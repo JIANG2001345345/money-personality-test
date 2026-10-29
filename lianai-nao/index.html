@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B0B0D">
+<title>隐藏恋爱脑指数 · 一谈恋爱就降智？</title>
+<meta name="description" content="表面高冷，测出来往往是重度。20 道题扫描你的隐藏恋爱脑等级。仅供娱乐，不构成任何心理诊断。">
+<style>
+/* ===== 隐藏恋爱脑指数 · 诊断扫描仪 ===== */
+:root{
+  --bg:#0B0B0D; --panel:#131317; --panel-2:#1B1B21;
+  --line:#2C2C35; --line-2:#3A3A46;
+  --pink:#FF2E7E; --pink-d:#B71E58; --pink-glow:rgba(255,46,126,.4);
+  --white:#F5F5F7; --gray:#8B8B99; --gray-2:#5E5E6B;
+  --mono:"Consolas","SFMono-Regular",ui-monospace,monospace;
+  --sans:"PingFang SC","Microsoft YaHei","Heiti SC",sans-serif;
+  --num:"Impact","Haettenschweiler","Arial Black",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--white);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+/* 扫描线 */
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:60;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px);
+  mix-blend-mode:screen;
+}
+.app{max-width:430px;margin:0 auto;position:relative;min-height:100vh;min-height:100dvh}
+.screen{display:none;flex-direction:column;min-height:100vh;min-height:100dvh;
+  padding:18px 20px calc(22px + env(safe-area-inset-bottom));position:relative}
+.screen.active{display:flex}
+.mono{font-family:var(--mono)}
+
+/* ---------- 顶栏 ---------- */
+.topbar{
+  display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;color:var(--gray);border-bottom:1px solid var(--line);
+  padding-bottom:10px;margin-bottom:6px;
+}
+.topbar .dot{width:6px;height:6px;border-radius:50%;background:var(--pink);
+  box-shadow:0 0 8px var(--pink);animation:blink 1.6s steps(1) infinite}
+@keyframes blink{0%,60%{opacity:1}61%,100%{opacity:.15}}
+.topbar .sp{margin-left:auto;color:var(--gray-2)}
+
+/* ---------- 按钮 ---------- */
+.btn{
+  display:block;width:100%;border:1px solid var(--pink);background:var(--pink);color:#0B0B0D;
+  font-family:var(--sans);font-size:15px;font-weight:800;letter-spacing:.16em;text-indent:.16em;
+  padding:16px 12px;border-radius:0;cursor:pointer;text-align:center;
+}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--gray);border-color:var(--line-2);
+  font-weight:500;font-size:12px;letter-spacing:.14em;text-indent:.14em;padding:13px 8px}
+
+/* ---------- 封面 ---------- */
+.cover-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 0}
+.kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--pink);margin:0 0 14px}
+.cover-title{
+  font-family:var(--sans);font-weight:900;font-size:clamp(46px,15vw,64px);
+  line-height:.98;letter-spacing:-.03em;margin:0;color:var(--white);
+}
+.cover-title em{font-style:normal;color:var(--pink);position:relative}
+.cover-title small{display:block;font-size:11px;letter-spacing:.3em;font-weight:400;
+  color:var(--gray-2);margin-top:22px;text-indent:.3em;font-family:var(--mono)}
+.scanbar{
+  position:relative;height:2px;background:var(--line);margin:22px 0 0;overflow:hidden;
+}
+.scanbar i{position:absolute;top:0;left:-40%;width:40%;height:100%;
+  background:linear-gradient(90deg,transparent,var(--pink),transparent);
+  animation:sweep 2.8s cubic-bezier(.5,0,.5,1) infinite}
+@keyframes sweep{0%{left:-40%}100%{left:100%}}
+.lede{font-size:14px;line-height:1.95;color:var(--gray);margin:22px 0 0;max-width:17em}
+.lede b{color:var(--white);font-weight:600}
+/* 五级刻度 */
+.scale{display:flex;gap:4px;margin:26px 0 0}
+.scale i{flex:1;height:42px;border:1px solid var(--line);position:relative;overflow:hidden;
+  font-family:var(--mono);font-size:9px;color:var(--gray-2);
+  display:flex;align-items:flex-start;justify-content:center;padding-top:7px}
+.scale i::after{content:"";position:absolute;left:0;right:0;bottom:0;height:var(--h,10px);
+  background:rgba(255,255,255,.13)}
+.scale i.hot{border-color:var(--pink);color:var(--pink)}
+.scale i.hot::after{background:var(--pink)}
+.cover-foot{display:flex;flex-direction:column;gap:12px}
+.specs{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--gray);
+  display:flex;justify-content:space-between}
+
+/* ---------- 答题 ---------- */
+.qtop{display:flex;align-items:baseline;gap:6px;font-family:var(--mono);color:var(--gray);margin:14px 0 0}
+.qtop .num{font-family:var(--num);font-size:44px;line-height:.9;color:var(--pink);letter-spacing:.02em}
+.qtop .of{font-size:12px;letter-spacing:.1em}
+.qtop .pct{margin-left:auto;font-size:11px;letter-spacing:.1em;color:var(--gray-2)}
+.blocks{display:flex;gap:3px;margin:12px 0 0}
+.blocks i{flex:1;height:6px;background:var(--line)}
+.blocks i.on{background:var(--pink);box-shadow:0 0 6px var(--pink-glow)}
+.qwrap{flex:1;display:flex;flex-direction:column;justify-content:center;padding:20px 0 8px}
+.qbox{position:relative;border:1px solid var(--line);background:var(--panel);
+  padding:26px 20px 24px}
+.qbox::before,.qbox::after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--pink)}
+.qbox::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.qbox::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.qlabel{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--gray-2);margin:0 0 10px}
+.qtext{font-size:20px;font-weight:700;line-height:1.62;margin:0;color:var(--white);letter-spacing:.01em}
+.opts{display:flex;flex-direction:column;margin-top:20px;border-top:1px solid var(--line)}
+.opt{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  background:transparent;border:0;border-bottom:1px solid var(--line);
+  padding:15px 2px;cursor:pointer;color:#C9C9D4;font-family:var(--sans);
+  font-size:14.5px;line-height:1.55;transition:background .12s,color .12s;
+}
+.opt .k{font-family:var(--mono);font-size:11px;color:var(--gray-2);width:14px;flex:0 0 auto;letter-spacing:.06em}
+.opt .arrow{margin-left:auto;color:var(--gray-2);font-size:15px;flex:0 0 auto}
+.opt.sel{background:var(--pink);color:#0B0B0D}
+.opt.sel .k,.opt.sel .arrow{color:#0B0B0D}
+.hint{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--gray-2);
+  text-align:center;margin:18px 0 0}
+
+/* ---------- 结果 ---------- */
+.report{animation:fadeUp .45s cubic-bezier(.2,.8,.3,1) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.r-top{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.18em;color:var(--gray-2);border-bottom:1px solid var(--line);padding-bottom:8px;margin-top:12px}
+.r-big{display:flex;align-items:flex-end;gap:10px;margin:22px 0 0}
+.r-title{font-family:var(--sans);font-size:32px;font-weight:900;letter-spacing:.02em;
+  line-height:1.2;margin:20px 0 0;color:var(--white)}
+.r-tag{display:inline-block;margin-top:9px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;color:var(--pink);border:1px solid var(--pink-d);padding:4px 9px}
+.r-big .n{font-family:var(--num);font-size:96px;line-height:.82;color:var(--white);letter-spacing:.01em}
+.r-big .n em{font-style:normal;color:var(--pink)}
+.r-big .u{font-family:var(--mono);font-size:13px;color:var(--gray);letter-spacing:.1em;padding-bottom:8px}
+.r-lv{margin-left:auto;text-align:right;padding-bottom:6px}
+.r-lv .lb{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--gray-2);display:block}
+.r-lv .v{font-family:var(--num);font-size:40px;line-height:1;color:var(--pink);letter-spacing:.02em}
+/* 量表 */
+.gauge{margin:20px 0 0;position:relative;height:16px;
+  background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 10px);}
+.gauge .fill{position:absolute;left:0;top:6px;height:4px;background:var(--pink);
+  box-shadow:0 0 12px var(--pink-glow);width:var(--w,0);transform-origin:left center;
+  animation:grow .9s cubic-bezier(.2,.9,.3,1) .2s both}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.gauge .tick{position:absolute;top:0;bottom:0;width:1px;background:var(--line-2)}
+.gscale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;
+  color:var(--gray-2);letter-spacing:.12em;margin-top:6px}
+/* 反差条 */
+.mirror{display:flex;margin:22px 0 0;border:1px solid var(--line)}
+.mirror div{flex:1;padding:12px 14px}
+.mirror div + div{border-left:1px solid var(--line)}
+.mirror .lb{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--gray-2);display:block;margin-bottom:5px}
+.mirror .v{font-family:var(--num);font-size:26px;line-height:1;color:var(--gray)}
+.mirror div:last-child .v{color:var(--pink)}
+/* 维度 */
+.dims{margin:24px 0 0}
+.dim-row{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.dim-row .n{font-size:12px;color:var(--gray);width:62px;flex:0 0 auto}
+.dim-row .track{flex:1;height:4px;background:var(--line);position:relative}
+.dim-row .track i{position:absolute;left:0;top:0;bottom:0;background:var(--pink);width:var(--w,0);
+  transform-origin:left center;animation:grow .9s cubic-bezier(.2,.9,.3,1) .3s both}
+.dim-row .track b{position:absolute;right:-1px;top:-3px;width:1px;height:10px;background:var(--line-2)}
+.dim-row .v{font-family:var(--mono);font-size:10px;color:var(--gray-2);width:26px;text-align:right}
+/* 段落 */
+.sec{margin-top:24px}
+.sec h3{font-family:var(--mono);font-size:9.5px;letter-spacing:.24em;color:var(--pink);
+  margin:0 0 10px;font-weight:400}
+.body-text{font-size:14px;line-height:2;color:#B9B9C6;margin:0;text-align:justify}
+.traits{display:flex;flex-wrap:wrap;gap:7px}
+.traits span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:#D8D8E2;
+  border:1px solid var(--line-2);padding:5px 9px;background:var(--panel)}
+.quote{margin:24px 0 0;padding:18px;background:var(--panel);border-left:3px solid var(--pink);
+  font-size:16px;font-weight:700;line-height:1.8;color:var(--white);letter-spacing:.01em}
+.advice{margin:20px 0 0;font-size:13px;line-height:1.9;color:var(--gray);border-top:1px dashed var(--line-2);padding-top:14px}
+.advice b{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;color:var(--pink);display:block;margin-bottom:6px;font-weight:400}
+.acts{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+.acts-row{display:flex;gap:10px}
+.acts-row .btn{flex:1}
+
+/* ---------- 弹层适配 ---------- */
+.modal-tip{color:#B9B9C6}
+.modal-x{border-color:var(--line-2);color:var(--pink)}
+
+
+/* ---------- 共用弹层 ---------- */
+.modal{position:fixed;inset:0;background:rgba(8,10,9,.9);display:none;z-index:80;
+  padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal.on{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.modal-card{width:100%;max-width:380px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.poster-img{width:100%;display:block;border-radius:3px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.modal-tip{font-size:12.5px;line-height:1.8;text-align:center;opacity:.62;margin:0}
+.modal-x{margin-top:4px;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;
+  font-size:13px;padding:9px 26px;border-radius:2px;letter-spacing:.08em;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,12px);
+  background:rgba(20,20,20,.92);color:#fff;font-size:13px;padding:10px 18px;border-radius:3px;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:90;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 封面 -->
+  <section class="screen active" id="s-cover">
+    <div class="topbar"><span class="dot"></span>NEURO.SCAN<span class="sp">v4.2</span></div>
+    <div class="cover-body">
+      <p class="kicker">SCAN NO.0417 · 请如实作答</p>
+      <h1 class="cover-title">隐藏<em>恋爱脑</em><br>指数<small>LOVE BRAIN INDEX</small></h1>
+      <div class="scanbar"><i></i></div>
+      <p class="lede">一谈恋爱就降智？<br>表面越高冷的人，测出来往往是<b>重度</b>。</p>
+      <div class="scale">
+        <i style="--h:5px">LV.0</i><i style="--h:10px">LV.1</i><i style="--h:15px">LV.2</i><i style="--h:19px">LV.3</i><i class="hot" style="--h:24px">LV.4</i>
+      </div>
+    </div>
+    <div class="cover-foot">
+      <div class="specs"><span>20 题</span><span>约 90 秒</span><span>无需登录</span></div>
+      <button class="btn" id="btnStart">开 始 扫 描 →</button>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section class="screen" id="s-quiz">
+    <div class="topbar"><span class="dot"></span>NEURO.SCAN<span class="sp">SCANNING</span></div>
+    <div class="qtop">
+      <span class="num" id="qIdx">01</span>
+      <span class="of">/ 20</span>
+      <span class="pct" id="qPct">5%</span>
+    </div>
+    <div class="blocks" id="blocks"></div>
+    <div class="qwrap">
+      <div class="qbox">
+        <p class="qlabel">Q.<span id="qNo">01</span> · 凭第一反应作答</p>
+        <h2 class="qtext" id="qText"></h2>
+        <div class="opts" id="opts"></div>
+      </div>
+    </div>
+    <p class="hint">THINK LESS · 选完自动进入下一题</p>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="s-result">
+    <div class="report">
+      <div class="r-top"><span>DIAGNOSIS REPORT</span><span id="rNo">NO.0000</span></div>
+      <h2 class="r-title" id="rTitle"></h2>
+      <span class="r-tag" id="rTag"></span>
+      <div class="r-big">
+        <div class="n"><span id="rNum">82</span><em>%</em></div>
+        <div class="u">恋爱脑<br>含量</div>
+        <div class="r-lv"><span class="lb">LEVEL</span><span class="v" id="rLv">LV.3</span></div>
+      </div>
+      <div class="gauge"><div class="fill" id="rGauge"></div></div>
+      <div class="gscale"><span>LV.0 人间清醒</span><span>恋爱脑晚期 LV.4</span></div>
+
+      <div class="mirror">
+        <div><span class="lb">你以为的自己</span><span class="v" id="rSelf">LV.1</span></div>
+        <div><span class="lb">系统实测</span><span class="v" id="rReal">LV.3</span></div>
+      </div>
+
+      <div class="dims" id="rDims"></div>
+
+      <div class="sec"><h3>D I A G N O S I S</h3><p class="body-text" id="rAnalysis"></p></div>
+      <div class="sec"><h3>S Y M P T O M S</h3><div class="traits" id="rTraits"></div></div>
+      <p class="quote" id="rLine"></p>
+      <p class="advice"><b>P R E S C R I P T I O N</b><span id="rAdvice"></span></p>
+
+      <div class="acts">
+        <button class="btn" id="btnPoster">生成检测报告图</button>
+        <div class="acts-row">
+          <button class="btn ghost" id="btnShare">复制链接</button>
+          <button class="btn ghost" id="btnAgain">再测一次</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card" id="modalBody"></div>
+  <button class="modal-x" onclick="closeModal()">关闭</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ===== 隐藏恋爱脑指数 · 数据 ===== */
+const TEST = {
+  id: "lianai-nao",
+  quizLen: 20,
+  slots: [7, 7, 6],
+  pctFloor: 4,
+  dims: [{ name: "上头速度" }, { name: "退让程度" }, { name: "情绪绑定" }],
+  qrImage: "",
+  qrCaption: "扫码测你的恋爱脑等级",
+  customLine: "",
+
+  /* 全部维度：3 = 更恋爱脑 */
+  bank: [
+    { d:0, q:"认识三天，他说想带你去见他妈，你会？", o:[
+      ["这也太快了吧",1],["先当玩笑听着",2],["已经开始想穿什么了",3]] },
+    { d:0, q:"他发来一句“在干嘛”，你的反应是？", o:[
+      ["回“在忙”",1],["正常回复",2],["先翻一遍聊天记录再回",3]] },
+    { d:0, q:"他发了一句晚安，你会？", o:[
+      ["回一个晚安",1],["回个表情",2],["截图存起来",3]] },
+    { d:0, q:"看到他和别人的合照，你会？", o:[
+      ["划过去",1],["多看两眼",2],["放大看看旁边那个是谁",3]] },
+    { d:0, q:"听到某首歌，你会想起他吗？", o:[
+      ["不会",1],["偶尔",2],["每首都能对上号",3]] },
+    { d:0, q:"他说“最近有点忙”，你会？", o:[
+      ["好的",1],["问一句忙什么",2],["开始复盘是不是自己做错了什么",3]] },
+    { d:0, q:"他三天没找你，你会？", o:[
+      ["继续过自己的生活",1],["有点在意",2],["反复点开他的头像",3]] },
+    { d:0, q:"朋友提起他，你会？", o:[
+      ["淡淡说一句还行",1],["聊两句",2],["话匣子关不住",3]] },
+    { d:0, q:"他随口夸了你一句，你能开心多久？", o:[
+      ["一会儿",1],["一天",2],["一周以上",3]] },
+    { d:0, q:"你会因为一个人的朋友圈喜欢上他吗？", o:[
+      ["不会",1],["看内容",2],["会，然后一直翻到底",3]] },
+    { d:0, q:"刚认识，你会开始幻想你们的以后吗？", o:[
+      ["不会",1],["偶尔",2],["已经在想孩子叫什么了",3]] },
+    { d:0, q:"他回消息很慢，你会在意吗？", o:[
+      ["不在意，我也有事",1],["有一点",2],["开始分析他的每个标点",3]] },
+    { d:0, q:"你会盯着他的在线状态吗？", o:[
+      ["不会",1],["偶尔看一眼",2],["会一直看",3]] },
+    { d:0, q:"他换了头像，你会？", o:[
+      ["没注意",1],["觉得挺好看",2],["研究这张是谁拍的",3]] },
+    { d:0, q:"你说得出他的口味、作息和喜欢的颜色吗？", o:[
+      ["说不出",1],["大概知道",2],["全知道，还记在备忘录里",3]] },
+
+    { d:1, q:"周末你原本有安排，他说想见你，你会？", o:[
+      ["改天吧",1],["看情况调整",2],["立刻推掉",3]] },
+    { d:1, q:"他迟到一个小时，你会？", o:[
+      ["直接说下次别这样",1],["嘴上抱怨两句",2],["说没事，其实心里记着",3]] },
+    { d:1, q:"他喜欢的电影你不爱看，你会？", o:[
+      ["各看各的",1],["陪着看",2],["看完还去查影评，好跟他聊",3]] },
+    { d:1, q:"他忘了你们的纪念日，你会？", o:[
+      ["直接说",1],["不高兴，但会提出来",2],["自己消化，还反过来安慰他",3]] },
+    { d:1, q:"他不喜欢你的某个朋友，你会？", o:[
+      ["该见还见",1],["少见面",2],["慢慢疏远",3]] },
+    { d:1, q:"你生病了，他只说“多喝热水”，你会？", o:[
+      ["直接说我想你来",1],["有点失落",2],["觉得他也挺忙的，算了",3]] },
+    { d:1, q:"他犯了错，你会？", o:[
+      ["把底线说清楚",1],["生气，但很快原谅",2],["先想是不是自己也有问题",3]] },
+    { d:1, q:"他临时改了行程，你会？", o:[
+      ["不接受",1],["有点烦，但配合",2],["完全没问题，他肯定有原因",3]] },
+    { d:1, q:"你会为了他改变自己的穿衣风格吗？", o:[
+      ["不会",1],["可以试试",2],["已经这么做了",3]] },
+    { d:1, q:"他心情不好，你会？", o:[
+      ["陪他，但先照顾自己",1],["一直陪着",2],["放下所有事去陪他",3]] },
+    { d:1, q:"他说不喜欢你化浓妆，你会？", o:[
+      ["想化就化",1],["出门化淡一点",2],["从此不化了",3]] },
+    { d:1, q:"他手机里没有你的照片，你会？", o:[
+      ["无所谓",1],["有点在意",2],["会难过，但不说",3]] },
+    { d:1, q:"他家里人对你不太热情，你会？", o:[
+      ["算了，不勉强",1],["努力表现一下",2],["加倍努力，想被接受",3]] },
+    { d:1, q:"你会因为他推掉朋友的聚会吗？", o:[
+      ["不会",1],["看情况",2],["经常",3]] },
+    { d:1, q:"他不想公开你们的关系，你会？", o:[
+      ["不接受",1],["问清楚原因",2],["答应，相信他",3]] },
+
+    { d:2, q:"他的一句话能决定你一天的心情吗？", o:[
+      ["不能",1],["有时候",2],["能",3]] },
+    { d:2, q:"你们吵架，谁先低头？", o:[
+      ["谁错谁低头",1],["看情况",2],["基本都是我",3]] },
+    { d:2, q:"分手之后你会？", o:[
+      ["删掉，继续过",1],["难受一阵",2],["反复看聊天记录",3]] },
+    { d:2, q:"你会在意他的“已读”吗？", o:[
+      ["不会",1],["偶尔看一眼时间",2],["会一直看",3]] },
+    { d:2, q:"他夸别人好看，你会？", o:[
+      ["无所谓",1],["有点酸",2],["整个人都不好了",3]] },
+    { d:2, q:"一天里有多少时间在想他？", o:[
+      ["很少",1],["时不时",2],["大部分时间",3]] },
+    { d:2, q:"他一整天没理你，晚上你会？", o:[
+      ["睡了",1],["发一句问候",2],["情绪已经到谷底",3]] },
+    { d:2, q:"你会因为他的话改变对自己的评价吗？", o:[
+      ["不会",1],["有一点",2],["会，他说的我都信",3]] },
+    { d:2, q:"他说“我需要一点空间”，你会？", o:[
+      ["好的，各过各的",1],["有点慌",2],["开始想是不是要分手了",3]] },
+    { d:2, q:"你会偷偷翻他的社交账号吗？", o:[
+      ["不会",1],["偶尔",2],["经常",3]] },
+    { d:2, q:"他一句“随便你”，你会？", o:[
+      ["那就随便",1],["有点不舒服",2],["反复想他是不是不耐烦了",3]] },
+    { d:2, q:"你会把他的聊天窗口置顶吗？", o:[
+      ["不会",1],["置顶",2],["置顶、星标、备注三行",3]] },
+    { d:2, q:"他不回你却在朋友圈点赞，你会？", o:[
+      ["直接问他",1],["有点不爽",2],["心里堵得慌，但什么都不说",3]] },
+    { d:2, q:"你会为了他戒掉一个习惯吗？", o:[
+      ["不会",1],["少一点",2],["全戒了",3]] },
+    { d:2, q:"分手后你会觉得“再也遇不到这么好的人了”吗？", o:[
+      ["不会",1],["偶尔会",2],["会，很确定",3]] }
+  ],
+
+  results: [
+    { min:20, max:27, title:"人间清醒体", tag:"意识清醒 · 未检出",
+      analysis:"你的脑子在感情里基本是在线的。不是你不心动，是你心动的时候脑子还在值班。你会喜欢一个人，但不会为了一个人把自己的生活拆了重盖。这种体质在二十岁看起来像冷漠，在三十岁你会感谢自己。唯一的风险是：太清醒的人容易把“我还没遇到”解释成“我不需要”。",
+      traits:["理智在线","边界清晰","自我优先"],
+      line:"我很喜欢你，但我的生活不止你。",
+      advice:"偶尔允许自己不讲道理一次。清醒是能力，不是任务。" },
+    { min:28, max:35, title:"轻微上头", tag:"轻度感染 · 可控",
+      analysis:"你会心动，也会胡思乱想，但大多时候还能拉回自己。你属于那种“晚上想了很多，第二天照常上班”的人。这种状态其实是最健康的：能投入，也能刹车。你要小心的不是上头，是那种“我都可以”的惯性——它会在某一天悄悄变成一次大的退让。",
+      traits:["可控上头","自我调节强","偶尔嘴硬"],
+      line:"我只是有点喜欢他，真的只是有点。",
+      advice:"把“我都可以”换成“我想要”。练习说出口，不解释。" },
+    { min:36, max:43, title:"中度沦陷", tag:"隐形沦陷 · 无症状",
+      analysis:"表面上看你挺稳的，朋友甚至会说你不像在谈恋爱。但只有你自己知道，你已经在很多小事上让步了：行程、口味、作息，还有那些你没说出口的不高兴。你的恋爱脑不是轰轰烈烈的那种，是安静的、持续的、一点点把自己挪过去的。等你反应过来，位置已经换了。",
+      traits:["表面冷静","隐性让步","情绪内耗"],
+      line:"我没做什么，我只是把周末都空出来了。",
+      advice:"下一次他不高兴的时候，先问自己：这件事我真的错了吗？" },
+    { min:44, max:51, title:"重度患者", tag:"重度感染 · 建议观察",
+      analysis:"你一谈恋爱就自动降智，而且是那种自己知道的降智。你能一边分析得头头是道，一边继续做让朋友想打你的事。你的问题是：你把“为他多做一点”当成了爱的证据，越付出越舍不得，越多越停不下。这不是深情，这是沉没成本。",
+      traits:["一谈就降智","听劝免疫","付出型上瘾"],
+      line:"我知道我在做什么，但我还是想做。",
+      advice:"恋爱可以上头，但有一样东西不能交出去：你明天的安排。" },
+    { min:52, max:60, title:"恋爱脑晚期", tag:"晚期 · 建议隔离",
+      analysis:"如果恋爱是一门课，你已经在脑内读到博士了。认识三天规划婚礼，吵架五分钟后原谅，对方一句“最近忙”能让你演完一整部电影。你的问题不是爱太多，是把整个自己都押在了一个人身上。你不是离不开他，你是离不开那份被需要的感觉。",
+      traits:["脑内已婚","情绪外挂","自我溶解"],
+      line:"我们才认识三天，我连孩子上哪个学校都想好了。",
+      advice:"给自己留一件和他无关的事，并且无论如何都不要停。" }
+  ]
+};
+
+/* ===== 共用引擎：抽题 / 打乱 / 计分 / 弹层 / 通用画笔 =====
+   每个主题只提供 SKIN 对象和 TEST 数据，其余都走这里。 */
+
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ---------- 二维码（每套主题在 data.js 里配） ---------- */
+let QR_IMG = null;
+if (TEST.qrImage){
+  QR_IMG = new Image();
+  QR_IMG.src = TEST.qrImage;
+}
+
+/* ---------- 工具 ---------- */
+function shuffleArr(a){
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* 按维度配比抽题：slots 之和 = TEST.quizLen */
+function drawQuiz(){
+  const picked = [];
+  const slots = shuffleArr(TEST.slots.slice());
+  TEST.dims.forEach((m, di) => {
+    const pool = shuffleArr(TEST.bank.filter(x => x.d === di));
+    picked.push.apply(picked, pool.slice(0, slots[di]));
+  });
+  return shuffleArr(picked);
+}
+
+/* ---------- 状态 ---------- */
+const state = { i:0, scores:[], drawn:[], opts:[], total:0, result:null, dims:null };
+let locked = false;
+
+/* ---------- 流程 ---------- */
+function startQuiz(){
+  state.i = 0;
+  state.scores = [];
+  state.drawn = drawQuiz();
+  state.opts = state.drawn.map(q => shuffleArr(q.o.map(o => ({ t:o[0], s:o[1] }))));
+  locked = false;
+  SKIN.goQuiz();
+  SKIN.renderQuestion();
+}
+
+function choose(score, el){
+  if (locked) return;
+  locked = true;
+  if (el) el.classList.add('sel');
+  state.scores.push(score);
+  SKIN.afterChoose(el, score);
+  setTimeout(() => {
+    locked = false;
+    if (state.i < TEST.quizLen - 1){
+      state.i++;
+      SKIN.renderQuestion();
+    } else {
+      finish();
+    }
+  }, SKIN.advanceDelay || 240);
+}
+
+function finish(){
+  state.total = state.scores.reduce((a,b) => a + b, 0);
+  state.result = TEST.results.find(r => state.total >= r.min && state.total <= r.max) || TEST.results[0];
+
+  const sum = [0,0,0], cnt = [0,0,0];
+  state.drawn.forEach((q, i) => { sum[q.d] += state.scores[i]; cnt[q.d]++; });
+  state.dims = TEST.dims.map((m, d) => ({
+    name: m.name,
+    pct: Math.max(TEST.pctFloor || 6, Math.min(100, Math.round(sum[d] / (cnt[d] * 3) * 100)))
+  }));
+
+  SKIN.goResult();
+  SKIN.renderResult();
+  window.scrollTo(0,0);
+}
+
+/* ---------- 弹层 ---------- */
+function openModal(html){
+  $('modalBody').innerHTML = html;
+  $('modal').classList.add('on');
+}
+function closeModal(){ $('modal').classList.remove('on'); }
+
+function showPoster(){
+  const url = SKIN.buildPoster();
+  openModal('<img class="poster-img" src="' + url + '" alt="测试结果海报">'
+    + '<p class="modal-tip">长按图片保存到相册<br>电脑上右键另存为</p>');
+}
+
+function copyLink(){
+  const url = location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(
+      () => toast('链接已复制'),
+      () => toast('长按地址栏复制链接')
+    );
+  } else {
+    toast('长按地址栏复制链接');
+  }
+}
+
+let toastTimer;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 1900);
+}
+
+/* ---------- 画布通用件 ---------- */
+function makeCanvas(w, h){
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return c;
+}
+function wrapLines(g, text, maxW){
+  const out = []; let line = '';
+  for (const ch of text){
+    if (g.measureText(line + ch).width > maxW && line){ out.push(line); line = ch; }
+    else line += ch;
+  }
+  if (line) out.push(line);
+  return out;
+}
+/* 防伪扭索纹：r = R + A·sin(Nθ) 旋转复制 */
+function drawRosette(g, cx, cy, R, amp, N, P, steps, color, alpha, lw){
+  g.save();
+  g.strokeStyle = color; g.globalAlpha = alpha; g.lineWidth = lw || 0.9;
+  for (let k = 0; k < P; k++){
+    const rot = k * 2 * Math.PI / (N * P);
+    g.beginPath();
+    for (let i = 0; i <= steps; i++){
+      const t = i / steps * Math.PI * 2;
+      const r = R + amp * Math.sin(N * t);
+      const a = t + rot;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.stroke();
+  }
+  g.restore();
+}
+function roundRect(g, x, y, w, h, r){
+  g.beginPath();
+  g.moveTo(x + r, y);
+  g.arcTo(x + w, y, x + w, y + h, r);
+  g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r);
+  g.arcTo(x, y, x + w, y, r);
+  g.closePath();
+}
+
+/* ===== 隐藏恋爱脑指数 · 界面层 ===== */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function levelOf(r){ return TEST.results.indexOf(r); }
+function pctOf(t){ return Math.max(0, Math.min(100, Math.round((t - 20) / 40 * 100))); }
+
+const SKIN = {
+  advanceDelay: 220,
+
+  goQuiz(){
+    let h = '';
+    for (let k = 0; k < TEST.quizLen; k++) h += '<i></i>';
+    $('blocks').innerHTML = h;
+    show('s-quiz');
+  },
+  goResult(){ show('s-result'); },
+
+  renderQuestion(){
+    const i = state.i;
+    const no = String(i + 1).padStart(2, '0');
+    $('qIdx').textContent = no;
+    $('qNo').textContent = no;
+    $('qPct').textContent = Math.round((i + 1) / TEST.quizLen * 100) + '%';
+    document.querySelectorAll('#blocks i').forEach((el, k) => {
+      el.classList.toggle('on', k <= i);
+    });
+    $('qText').textContent = state.drawn[i].q;
+
+    const box = $('opts');
+    box.innerHTML = '';
+    state.opts[i].forEach((o, idx) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      const k = document.createElement('span'); k.className = 'k'; k.textContent = 'ABC'[idx];
+      const t = document.createElement('span'); t.className = 't'; t.textContent = o.t;
+      const a = document.createElement('span'); a.className = 'arrow'; a.textContent = '›';
+      b.appendChild(k); b.appendChild(t); b.appendChild(a);
+      b.addEventListener('click', () => choose(o.s, b));
+      box.appendChild(b);
+    });
+  },
+
+  afterChoose(el){ /* .sel 反白由 CSS 完成 */ },
+
+  renderResult(){
+    const r = state.result, t = state.total;
+    const lv = levelOf(r), pct = pctOf(t);
+    const self = lv >= 2 ? Math.max(0, lv - 2) : lv;
+
+    $('rTitle').textContent = r.title;
+    $('rTag').textContent = r.tag;
+    $('rNum').textContent = pct;
+    $('rLv').textContent = 'LV.' + lv;
+    $('rSelf').textContent = 'LV.' + self;
+    $('rReal').textContent = 'LV.' + lv;
+    $('rNo').textContent = 'NO.' + String(1000 + t * 17).slice(-4);
+    $('rGauge').style.setProperty('--w', pct + '%');
+    $('rAnalysis').textContent = r.analysis;
+    $('rTraits').innerHTML = r.traits.map(x => '<span>' + x + '</span>').join('');
+    $('rLine').textContent = r.line;
+    $('rAdvice').textContent = r.advice;
+
+    $('rDims').innerHTML = state.dims.map(d =>
+      '<div class="dim-row"><span class="n">' + d.name + '</span>'
+      + '<span class="track"><i style="--w:' + d.pct + '%"></i><b></b></span>'
+      + '<span class="v">' + d.pct + '</span></div>'
+    ).join('');
+  },
+
+  buildPoster(){
+    const W = 750, H = 1200;
+    const c = makeCanvas(W, H), g = c.getContext('2d');
+    const r = state.result, t = state.total;
+    const lv = levelOf(r), pct = pctOf(t);
+    const self = lv >= 2 ? Math.max(0, lv - 2) : lv;
+    const PAD = 64, R = W - PAD;
+
+    g.fillStyle = '#0B0B0D'; g.fillRect(0, 0, W, H);
+
+    // 网格
+    g.strokeStyle = 'rgba(255,255,255,.045)'; g.lineWidth = 1;
+    for (let x = 0; x <= W; x += 75){ g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke(); }
+    for (let y = 0; y <= H; y += 75){ g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+
+    // 扫描线
+    g.fillStyle = 'rgba(255,255,255,.022)';
+    for (let y = 0; y < H; y += 4) g.fillRect(0, y, W, 1);
+
+    // 顶栏
+    g.fillStyle = '#FF2E7E';
+    g.fillRect(PAD, 70, 8, 8);
+    g.fillStyle = '#8B8B99';
+    g.font = '19px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText('NEURO.SCAN  //  恋爱脑检测报告', PAD + 18, 79);
+    g.textAlign = 'right';
+    g.fillText('NO.' + String(1000 + t * 17).slice(-4), R, 79);
+    g.textAlign = 'left';
+    g.fillStyle = '#FF2E7E';
+    g.fillRect(PAD, 104, R - PAD, 2);
+
+    // 标题
+    g.fillStyle = '#F5F5F7';
+    g.font = '900 78px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText(r.title, PAD, 200);
+
+    g.fillStyle = '#FF2E7E';
+    g.font = '21px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText(r.tag, PAD, 240);
+
+    // 巨号百分比
+    g.fillStyle = '#F5F5F7';
+    g.font = '190px Impact,"Arial Black",sans-serif';
+    const numTxt = String(pct);
+    g.fillText(numTxt, PAD - 6, 420);
+    const nw = g.measureText(numTxt).width;
+    g.fillStyle = '#FF2E7E';
+    g.font = '90px Impact,"Arial Black",sans-serif';
+    g.fillText('%', PAD + nw + 6, 420);
+
+    g.fillStyle = '#5E5E6B';
+    g.font = '20px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText('恋爱脑含量', PAD + 4, 456);
+    g.textAlign = 'right';
+    g.fillStyle = '#FF2E7E';
+    g.font = '58px Impact,"Arial Black",sans-serif';
+    g.fillText('LV.' + lv, R, 452);
+    g.textAlign = 'left';
+
+    // 量表 + 刻度
+    const gy = 500;
+    g.fillStyle = '#2C2C35'; g.fillRect(PAD, gy, R - PAD, 4);
+    g.fillStyle = '#FF2E7E'; g.fillRect(PAD, gy, (R - PAD) * pct / 100, 4);
+    g.fillStyle = 'rgba(255,255,255,.16)';
+    for (let k = 0; k <= 10; k++) g.fillRect(PAD + (R - PAD) * k / 10, gy - 8, 1, 6);
+    g.fillStyle = '#5E5E6B';
+    g.font = '15px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText('LV.0 人间清醒', PAD, gy + 30);
+    g.textAlign = 'right';
+    g.fillText('恋爱脑晚期 LV.4', R, gy + 30);
+    g.textAlign = 'left';
+
+    // 反差
+    const my = 570, mh = 78, mw = (R - PAD) / 2;
+    g.strokeStyle = '#2C2C35'; g.lineWidth = 1;
+    g.strokeRect(PAD, my, mw, mh);
+    g.strokeRect(PAD + mw, my, mw, mh);
+    g.fillStyle = '#5E5E6B';
+    g.font = '16px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText('你以为的自己', PAD + 20, my + 28);
+    g.fillText('系统实测', PAD + mw + 20, my + 28);
+    g.fillStyle = '#8B8B99';
+    g.font = '46px Impact,"Arial Black",sans-serif';
+    g.fillText('LV.' + self, PAD + 20, my + 68);
+    g.fillStyle = '#FF2E7E';
+    g.fillText('LV.' + lv, PAD + mw + 20, my + 68);
+
+    // 三维
+    let dy = 700;
+    state.dims.forEach(d => {
+      g.fillStyle = '#8B8B99';
+      g.font = '20px "PingFang SC","Microsoft YaHei",sans-serif';
+      g.fillText(d.name, PAD, dy + 6);
+      const tx = PAD + 130, tw = R - tx - 54;
+      g.fillStyle = '#2C2C35'; g.fillRect(tx, dy - 2, tw, 4);
+      g.fillStyle = '#FF2E7E'; g.fillRect(tx, dy - 2, tw * d.pct / 100, 4);
+      g.fillStyle = '#5E5E6B';
+      g.font = '15px "PingFang SC","Microsoft YaHei",sans-serif';
+      g.textAlign = 'right';
+      g.fillText(String(d.pct), R, dy + 6);
+      g.textAlign = 'left';
+      dy += 46;
+    });
+
+    // 金句
+    const qy = dy + 30;
+    g.fillStyle = '#F5F5F7';
+    g.font = '700 32px "PingFang SC","Microsoft YaHei",sans-serif';
+    const ql = wrapLines(g, r.line, W - PAD * 2 - 34);
+    g.fillStyle = '#FF2E7E';
+    g.fillRect(PAD, qy, 3, ql.length * 46 + 18);
+    g.fillStyle = '#F5F5F7';
+    ql.forEach((ln, i) => g.fillText(ln, PAD + 24, qy + 38 + i * 46));
+
+    // 底部
+    const footY = 1042;
+    g.fillStyle = '#2C2C35'; g.fillRect(PAD, footY, R - PAD, 1);
+
+    const qs = 100, qx = R - qs, qyy = footY + 26;
+    g.fillStyle = '#fff'; g.fillRect(qx - 8, qyy - 8, qs + 16, qs + 16);
+    if (QR_IMG){
+      g.drawImage(QR_IMG, qx, qyy, qs, qs);
+    } else {
+      g.fillStyle = '#8E96B4';
+      g.font = '14px "PingFang SC","Microsoft YaHei",sans-serif';
+      g.textAlign = 'center';
+      g.fillText('二维码', qx + qs / 2, qyy + 46);
+      g.fillText('放这里', qx + qs / 2, qyy + 68);
+      g.textAlign = 'left';
+    }
+
+    g.fillStyle = '#F5F5F7';
+    g.font = '700 22px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText(TEST.qrCaption, PAD, footY + 60);
+    g.fillStyle = '#5E5E6B';
+    g.font = '15px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText('仅供娱乐 · 不构成任何心理诊断', PAD, footY + 92);
+    if (TEST.customLine){
+      g.fillText(TEST.customLine, PAD, footY + 114);
+    }
+
+    return c.toDataURL('image/png');
+  }
+};
+
+/* ---------- 绑定 ---------- */
+$('btnStart').addEventListener('click', startQuiz);
+$('btnAgain').addEventListener('click', startQuiz);
+$('btnPoster').addEventListener('click', showPoster);
+$('btnShare').addEventListener('click', copyLink);
+
+</script>
+</body>
+</html>
