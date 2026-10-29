@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#E8EDF4">
+<title>测测你的职场生存段位 · 你能在这家公司活到第几级</title>
+<meta name="description" content="同一间办公室，有人三个月就混开了，有人三年还在原地。20 道题测你的向上管理、人情练达和边界硬度。">
+<style>
+/* ===== 职场生存段位 · 工牌/评定表 ===== */
+:root{
+  --bg:#E8EDF4; --card:#FFFFFF; --ink:#0E1318; --blue:#1F48F0;
+  --grey:#7D8898; --line:#D9E0EA; --tint:#F1F5FF; --sub:#5A6676;
+  --sans:"PingFang SC","Microsoft YaHei","Heiti SC",sans-serif;
+  --mono:Consolas,"SF Mono",Menlo,"Courier New",monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  background-image:
+    linear-gradient(rgba(14,19,24,.032) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(14,19,24,.032) 1px,transparent 1px);
+  background-size:26px 26px;
+  background-attachment:fixed;
+}
+.app{max-width:430px;margin:0 auto;position:relative;min-height:100vh;min-height:100dvh}
+.screen{display:none;flex-direction:column;min-height:100vh;min-height:100dvh;
+  padding:20px 20px calc(24px + env(safe-area-inset-bottom))}
+.screen.active{display:flex}
+
+/* ---------- 按钮 ---------- */
+.btn{
+  display:block;width:100%;border:2px solid var(--ink);background:var(--card);color:var(--ink);
+  font-family:var(--sans);font-size:15px;font-weight:700;letter-spacing:.18em;text-indent:.18em;
+  padding:14px 12px;cursor:pointer;border-radius:3px;box-shadow:3px 3px 0 var(--ink);
+  transition:transform .1s ease,box-shadow .1s ease;
+}
+.btn.solid{background:var(--blue);color:#fff}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.btn.ghost{box-shadow:none;border-width:1.5px;border-color:#B7C1CF;color:#3D4857;
+  font-size:12.5px;font-weight:600;letter-spacing:.1em;text-indent:.1em;padding:11px 8px;background:#FBFCFE}
+
+/* ---------- 封面：挂绳工牌 ---------- */
+.cover{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-bottom:4px}
+.strap{width:26px;height:clamp(70px,22vh,220px);margin-top:-20px;position:relative;
+  background:linear-gradient(90deg,#122F9E,#2E5CFF 46%,#122F9E)}
+.strap::after{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.13) 0 1px,transparent 1px 3px)}
+.clip{width:32px;height:19px;border:2px solid #B4BFCE;border-radius:4px;margin-top:-1px;
+  background:linear-gradient(180deg,#FAFBFD,#D9E0EA);position:relative;z-index:2}
+.badge{
+  width:100%;max-width:320px;background:var(--card);border:2px solid var(--ink);border-radius:5px;
+  padding:32px 24px 0;margin-top:-2px;position:relative;overflow:hidden;box-shadow:6px 6px 0 var(--ink);
+}
+.badge::before{content:'';position:absolute;top:12px;left:50%;margin-left:-7px;width:14px;height:14px;
+  border-radius:50%;background:var(--bg);box-shadow:inset 0 1.5px 2px rgba(14,19,24,.5)}
+.b-top{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.1em;color:var(--grey);border-bottom:1px solid var(--line);padding-bottom:9px}
+.b-title{font-size:33px;line-height:1.28;font-weight:800;letter-spacing:.08em;margin:16px 0 0}
+.b-title em{font-style:normal;color:var(--blue)}
+.b-sub{font-size:12.5px;color:var(--sub);line-height:1.7;margin:9px 0 18px}
+.b-row{display:flex;gap:10px;align-items:baseline;font-family:var(--mono);font-size:9.5px;
+  color:var(--grey);letter-spacing:.1em;padding:8px 0;border-top:1px solid var(--line)}
+.b-row b{font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--ink);letter-spacing:.04em}
+.barcode{height:36px;margin:14px -24px 0;
+  background:
+    repeating-linear-gradient(90deg,#0E1318 0 2px,transparent 2px 5px),
+    repeating-linear-gradient(90deg,transparent 0 7px,#0E1318 7px 9px,transparent 9px 14px),
+    repeating-linear-gradient(90deg,#0E1318 0 1px,transparent 1px 4px);
+  background-size:37px 100%,61px 100%,17px 100%;opacity:.9}
+.bcode{margin:0 -24px;padding:7px 0 9px;text-align:center;font-family:var(--mono);font-size:8.5px;
+  letter-spacing:.3em;color:var(--grey);background:#F7F9FC;border-top:1px solid var(--line)}
+.cover-foot{width:100%;max-width:320px;margin-top:auto;display:flex;flex-direction:column;gap:12px}
+.facts{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.08em;color:var(--grey)}
+
+/* ---------- 答题：问卷 ---------- */
+.fhead{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);
+  font-size:10px;letter-spacing:.12em;color:var(--grey);padding-top:10px}
+.fhead b{font-size:12.5px;color:var(--blue)}
+.fbar{height:7px;background:var(--card);border:1.5px solid var(--ink);margin-top:9px;position:relative;overflow:hidden}
+.fbar i{position:absolute;left:0;top:0;bottom:0;background:var(--blue);width:var(--w,0);transition:width .28s ease}
+.qwrap{flex:1;display:flex;flex-direction:column;justify-content:center;padding:16px 0 58px}
+.qtext{font-size:21px;line-height:1.62;font-weight:700;margin:0 0 22px;letter-spacing:.01em}
+.opts{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:transparent;
+  border:0;border-bottom:1px solid var(--line);padding:16px 4px;cursor:pointer;
+  font-family:var(--sans);font-size:15px;line-height:1.6;color:#2A3441;transition:background .12s}
+.opt .k{flex:0 0 auto;width:16px;height:16px;border:1.5px solid #A7B1C0;border-radius:2px;
+  background:#fff;position:relative}
+.opt .t{flex:1}
+.opt.sel{background:var(--tint)}
+.opt.sel .k{background:var(--blue);border-color:var(--blue)}
+.opt.sel .k::after{content:'';position:absolute;left:4.4px;top:1px;width:4px;height:8.5px;
+  border:solid #fff;border-width:0 1.8px 1.8px 0;transform:rotate(42deg)}
+.hint{margin:16px 0 0;text-align:center;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.16em;color:#A3ADBB}
+
+/* ---------- 结果：评定表 ---------- */
+.rhead{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;
+  letter-spacing:.12em;color:var(--grey);padding:10px 0;border-bottom:1.5px solid var(--ink)}
+.rank{display:flex;align-items:flex-start;gap:14px;margin-top:18px}
+.rank-no{font-family:var(--mono);font-size:25px;font-weight:700;color:var(--blue);
+  letter-spacing:-.02em;line-height:1.1;flex:0 0 auto}
+.rank-name{font-size:33px;font-weight:800;line-height:1.15;margin:0;letter-spacing:.06em}
+.rank-tag{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;
+  color:var(--blue);border:1.5px solid var(--blue);background:#fff;padding:4px 7px;margin-top:9px}
+.ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:20px}
+.ladder div{border:1.5px solid var(--line);background:var(--card);padding:7px 0 6px;text-align:center}
+.ladder div i{display:block;font-style:normal;font-family:var(--mono);font-size:8px;
+  letter-spacing:.06em;color:var(--grey)}
+.ladder div span{display:block;font-size:9.5px;margin-top:3px;color:var(--sub);white-space:nowrap;
+  letter-spacing:-.02em}
+.ladder div.on{border-color:var(--ink);background:var(--blue);box-shadow:2px 2px 0 var(--ink)}
+.ladder div.on i,.ladder div.on span{color:#fff}
+.dims{margin-top:22px;border-top:1px solid var(--line);padding-top:16px}
+.dim-row{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.dim-row .n{font-size:12px;color:var(--sub);width:60px;flex:0 0 auto}
+.dim-row .track{flex:1;height:7px;background:#EEF2F7;border:1px solid #E0E6EE;position:relative;overflow:hidden}
+.dim-row .track i{position:absolute;left:0;top:0;bottom:0;background:var(--blue);width:var(--w,0);
+  transform-origin:left center;animation:grow .9s cubic-bezier(.2,.9,.3,1) .2s both}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.dim-row .v{font-family:var(--mono);font-size:11px;width:28px;text-align:right;color:var(--ink)}
+.sec{margin-top:24px}
+.sec h3{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.18em;
+  color:var(--grey);margin:0 0 10px}
+.review{margin:0;padding:15px 15px;background:var(--card);border:1.5px solid var(--line);
+  border-left:3px solid var(--blue);font-size:13.5px;line-height:1.95;color:#2A3441;text-align:justify}
+.traits{display:flex;flex-wrap:wrap;gap:8px}
+.traits span{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;border:1.5px solid var(--ink);
+  background:var(--card);padding:5px 9px}
+.quote{margin:24px 0 0;padding:15px 0 0;border-top:2px solid var(--ink);
+  font-size:16px;font-weight:600;line-height:1.85;letter-spacing:.02em}
+.advice{margin:18px 0 0;font-size:12.5px;line-height:1.9;color:var(--sub)}
+.advice b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  color:var(--blue);margin-bottom:6px}
+.acts{display:flex;flex-direction:column;gap:10px;margin-top:26px}
+.acts-row{display:flex;gap:10px}
+.acts-row .btn{flex:1}
+.rfoot{margin:32px 0 0;text-align:center;font-family:var(--mono);font-size:9px;
+  letter-spacing:.16em;color:#A3ADBB}
+
+/* ---------- 弹层适配 ---------- */
+.modal-tip{color:#C9D2DE}
+.modal-x{border-color:rgba(255,255,255,.32)}
+
+
+/* ---------- 共用弹层 ---------- */
+.modal{position:fixed;inset:0;background:rgba(8,10,9,.9);display:none;z-index:80;
+  padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal.on{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.modal-card{width:100%;max-width:380px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.poster-img{width:100%;display:block;border-radius:3px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.modal-tip{font-size:12.5px;line-height:1.8;text-align:center;opacity:.62;margin:0}
+.modal-x{margin-top:4px;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;
+  font-size:13px;padding:9px 26px;border-radius:2px;letter-spacing:.08em;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,12px);
+  background:rgba(20,20,20,.92);color:#fff;font-size:13px;padding:10px 18px;border-radius:3px;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:90;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 封面 -->
+  <section class="screen active" id="s-cover">
+    <div class="cover">
+      <div class="strap"></div>
+      <div class="clip"></div>
+      <div class="badge">
+        <div class="b-top"><span>STAFF ID · 0007</span><span>2026 / 10</span></div>
+        <h1 class="b-title">职场<em>生存</em><br>段位测定</h1>
+        <p class="b-sub">20 题，测出你在这家公司能活到第几级</p>
+        <div class="b-row"><span>DEPT.</span><b>生存部 · SURVIVAL</b></div>
+        <div class="b-row"><span>NAME</span><b>匿名员工</b></div>
+        <div class="barcode"></div>
+        <div class="bcode">ZCSD — 2026 — 0007</div>
+      </div>
+      <div class="cover-foot">
+        <button class="btn solid" id="btnStart">开 始 入 职</button>
+        <div class="facts"><span>20 题</span><span>约 90 秒</span><span>无需登录</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section class="screen" id="s-quiz">
+    <div class="fhead"><span>问卷 · Q<b id="qIdx">07</b></span><span id="qPct">35%</span></div>
+    <div class="fbar"><i id="qBar"></i></div>
+    <div class="qwrap">
+      <h2 class="qtext" id="qText"></h2>
+      <div class="opts" id="opts"></div>
+    </div>
+    <p class="hint">按第一反应作答 · 没有对错</p>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="s-result">
+    <div class="rhead"><span>绩 效 评 定 表</span><span>NO.<span id="rNo">0007</span></span></div>
+
+    <div class="rank">
+      <span class="rank-no" id="rRank">LV.4</span>
+      <div>
+        <h2 class="rank-name" id="rTitle"></h2>
+        <span class="rank-tag" id="rTag"></span>
+      </div>
+    </div>
+
+    <div class="ladder" id="rLadder"></div>
+    <div class="dims" id="rDims"></div>
+
+    <div class="sec"><h3>评 语 / REVIEW</h3><p class="review" id="rAnalysis"></p></div>
+    <div class="sec"><h3>标 签 / TAGS</h3><div class="traits" id="rTraits"></div></div>
+    <p class="quote" id="rLine"></p>
+    <p class="advice"><b>改进建议 / ADVICE</b><span id="rAdvice"></span></p>
+
+    <div class="acts">
+      <button class="btn solid" id="btnPoster">生成我的工牌</button>
+      <div class="acts-row">
+        <button class="btn ghost" id="btnShare">复制链接</button>
+        <button class="btn ghost" id="btnAgain">再测一次</button>
+      </div>
+    </div>
+    <p class="rfoot">ZCSD · EMPLOYEE REVIEW · 2026</p>
+  </section>
+
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card" id="modalBody"></div>
+  <button class="modal-x" onclick="closeModal()">关闭</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ===== 职场生存段位 · 数据 ===== */
+const TEST = {
+  id: "zhichang-duanwei",
+  quizLen: 20,
+  slots: [7, 7, 6],
+  pctFloor: 6,
+  dims: [{ name: "向上管理" }, { name: "人情练达" }, { name: "边界硬度" }],
+  qrImage: "",
+  qrCaption: "扫码查你的段位",
+  customLine: "",
+
+  /* 3 = 更会生存 */
+  bank: [
+    { d:0, q:"群里领导说“有问题随时找我”，你会？", o:[
+      ["有问题就直接问",3],["攒几个一起问",2],["能不问就不问",1]] },
+    { d:0, q:"项目做完，你会主动汇报吗？", o:[
+      ["会，还整理成一页纸",3],["被问才说",2],["做完就完事",1]] },
+    { d:0, q:"开会的时候，你在？", o:[
+      ["会主动发言",3],["被点到才说",2],["全程沉默",1]] },
+    { d:0, q:"你加班到很晚，会让领导知道吗？", o:[
+      ["会顺口提一句",3],["看情况",2],["绝对不会",1]] },
+    { d:0, q:"领导问“最近怎么样”，你会说？", o:[
+      ["进度，还有我想要什么",3],["“还行吧”",2],["“挺好的”然后没了",1]] },
+    { d:0, q:"你想涨薪，会怎么做？", o:[
+      ["拿着成果去谈",3],["等年终再说",2],["根本不敢提",1]] },
+    { d:0, q:"你觉得领导的方案有问题，会？", o:[
+      ["私下把利弊说清",3],["委婉提一句",2],["照着做",1]] },
+    { d:0, q:"你在领导眼里大概是？", o:[
+      ["那个让人放心的人",3],["一个普通下属",2],["好像没什么存在感",1]] },
+    { d:0, q:"汇报工作，你更常？", o:[
+      ["先说结论",3],["从头讲过程",2],["说到哪算哪",1]] },
+    { d:0, q:"跨部门的事卡住了，你会？", o:[
+      ["直接找领导拍板",3],["找机会提一下",2],["自己想办法绕开",1]] },
+    { d:0, q:"领导批评你，你会？", o:[
+      ["听清问题，问清标准",3],["点头认错",2],["心里不服",1]] },
+    { d:0, q:"你的工作成果，领导知道多少？", o:[
+      ["大部分",3],["一部分",2],["基本不知道",1]] },
+    { d:0, q:"公司里有能说得上话的人吗？", o:[
+      ["有，关键时能问一句",3],["有一两个同事",2],["没有",1]] },
+    { d:0, q:"遇到不懂的，你会？", o:[
+      ["直接问，不装懂",3],["先自己查半天",2],["拖着不问",1]] },
+    { d:0, q:"被安排了一个好机会，你会？", o:[
+      ["接下来，同时谈条件",3],["接下来",2],["觉得是负担",1]] },
+
+    { d:1, q:"同事请你帮忙，你会？", o:[
+      ["看情况，能帮就帮",3],["一般都会答应",2],["直接说没空",1]] },
+    { d:1, q:"有人在背后说你，你会？", o:[
+      ["找机会当面化解",3],["装作不知道",2],["记着，然后疏远",1]] },
+    { d:1, q:"部门团建，你去吗？", o:[
+      ["去，还能聊几句",3],["露个面就走",2],["想尽办法不去",1]] },
+    { d:1, q:"群里发红包，你会？", o:[
+      ["抢了也会发一个",3],["抢了不说话",2],["完全不参与",1]] },
+    { d:1, q:"同事跟你抱怨公司，你会？", o:[
+      ["听着，偶尔接一句",3],["跟着一起骂",2],["“那你怎么不走”",1]] },
+    { d:1, q:"你需要别的部门配合，会？", o:[
+      ["先请人喝杯咖啡",3],["直接发需求",2],["找领导压下去",1]] },
+    { d:1, q:"同事的名字和情况，你记得住吗？", o:[
+      ["名字和大致情况",3],["大概记得名字",2],["基本记不住",1]] },
+    { d:1, q:"别人帮了你，你会？", o:[
+      ["当面谢，也记着还",3],["说声谢谢",2],["觉得是应该的",1]] },
+    { d:1, q:"你说话时更常？", o:[
+      ["先看对方脸色",3],["想到什么说什么",2],["能不开口就不开口",1]] },
+    { d:1, q:"同事结婚发请帖，你会？", o:[
+      ["去，随礼",3],["随礼但不去",2],["装没看见",1]] },
+    { d:1, q:"午饭时间，你通常？", o:[
+      ["和同事一起吃",3],["看心情",2],["一个人吃",1]] },
+    { d:1, q:"有人把锅甩给你，你会？", o:[
+      ["当众把事说清，但不翻脸",3],["私下找他谈",2],["默默忍下来",1]] },
+    { d:1, q:"你会夸人吗？", o:[
+      ["会，而且夸得具体",3],["会说“不错”",2],["说不出口",1]] },
+    { d:1, q:"来了新同事，你会？", o:[
+      ["主动搭话带一带",3],["等他先开口",2],["一直不熟",1]] },
+    { d:1, q:"两个部门吵起来了，你会？", o:[
+      ["找共同利益点",3],["各说各的",2],["躲远点",1]] },
+
+    { d:2, q:"下班后领导找你，你会？", o:[
+      ["看急不急再回",3],["一般都会回",2],["立刻秒回",1]] },
+    { d:2, q:"同事让你帮做他的活，你会？", o:[
+      ["说清楚这不是我的职责",3],["帮这一次",2],["每次都帮",1]] },
+    { d:2, q:"下班以后，工作群？", o:[
+      ["基本不看",3],["偶尔瞄一眼",2],["一直盯着",1]] },
+    { d:2, q:"有人当众开你玩笑，你会？", o:[
+      ["当场把话接回去",3],["笑笑不说话",2],["心里难受一整天",1]] },
+    { d:2, q:"你的周末？", o:[
+      ["完全属于自己",3],["一半一半",2],["随时待命",1]] },
+    { d:2, q:"被塞了不属于你的活，你会？", o:[
+      ["问清楚为什么是我",3],["先干着",2],["二话不说就接了",1]] },
+    { d:2, q:"有人抢你的功劳，你会？", o:[
+      ["把过程摆出来",3],["忍着",2],["算了，反正没人信",1]] },
+    { d:2, q:"你要请假，会？", o:[
+      ["直接提，说清理由",3],["先问方不方便",2],["不太敢请",1]] },
+    { d:2, q:"说话被人打断，你会？", o:[
+      ["等他说完，再把话说完",3],["提高音量盖过去",2],["干脆不说了",1]] },
+    { d:2, q:"你能对领导说“不”吗？", o:[
+      ["能，把原因说清",3],["很难",2],["从来不能",1]] },
+    { d:2, q:"“帮个忙，很快的”，你会？", o:[
+      ["先问清楚要多久",3],["放下手里的事",2],["立刻就去",1]] },
+    { d:2, q:"你的情绪？", o:[
+      ["不太容易被人带走",3],["会受影响",2],["一点就着，然后自己消化",1]] },
+    { d:2, q:"为了合群，你会勉强自己吗？", o:[
+      ["不会，我能自己待着",3],["偶尔",2],["常常",1]] },
+    { d:2, q:"别人越界了，你会？", o:[
+      ["直接指出来",3],["委婉提醒",2],["自己消化",1]] },
+    { d:2, q:"不属于你的功劳，你会？", o:[
+      ["明确说不是我的",3],["含糊过去",2],["跟着一起领",1]] }
+  ],
+
+  results: [
+    { min:20, max:27, title:"职场萌新", short:"萌新", rank:"LV.1", tag:"存活率 92% · 还没学会装",
+      analysis:"你还没学会在职场上“表演”。活干得不差，但你不会说、不会争、也不会挡，于是活越干越多，名字却总在名单的最后一行。你不是能力不够，是把“做好”当成了全部——可职场从来不奖励沉默的人。",
+      traits:["不会汇报","有求必应","埋头型"],
+      line:"我以为只要把活干好，别人自然会看见。",
+      advice:"从明天开始，每周主动发一条进度给领导。就一条。" },
+    { min:28, max:35, title:"老实人", short:"老实人", rank:"LV.2", tag:"存活率 71% · 活最多，话最少",
+      analysis:"你是那种所有人都放心、但没人会想起要提拔的人。你可靠、不出错、什么都能接，代价是所有脏活累活最后都落在你身上。你的问题不是不努力，是太怕麻烦别人——于是所有麻烦都变成你的。",
+      traits:["高可靠","低存在感","不会拒绝"],
+      line:"我不是不想说，我是怕一开口就得罪人。",
+      advice:"挑一件你不想做的事，说一次“这次我做不了”。看看到底会发生什么。" },
+    { min:36, max:43, title:"部门支柱", short:"支柱", rank:"LV.3", tag:"存活率 48% · 离不开你，也不提拔你",
+      analysis:"你是部门里真正撑着事的人。你懂业务、能协调、也愿意替团队兜一点。但正因为你太好用，没人愿意把你调走——你被稳稳定在了原地。你不是没有野心，是把野心都换成了“先把这件事做完”。",
+      traits:["扛事","半懂人情","被需要"],
+      line:"他们离不开我，可他们从来没想过让我往上走。",
+      advice:"把手上的事分出去一件。你得先空出手，别人才看得见你。" },
+    { min:44, max:51, title:"办公室狐狸", short:"狐狸", rank:"LV.4", tag:"存活率 13% · 会干活，更会做人",
+      analysis:"你既有本事，又懂分寸。你知道什么时候该往前站，什么时候该退半步；你能把事做成，也不让人难堪。你是那种领导喜欢、同事也不讨厌的人。唯一的风险是：你太会权衡了，久了自己都分不清哪句是真心的。",
+      traits:["高情商","看得清","会借力"],
+      line:"我不争，但我要的东西最后都会到我手上。",
+      advice:"留一两个可以不说场面话的人。你需要一个不用演的角落。" },
+    { min:52, max:60, title:"隐形掌权者", short:"掌权者", rank:"LV.5", tag:"存活率 4% · 不在编制里，在气场里",
+      analysis:"你未必是职位最高的，但很多事没有你推不动。你清楚规则，也知道规则哪里是空的；你敢说“不”，而且说得让人服气。别人怕得罪你，你却很少真的发火——因为你知道，让一个人猜，比骂他一顿有用得多。",
+      traits:["掌控力","边界清晰","不怒自威"],
+      line:"我不需要这个头衔，我需要的那句话本来就该我说。",
+      advice:"偶尔让人看到你的犹豫。全知全能的人，没人敢真的靠近。" }
+  ]
+};
+
+/* ===== 共用引擎：抽题 / 打乱 / 计分 / 弹层 / 通用画笔 =====
+   每个主题只提供 SKIN 对象和 TEST 数据，其余都走这里。 */
+
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ---------- 二维码（每套主题在 data.js 里配） ---------- */
+let QR_IMG = null;
+if (TEST.qrImage){
+  QR_IMG = new Image();
+  QR_IMG.src = TEST.qrImage;
+}
+
+/* ---------- 工具 ---------- */
+function shuffleArr(a){
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* 按维度配比抽题：slots 之和 = TEST.quizLen */
+function drawQuiz(){
+  const picked = [];
+  const slots = shuffleArr(TEST.slots.slice());
+  TEST.dims.forEach((m, di) => {
+    const pool = shuffleArr(TEST.bank.filter(x => x.d === di));
+    picked.push.apply(picked, pool.slice(0, slots[di]));
+  });
+  return shuffleArr(picked);
+}
+
+/* ---------- 状态 ---------- */
+const state = { i:0, scores:[], drawn:[], opts:[], total:0, result:null, dims:null };
+let locked = false;
+
+/* ---------- 流程 ---------- */
+function startQuiz(){
+  state.i = 0;
+  state.scores = [];
+  state.drawn = drawQuiz();
+  state.opts = state.drawn.map(q => shuffleArr(q.o.map(o => ({ t:o[0], s:o[1] }))));
+  locked = false;
+  SKIN.goQuiz();
+  SKIN.renderQuestion();
+}
+
+function choose(score, el){
+  if (locked) return;
+  locked = true;
+  if (el) el.classList.add('sel');
+  state.scores.push(score);
+  SKIN.afterChoose(el, score);
+  setTimeout(() => {
+    locked = false;
+    if (state.i < TEST.quizLen - 1){
+      state.i++;
+      SKIN.renderQuestion();
+    } else {
+      finish();
+    }
+  }, SKIN.advanceDelay || 240);
+}
+
+function finish(){
+  state.total = state.scores.reduce((a,b) => a + b, 0);
+  state.result = TEST.results.find(r => state.total >= r.min && state.total <= r.max) || TEST.results[0];
+
+  const sum = [0,0,0], cnt = [0,0,0];
+  state.drawn.forEach((q, i) => { sum[q.d] += state.scores[i]; cnt[q.d]++; });
+  state.dims = TEST.dims.map((m, d) => ({
+    name: m.name,
+    pct: Math.max(TEST.pctFloor || 6, Math.min(100, Math.round(sum[d] / (cnt[d] * 3) * 100)))
+  }));
+
+  SKIN.goResult();
+  SKIN.renderResult();
+  window.scrollTo(0,0);
+}
+
+/* ---------- 弹层 ---------- */
+function openModal(html){
+  $('modalBody').innerHTML = html;
+  $('modal').classList.add('on');
+}
+function closeModal(){ $('modal').classList.remove('on'); }
+
+function showPoster(){
+  const url = SKIN.buildPoster();
+  openModal('<img class="poster-img" src="' + url + '" alt="测试结果海报">'
+    + '<p class="modal-tip">长按图片保存到相册<br>电脑上右键另存为</p>');
+}
+
+function copyLink(){
+  const url = location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(
+      () => toast('链接已复制'),
+      () => toast('长按地址栏复制链接')
+    );
+  } else {
+    toast('长按地址栏复制链接');
+  }
+}
+
+let toastTimer;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 1900);
+}
+
+/* ---------- 画布通用件 ---------- */
+function makeCanvas(w, h){
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return c;
+}
+function wrapLines(g, text, maxW){
+  const out = []; let line = '';
+  for (const ch of text){
+    if (g.measureText(line + ch).width > maxW && line){ out.push(line); line = ch; }
+    else line += ch;
+  }
+  if (line) out.push(line);
+  return out;
+}
+/* 防伪扭索纹：r = R + A·sin(Nθ) 旋转复制 */
+function drawRosette(g, cx, cy, R, amp, N, P, steps, color, alpha, lw){
+  g.save();
+  g.strokeStyle = color; g.globalAlpha = alpha; g.lineWidth = lw || 0.9;
+  for (let k = 0; k < P; k++){
+    const rot = k * 2 * Math.PI / (N * P);
+    g.beginPath();
+    for (let i = 0; i <= steps; i++){
+      const t = i / steps * Math.PI * 2;
+      const r = R + amp * Math.sin(N * t);
+      const a = t + rot;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.stroke();
+  }
+  g.restore();
+}
+function roundRect(g, x, y, w, h, r){
+  g.beginPath();
+  g.moveTo(x + r, y);
+  g.arcTo(x + w, y, x + w, y + h, r);
+  g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r);
+  g.arcTo(x, y, x + w, y, r);
+  g.closePath();
+}
+
+/* ===== 职场生存段位 · 界面层 ===== */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+const MONO = 'Consolas,"SF Mono",Menlo,"Courier New",monospace';
+const SANS = '"PingFang SC","Microsoft YaHei","Heiti SC",sans-serif';
+
+const SKIN = {
+  advanceDelay: 220,
+
+  goQuiz(){ show('s-quiz'); },
+  goResult(){ show('s-result'); },
+
+  renderQuestion(){
+    const i = state.i;
+    $('qIdx').textContent = String(i + 1).padStart(2, '0');
+    $('qPct').textContent = Math.round((i + 1) / TEST.quizLen * 100) + '%';
+    $('qBar').style.width = ((i + 1) / TEST.quizLen * 100) + '%';
+    $('qText').textContent = state.drawn[i].q;
+
+    const box = $('opts');
+    box.innerHTML = '';
+    state.opts[i].forEach(o => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      const k = document.createElement('span'); k.className = 'k';
+      const t = document.createElement('span'); t.className = 't'; t.textContent = o.t;
+      b.appendChild(k); b.appendChild(t);
+      b.addEventListener('click', () => choose(o.s, b));
+      box.appendChild(b);
+    });
+  },
+
+  afterChoose(el){ /* .sel 勾选由 CSS 完成 */ },
+
+  renderResult(){
+    const r = state.result, t = state.total;
+    const idx = TEST.results.indexOf(r);
+    $('rNo').textContent = String(1000 + t * 17).slice(-4);
+    $('rRank').textContent = r.rank;
+    $('rTitle').textContent = r.title;
+    $('rTag').textContent = r.tag;
+    $('rAnalysis').textContent = r.analysis;
+    $('rTraits').innerHTML = r.traits.map(x => '<span>' + x + '</span>').join('');
+    $('rLine').textContent = r.line;
+    $('rAdvice').textContent = r.advice;
+
+    $('rLadder').innerHTML = TEST.results.map((x, i) =>
+      '<div' + (i === idx ? ' class="on"' : '') + '><i>' + x.rank + '</i><span>' + x.short + '</span></div>'
+    ).join('');
+
+    $('rDims').innerHTML = state.dims.map(d =>
+      '<div class="dim-row"><span class="n">' + d.name + '</span>'
+      + '<span class="track"><i style="--w:' + d.pct + '%"></i></span>'
+      + '<span class="v">' + d.pct + '</span></div>'
+    ).join('');
+  },
+
+  buildPoster(){
+    const W = 750, H = 1200;
+    const c = makeCanvas(W, H), g = c.getContext('2d');
+    const r = state.result, t = state.total;
+    const CX = 46, CY = 46, CW = 658, CH = 1104;
+    const L = 80, R = 670;
+
+    // 底：冷灰蓝 + 网格
+    g.fillStyle = '#E8EDF4'; g.fillRect(0, 0, W, H);
+    g.strokeStyle = 'rgba(14,19,24,.045)'; g.lineWidth = 1;
+    for (let x = 0; x <= W; x += 26){ g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke(); }
+    for (let y = 0; y <= H; y += 26){ g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+
+    // 硬投影 + 工牌
+    g.fillStyle = '#0E1318'; g.fillRect(CX + 10, CY + 10, CW, CH);
+    g.fillStyle = '#FFFFFF'; g.fillRect(CX, CY, CW, CH);
+
+    // 蓝色头带
+    g.fillStyle = '#1F48F0'; g.fillRect(CX, CY, CW, 78);
+    g.fillStyle = '#FFFFFF';
+    g.font = '800 24px ' + SANS;
+    g.fillText('职场生存段位', L, CY + 51);
+    g.font = '11px ' + MONO;
+    g.fillStyle = 'rgba(255,255,255,.72)';
+    g.textAlign = 'right';
+    g.fillText('PERFORMANCE REVIEW · NO.' + String(1000 + t * 17).slice(-4), R, CY + 47);
+    g.textAlign = 'left';
+
+    // 段位标题
+    g.fillStyle = '#7D8898';
+    g.font = '12px ' + MONO;
+    g.fillText('段位 / RANK', L, 164);
+
+    g.fillStyle = '#1F48F0';
+    g.font = '700 88px ' + MONO;
+    g.fillText(r.rank, L, 262);
+
+    g.fillStyle = '#0E1318';
+    g.font = '800 50px ' + SANS;
+    g.fillText(r.title, 342, 218);
+
+    g.font = '13px ' + MONO;
+    const tw = g.measureText(r.tag).width + 22;
+    g.strokeStyle = '#1F48F0'; g.lineWidth = 1.6;
+    g.strokeRect(342, 240, tw, 36);
+    g.fillStyle = '#1F48F0';
+    g.fillText(r.tag, 353, 264);
+
+    // 段位列
+    const n = TEST.results.length, gap = 5;
+    const cw = (R - L - gap * (n - 1)) / n;
+    const ly = 308, lh = 50;
+    TEST.results.forEach((x, i) => {
+      const x0 = L + i * (cw + gap);
+      if (x === r){
+        g.fillStyle = '#0E1318'; g.fillRect(x0 + 3, ly + 3, cw, lh);
+        g.fillStyle = '#1F48F0'; g.fillRect(x0, ly, cw, lh);
+      } else {
+        g.fillStyle = '#FFFFFF'; g.fillRect(x0, ly, cw, lh);
+        g.strokeStyle = '#D9E0EA'; g.lineWidth = 1.5; g.strokeRect(x0, ly, cw, lh);
+      }
+      g.textAlign = 'center';
+      g.fillStyle = x === r ? 'rgba(255,255,255,.8)' : '#7D8898';
+      g.font = '10px ' + MONO;
+      g.fillText(x.rank, x0 + cw / 2, ly + 19);
+      g.fillStyle = x === r ? '#FFFFFF' : '#5A6676';
+      g.font = '13px ' + SANS;
+      g.fillText(x.short, x0 + cw / 2, ly + 38);
+      g.textAlign = 'left';
+    });
+
+    // 三维
+    let dy = 408;
+    state.dims.forEach(d => {
+      g.fillStyle = '#5A6676';
+      g.font = '15px ' + SANS;
+      g.fillText(d.name, L, dy + 6);
+      const tx = L + 92, twid = R - tx - 46;
+      g.fillStyle = '#EEF2F7'; g.fillRect(tx, dy, twid, 8);
+      g.fillStyle = '#1F48F0'; g.fillRect(tx, dy, twid * d.pct / 100, 8);
+      g.fillStyle = '#0E1318';
+      g.font = '13px ' + MONO;
+      g.textAlign = 'right';
+      g.fillText(String(d.pct), R, dy + 9);
+      g.textAlign = 'left';
+      dy += 42;
+    });
+
+    // 标签
+    let px = L;
+    const py = 528;
+    g.font = '12px ' + MONO;
+    r.traits.forEach(tr => {
+      const w3 = g.measureText(tr).width + 22;
+      g.fillStyle = '#FFFFFF'; g.fillRect(px, py, w3, 34);
+      g.strokeStyle = '#0E1318'; g.lineWidth = 1.5; g.strokeRect(px, py, w3, 34);
+      g.fillStyle = '#0E1318';
+      g.fillText(tr, px + 11, py + 22);
+      px += w3 + 9;
+    });
+
+    // 金句
+    const qy = 634;
+    g.fillStyle = '#0E1318'; g.fillRect(L, qy - 48, R - L, 2.5);
+    g.font = '700 30px ' + SANS;
+    const ql = wrapLines(g, r.line, 470);
+    g.fillStyle = '#0E1318';
+    ql.slice(0, 3).forEach((ln, i) => g.fillText(ln, L, qy + i * 44));
+
+    // 建议
+    const ay = qy + Math.min(ql.length, 3) * 44 + 22;
+    g.fillStyle = '#1F48F0';
+    g.font = '11px ' + MONO;
+    g.fillText('ADVICE', L, ay);
+    g.fillStyle = '#5A6676';
+    g.font = '16px ' + SANS;
+    wrapLines(g, r.advice, R - L).slice(0, 2).forEach((ln, i) => g.fillText(ln, L, ay + 28 + i * 26));
+
+    // 条码
+    const by = 862, bh = 46;
+    g.fillStyle = '#F7F9FC'; g.fillRect(L, by - 10, R - L, bh + 34);
+    g.fillStyle = '#0E1318';
+    const pat = [2,3,1,4,2,2,5,1,3,2,1,3,6,2,1,2,4,1,3,2,2,5,1,2,3,1,4,2,1,3,2,6,1,2,3,1];
+    let bx = L + 4, pi = 0;
+    while (bx < R - 4){
+      const w = pat[pi % pat.length];
+      if (pi % 2 === 0) g.fillRect(bx, by, w, bh);
+      bx += w + 1; pi++;
+    }
+    g.fillStyle = '#7D8898';
+    g.font = '10px ' + MONO;
+    g.fillText('ZCSD — 2026 — ' + String(1000 + t * 17).slice(-4), L, by + bh + 15);
+
+    // 底部
+    const fy = 986;
+    g.fillStyle = 'rgba(14,19,24,.12)'; g.fillRect(L, fy, R - L, 1);
+    const qs = 100, qx = R - qs, qy2 = fy + 22;
+    g.fillStyle = '#fff'; g.fillRect(qx - 6, qy2 - 6, qs + 12, qs + 12);
+    g.strokeStyle = '#0E1318'; g.lineWidth = 1.5; g.strokeRect(qx - 6, qy2 - 6, qs + 12, qs + 12);
+    if (QR_IMG) g.drawImage(QR_IMG, qx, qy2, qs, qs);
+    else {
+      g.fillStyle = '#A3ADBB';
+      g.font = '13px ' + SANS;
+      g.textAlign = 'center';
+      g.fillText('二维码', qx + qs / 2, qy2 + 48);
+      g.fillText('放这里', qx + qs / 2, qy2 + 68);
+      g.textAlign = 'left';
+    }
+    g.fillStyle = '#0E1318';
+    g.font = '800 20px ' + SANS;
+    g.fillText(TEST.qrCaption, L, fy + 56);
+    g.fillStyle = '#7D8898';
+    g.font = '14px ' + SANS;
+    g.fillText('仅供娱乐 · 不构成任何职业评价', L, fy + 86);
+
+    // 外框
+    g.strokeStyle = '#0E1318'; g.lineWidth = 3;
+    g.strokeRect(CX + 1.5, CY + 1.5, CW - 3, CH - 3);
+
+    return c.toDataURL('image/png');
+  }
+};
+
+/* ---------- 绑定 ---------- */
+$('btnStart').addEventListener('click', startQuiz);
+$('btnAgain').addEventListener('click', startQuiz);
+$('btnPoster').addEventListener('click', showPoster);
+$('btnShare').addEventListener('click', copyLink);
+
+</script>
+</body>
+</html>
