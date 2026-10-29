@@ -56,6 +56,7 @@
 
   /* ---------- 封面 ---------- */
   .cover-top{flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:8px}
+  .cover-note{margin:14px 0 0;font-size:12.5px;line-height:1.7;color:var(--on-dark-dim);letter-spacing:.02em}
   .title-wrap{position:relative;width:100%}
   .cover-title{
     font-family:var(--serif);
@@ -241,28 +242,63 @@
     transition:opacity .25s,transform .25s;z-index:60;white-space:nowrap;
   }
   .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  /* ---------- 防伪扭索纹（钞票同源的几何纹样，参数化生成） ---------- */
+  .screen{position:relative;overflow:hidden}
+  .orn{
+    position:absolute;pointer-events:none;fill:none;
+    stroke:currentColor;stroke-width:.8;stroke-linejoin:round;
+  }
+  .orn-cover{
+    width:min(600px,150vw);height:min(600px,150vw);
+    left:50%;top:41%;
+    margin-left:calc(min(600px,150vw) / -2);
+    margin-top:calc(min(600px,150vw) / -2);
+    color:var(--brass);opacity:.095;
+    animation:ornSpin 260s linear infinite;
+  }
+  @keyframes ornSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  .orn-quiz{
+    width:min(640px,168vw);height:min(640px,168vw);
+    right:-44%;top:3%;color:var(--brass);opacity:.05;
+  }
+  .orn-result{
+    width:min(520px,140vw);height:min(520px,140vw);
+    left:-42%;bottom:4%;color:var(--brass);opacity:.05;
+  }
 </style>
 </head>
 <body>
+<!-- 扭索纹母版：一条参数曲线，靠旋转复制成整朵花纹 -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute;overflow:hidden">
+  <defs>
+    <path id="gp" d=""></path>
+    <g id="rosette"></g>
+  </defs>
+</svg>
+
 <div class="app">
 
   <!-- 封面 -->
   <section class="screen active" id="screen-cover">
+    <svg class="orn orn-cover" viewBox="-220 -220 440 440" aria-hidden="true"><use href="#rosette"></use></svg>
     <div class="cover-top">
       <div class="title-wrap">
         <h1 class="cover-title">你的搞钱天赋<br>与隐藏财富人格</h1>
         <div class="seal" aria-hidden="true"><span>财富</span><span>体检</span></div>
       </div>
       <p class="cover-sub">20 个关于钱的下意识反应。不是问你想不想富，是问你在没人看着的时候，手会怎么动。</p>
+      <p class="cover-note">题库 60 道，每次随机抽 20 道，题目和选项都会重新洗牌</p>
     </div>
     <div class="cover-foot">
-      <div class="meta-row"><span>20 道题</span><i class="vr"></i><span>约 100 秒</span><i class="vr"></i><span>无需登录</span></div>
+      <div class="meta-row"><span>题库 60 抽 20</span><i class="vr"></i><span>约 100 秒</span><i class="vr"></i><span>无需登录</span></div>
       <button class="btn btn-primary" id="btnStart">开始测我的财富人格</button>
     </div>
   </section>
 
   <!-- 答题 -->
   <section class="screen" id="screen-quiz">
+    <svg class="orn orn-quiz" viewBox="-220 -220 440 440" aria-hidden="true"><use href="#rosette"></use></svg>
     <div class="q-head">
       <span class="q-count"><b id="qIdx">01</b>/ 20</span>
       <span class="q-count" id="qPct">5%</span>
@@ -280,6 +316,7 @@
 
   <!-- 结果 -->
   <section class="screen" id="screen-result">
+    <svg class="orn orn-result" viewBox="-220 -220 440 440" aria-hidden="true"><use href="#rosette"></use></svg>
     <div class="result-wrap">
       <div class="receipt" id="receipt"></div>
       <div class="actions">
@@ -322,95 +359,284 @@ if (CONFIG.qrImage){
 }
 
 /* ============ 题库数据 ============ */
-const QUESTIONS = [
-  { q:"如果明天你突然中奖100万，你的第一反应是？", o:[
-    ["先吃顿好的，买个平时舍不得买的东西",1],
-    ["存进银行，吃利息",2],
-    ["马上研究怎么用这笔钱做投资或搞副业",3]] },
-  { q:"看到一件很贵但非常喜欢的外套，你会？", o:[
+/* d: 0=消费克制 1=财务规划 2=搞钱行动
+   每次随机抽 20 题（三维按 7/7/6 分配），题目顺序和选项顺序都当场打乱。
+   每题三个选项各对应 1/2/3 分，所以总分恒定落在 20-60。 */
+const BANK = [
+
+  /* ---------- d:0 消费克制 ---------- */
+  { d:0, q:"看到一件很贵但非常喜欢的外套，你会？", o:[
     ["喜欢就买，钱花了还能再赚",1],
     ["加入购物车，等大促或者发工资再买",2],
     ["看看有没有平替，或者去二手平台找找",3]] },
-  { q:"朋友跟你借钱，数目不大但你了解他花钱没数，你会？", o:[
-    ["借，不好意思拒绝，大不了不要了",1],
-    ["少借一点，就当送他了",2],
-    ["找个理由拒绝，或者让他写个借条",3]] },
-  { q:"同事买了个名表/名牌包在办公室炫耀，你心里想的是？", o:[
+  { d:0, q:"同事买了个名表/名牌包在办公室炫耀，你心里想的是？", o:[
     ["好看，我也想要，得想办法搞点钱买",1],
     ["关我屁事，能当饭吃吗",2],
     ["这玩意儿保值吗？不如买黄金",3]] },
-  { q:"周末朋友约你去一个网红餐厅吃饭，人均500，你会？", o:[
+  { d:0, q:"周末朋友约你去一个网红餐厅吃饭，人均500，你会？", o:[
     ["去！周末就该享受生活",1],
     ["去是可以，但这个月其他开销得省着点",2],
     ["太贵了，不如去菜市场买点好菜自己做",3]] },
-  { q:"你在网上看到“0基础七天理财训练营”，你会？", o:[
-    ["划走，都是割韭菜的",1],
-    ["收藏看看，如果有免费的试听课就听听",2],
-    ["找找有没有不花钱的平替资料，自己研究",3]] },
-  { q:"如果现在给你一份月薪2万但996的工作，和一个月薪1万但朝九晚五的工作，你选？", o:[
-    ["选2万，趁年轻多搞点钱",3],
-    ["选1万，身体健康和生活质量更重要",1],
-    ["看看有没有月薪1.5万，稍微加点班的",2]] },
-  { q:"你的钱一般放在哪里？", o:[
-    ["活期，随时准备花",1],
-    ["余额宝或零钱通，每天看着几毛钱利息很开心",2],
-    ["分散投资，基金、定期、股票都有配置",3]] },
-  { q:"逛街时销售一个劲地夸你，说这件衣服就是为你量身定做的，你会？", o:[
+  { d:0, q:"逛街时销售一个劲地夸你，说这件衣服就是为你量身定做的，你会？", o:[
     ["被夸迷糊了，直接买单",1],
     ["借口去试衣间，看看吊牌价格再决定",2],
     ["礼貌微笑，不管多好看，不买就是不买",3]] },
-  { q:"如果在二手平台发现你刚买的全新东西，别人卖得比你便宜一半，你会？", o:[
-    ["气死，感觉亏大了",1],
-    ["算了，买都买了，下次多比比价",2],
-    ["心想：我买的时候怎么没发现这个渠道",3]] },
-  { q:"关于记账，你的习惯是？", o:[
-    ["从来不记，花了多少看余额",1],
-    ["偶尔想起来记一下",2],
-    ["每一笔都记，月底复盘开销",3]] },
-  { q:"假如你办了一张健身卡，去了两次就不想去了，你会？", o:[
-    ["放着落灰，就当交了智商税",1],
-    ["强迫自己去，为了不亏钱",2],
-    ["把卡挂在闲鱼上转让，回点血",3]] },
-  { q:"朋友拉你进一个“内部投资群”，说稳赚不赔，你会？", o:[
-    ["投入一点试试水",1],
-    ["观望几天，看看别人怎么赚的",2],
-    ["直接退群，哪有稳赚不赔的好事",3]] },
-  { q:"你怎么看待“买彩票”？", o:[
-    ["偶尔买个10块钱，买个梦想",1],
-    ["只有奖池积累到几千万时才去凑个热闹",2],
-    ["纯属智商税，概率算一下就知道了",3]] },
-  { q:"如果你喜欢的一个博主推出了99元的定制周边，你会？", o:[
+  { d:0, q:"你喜欢的博主推出了99元的定制周边，你会？", o:[
     ["买，支持一下，反正也不贵",1],
     ["看看实物值不值这个价",2],
     ["觉得这是在割粉丝韭菜",3]] },
-  { q:"每个月发工资的第一天，你的首要动作是？", o:[
+  { d:0, q:"去超市买东西，你的习惯是？", o:[
+    ["不看价格，想吃什么拿什么",1],
+    ["主要买打折或者放在促销区的东西",2],
+    ["一个个看价格标签，货比三家",3]] },
+  { d:0, q:"深夜刷到直播间在喊“最后3件，上车”，你会？", o:[
+    ["手比脑子快，先抢了再说",1],
+    ["加进购物车，想想明天还要不要",2],
+    ["直接划走，明天还想要再回来买",3]] },
+  { d:0, q:"手机数据线接触不良，甩两下还能充上电，你会？", o:[
+    ["直接买根新的，顺便看看还有什么要买",1],
+    ["先凑合用，实在不行再说",2],
+    ["换根最便宜的，能用就行",3]] },
+  { d:0, q:"点外卖时看到5块钱配送费，你会？", o:[
+    ["不在意，想吃就点",1],
+    ["凑个单把配送费免掉",2],
+    ["算了，下楼走两步自己买",3]] },
+  { d:0, q:"你手机里装了几个购物App？", o:[
+    ["一堆，每天睡前都要刷一遍",1],
+    ["两三个，想买东西的时候才开",2],
+    ["就留一个，平时基本不点开",3]] },
+  { d:0, q:"双十一前一晚十一点半，你在干嘛？", o:[
+    ["守着点，购物车早就加满了",1],
+    ["刷刷看有没有什么便宜的顺手买点",2],
+    ["已经睡了，缺什么平时就买了",3]] },
+  { d:0, q:"朋友说“这顿我请”，你会？", o:[
+    ["好啊，谢谢老板",1],
+    ["行，那下次我请回来",2],
+    ["还是AA吧，不想欠这个人情",3]] },
+  { d:0, q:"你买过最后悔的东西，通常是哪种？", o:[
+    ["看到就想买，买完就闲置的",1],
+    ["别人都说好，被安利着买的",2],
+    ["很少后悔，我买之前会想很久",3]] },
+  { d:0, q:"超市搞“买二送一”，你本来只想买一个，会？", o:[
+    ["拿三个，反正划算",1],
+    ["算一下单价，真划算才多拿",2],
+    ["只买要的那一个",3]] },
+  { d:0, q:"打车能省15分钟，地铁便宜12块，你选？", o:[
+    ["打车，时间就是钱",1],
+    ["看当天累不累",2],
+    ["地铁，15分钟而已，还能刷会儿手机",3]] },
+  { d:0, q:"你会为了凑满减，买本来不需要的东西吗？", o:[
+    ["经常，感觉不凑就亏了",1],
+    ["偶尔，差几块钱的时候会",2],
+    ["从不，多买一件才是真亏",3]] },
+  { d:0, q:"奶茶咖啡，你的频率是？", o:[
+    ["每天必须来一杯，不然没精神",1],
+    ["一周两三次，看心情",2],
+    ["自己冲，或者只在特别的日子买",3]] },
+  { d:0, q:"一双99的鞋穿三个月就开胶，一双600的能穿三年，你买哪双？", o:[
+    ["先买99的对付着，坏了再说",1],
+    ["看这个月钱包还剩多少",2],
+    ["买600的，算下来一天才几毛钱",3]] },
+  { d:0, q:"朋友晒了一张两万块的旅行账单，你会？", o:[
+    ["羡慕，我也想去",1],
+    ["挺好的，但我不会花这么多",2],
+    ["在心里默默算：这钱够我玩几趟",3]] },
+  { d:0, q:"你衣柜里吊牌还没剪的衣服，有几件？", o:[
+    ["好几件，都忘了什么时候买的",1],
+    ["一两件，买回来发现不太合适",2],
+    ["几乎没有，买之前会想清楚",3]] },
+
+  /* ---------- d:1 财务规划 ---------- */
+  { d:1, q:"朋友跟你借钱，数目不大但你了解他花钱没数，你会？", o:[
+    ["借，不好意思拒绝，大不了不要了",1],
+    ["少借一点，就当送他了",2],
+    ["找个理由拒绝，或者让他写个借条",3]] },
+  { d:1, q:"你的钱一般放在哪里？", o:[
+    ["活期，随时准备花",1],
+    ["余额宝或零钱通，每天看着几毛钱利息很开心",2],
+    ["分散投资，基金、定期、股票都有配置",3]] },
+  { d:1, q:"关于记账，你的习惯是？", o:[
+    ["从来不记，花了多少看余额",1],
+    ["偶尔想起来记一下",2],
+    ["每一笔都记，月底复盘开销",3]] },
+  { d:1, q:"朋友拉你进一个“内部投资群”，说稳赚不赔，你会？", o:[
+    ["投入一点试试水",1],
+    ["观望几天，看看别人怎么赚的",2],
+    ["直接退群，哪有稳赚不赔的好事",3]] },
+  { d:1, q:"你怎么看待“买彩票”？", o:[
+    ["偶尔买个10块钱，买个梦想",1],
+    ["只有奖池积累到几千万时才去凑个热闹",2],
+    ["纯属智商税，概率算一下就知道了",3]] },
+  { d:1, q:"每个月发工资的第一天，你的首要动作是？", o:[
     ["还花呗、信用卡，然后打开淘宝",1],
-    ["先转一笔固定的钱到储蓄卡里",3],
-    ["计划一下这个月的预算，然后存点备用金",2]] },
-  { q:"你觉得自己是一个“对数字敏感”的人吗？", o:[
+    ["计划一下这个月的预算，然后存点备用金",2],
+    ["先转一笔固定的钱到储蓄卡里",3]] },
+  { d:1, q:"你觉得自己是一个“对数字敏感”的人吗？", o:[
     ["完全不敏感，看到数字头疼",1],
     ["还可以，自己的账算得清",2],
     ["非常敏感，尤其是算价格和收益的时候",3]] },
-  { q:"去超市买东西，你的习惯是？", o:[
-    ["不看价格，想吃什么拿什么",1],
-    ["看价格标签，货比三家",3],
-    ["主要买打折或者放在促销区的东西",2]] },
-  { q:"如果明天就要交房租，但你的钱全在定期里取不出来，你会？", o:[
+  { d:1, q:"如果明天就要交房租，但你的钱全在定期里取不出来，你会？", o:[
     ["找爸妈或者朋友借一点周转",1],
     ["刷信用卡套现",2],
     ["庆幸自己留有备用金，完全不怕",3]] },
-  { q:"你梦想中的生活状态是？", o:[
+  { d:1, q:"你知道自己上个月一共花了多少钱吗？", o:[
+    ["完全不知道，看余额才知道",1],
+    ["大概有个数，差不太多",2],
+    ["能说到百位，我记着账",3]] },
+  { d:1, q:"你现在手上有多少应急备用金？", o:[
+    ["没有，月月光",1],
+    ["有一点，但撑不过三个月",2],
+    ["至少够三个月生活费，动都不动",3]] },
+  { d:1, q:"买基金或者理财之前，你会看什么？", o:[
+    ["朋友说好就买，跟着买",1],
+    ["看历史收益，涨得猛就行",2],
+    ["看说明书和费率，知道自己买的是什么",3]] },
+  { d:1, q:"信用卡和花呗，你怎么用？", o:[
+    ["能刷就刷，反正只还最低",1],
+    ["按时全额还，绝不欠利息",2],
+    ["很少用，怕自己控制不住",3]] },
+  { d:1, q:"有人问你“到底多少钱才够用”，你的答案是？", o:[
+    ["越多越好，没有上限",1],
+    ["模糊有个数，大概够花就行",2],
+    ["算过，知道自己的临界点在哪",3]] },
+  { d:1, q:"你会给自己定年度存钱目标吗？", o:[
+    ["没想过这事",1],
+    ["想过，但没真的执行",2],
+    ["有，而且每个月会对一次进度",3]] },
+  { d:1, q:"关于保险，你的态度是？", o:[
+    ["用不上，纯属浪费钱",1],
+    ["公司交了社保就行",2],
+    ["自己另外配了基础的医疗和意外",3]] },
+  { d:1, q:"你算过自己的“时薪”吗？", o:[
+    ["没算过，工资按月发就行",1],
+    ["大概知道个数",2],
+    ["算过，会拿它判断一件事值不值得做",3]] },
+  { d:1, q:"涨工资之后，你的第一反应是？", o:[
+    ["终于可以买点好的了",1],
+    ["先把多出来的存一部分",2],
+    ["重新调预算和储蓄比例，生活水平不上调",3]] },
+  { d:1, q:"“复利”这两个字，对你来说？", o:[
+    ["听过，但不太懂",1],
+    ["知道是利滚利",2],
+    ["会算，也知道时间比收益率更重要",3]] },
+  { d:1, q:"家里要换个大件（手机、冰箱），你会？", o:[
+    ["旧的不能用了就直接买",1],
+    ["比价、看评测，然后买",2],
+    ["提前几个月就列进预算里",3]] },
+  { d:1, q:"买东西前，你会问自己“三个月后还会用吗”？", o:[
+    ["从不，想要就买",1],
+    ["偶尔会想一下",2],
+    ["经常，不然就不下单",3]] },
+
+  /* ---------- d:2 搞钱行动 ---------- */
+  { d:2, q:"如果明天你突然中奖100万，第一反应是？", o:[
+    ["先吃顿好的，买个平时舍不得买的东西",1],
+    ["存进银行，吃利息",2],
+    ["马上研究怎么用这笔钱做投资或搞副业",3]] },
+  { d:2, q:"你在网上看到“0基础七天理财训练营”，你会？", o:[
+    ["划走，都是割韭菜的",1],
+    ["收藏看看，如果有免费的试听课就听听",2],
+    ["找找有没有不花钱的平替资料，自己研究",3]] },
+  { d:2, q:"月薪2万但996，和月薪1万但朝九晚五，你选？", o:[
+    ["选1万，身体和生活质量更重要",1],
+    ["看看有没有月薪1.5万、稍微加班的",2],
+    ["选2万，趁年轻多搞点钱",3]] },
+  { d:2, q:"你在二手平台发现，刚买的全新东西别人卖得比你便宜一半，你会？", o:[
+    ["气死，感觉自己亏大了",1],
+    ["算了，买都买了，下次多比比价",2],
+    ["心想：我买的时候怎么没发现这个渠道",3]] },
+  { d:2, q:"你办了一张健身卡，去了两次就不想去了，你会？", o:[
+    ["放着落灰，就当交智商税",1],
+    ["强迫自己去，为了不亏钱",2],
+    ["挂到闲鱼上转让，回点血",3]] },
+  { d:2, q:"你梦想中的生活状态是？", o:[
     ["暴富，买豪宅豪车，环游世界",1],
     ["有一份稳定的收入，不用为钱发愁就行",2],
-    ["靠被动收入（收租/理财）覆盖日常开销",3]] }
+    ["靠被动收入（收租/理财）覆盖日常开销",3]] },
+  { d:2, q:"你脑子里有个副业想法，下一步一般是？", o:[
+    ["想想就算了，还是上班稳",1],
+    ["先查查资料，看看别人怎么做",2],
+    ["这周就试着接第一单，先跑通再说",3]] },
+  { d:2, q:"同事靠副业月入过万，你会？", o:[
+    ["羡慕一下，然后继续上班",1],
+    ["问问他具体怎么做的",2],
+    ["回去就研究自己能不能也做一个",3]] },
+  { d:2, q:"你会主动跟陌生人谈价格吗？", o:[
+    ["不会，太尴尬了",1],
+    ["硬着头皮谈，能省一点是一点",2],
+    ["会，谈崩了又不亏什么",3]] },
+  { d:2, q:"有一笔钱专门用来“投资自己”，你会花在哪？", o:[
+    ["买点喜欢的东西，让自己开心",1],
+    ["报个课，学点东西",2],
+    ["学一项能直接接单变现的技能",3]] },
+  { d:2, q:"你现在有几种收入来源？", o:[
+    ["一种，就是工资",1],
+    ["工资，加上偶尔有点外快",2],
+    ["三种以上，东边不亮西边亮",3]] },
+  { d:2, q:"领导让你做一件超出职责范围、但能露脸的事，你会？", o:[
+    ["不干，又不给我加钱",1],
+    ["看心情，闲的话就接",2],
+    ["干，能攒资本的事不亏",3]] },
+  { d:2, q:"如果明天失业，你手上的钱能撑多久？", o:[
+    ["一个月都悬",1],
+    ["三到六个月，得赶紧找",2],
+    ["一年以上，而且我还有别的进项",3]] },
+  { d:2, q:"你上一次主动谈薪或者跳槽是什么时候？", o:[
+    ["从来没提过，等着公司给",1],
+    ["想过，但一直没开口",2],
+    ["两年内主动争取过，谈成了",3]] },
+  { d:2, q:"有个能赚钱但有点掉价的活动（比如去摆摊），你会？", o:[
+    ["算了，太掉价了",1],
+    ["先看看别人做得怎么样",2],
+    ["能赚钱就干，面子不值钱",3]] },
+  { d:2, q:"两份工作，一份稳定但天花板低，一份有上限但要看运气，你选？", o:[
+    ["稳定的，别折腾",1],
+    ["看当时手里的余粮",2],
+    ["赌一把，年轻就该试",3]] },
+  { d:2, q:"有人找你合伙做点小生意，你会？", o:[
+    ["怕被骗，直接拒绝",1],
+    ["先听他说完再说",2],
+    ["算清楚成本和分成，再决定投不投",3]] },
+  { d:2, q:"一个项目做了三个月还没起色，你会？", o:[
+    ["放弃，及时止损",1],
+    ["再撑一阵，看看会不会好",2],
+    ["复盘哪里不对，调完再给一次机会",3]] },
+  { d:2, q:"遇到一个不会做但能赚钱的机会，你会？", o:[
+    ["不会就算了，别丢人",1],
+    ["先学一点，准备好了再说",2],
+    ["边做边学，先把单接下来",3]] },
+  { d:2, q:"你多久看一次自己的收入结构（工资、副业、理财各占多少）？", o:[
+    ["从不看，反正就那点",1],
+    ["一年想一次",2],
+    ["每个季度都会盘一次",3]] }
 ];
 
-/* 雷达三维：题号从 1 开始 */
-const RADAR_DIMS = [
-  { id:"spendingControl", name:"消费克制", q:[2,4,5,9,15,18], max:18 },
-  { id:"moneyAwareness",  name:"财务规划", q:[3,8,11,13,14,16,17,19], max:24 },
-  { id:"moneyDrive",      name:"搞钱行动", q:[1,6,7,10,12,20], max:18 }
+const DIM_META = [
+  { id:"spendingControl", name:"消费克制" },
+  { id:"moneyAwareness",  name:"财务规划" },
+  { id:"moneyDrive",      name:"搞钱行动" }
 ];
+
+const QUIZ_LEN = 20;
+
+function shuffleArr(a){
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* 三维按 7/7/6 抽题，总和 20；哪个维度抽 6 道是随机的 */
+function drawQuiz(){
+  const slots = shuffleArr([7, 7, 6]);
+  const picked = [];
+  DIM_META.forEach((m, di) => {
+    const pool = shuffleArr(BANK.filter(x => x.d === di));
+    picked.push.apply(picked, pool.slice(0, slots[di]));
+  });
+  return shuffleArr(picked);
+}
 
 /* ============ 结果数据 ============ */
 const RESULTS = [
@@ -452,8 +678,33 @@ const RESULTS = [
   }
 ];
 
+/* ============ 扭索纹样 ============ */
+/* 一条 r = R + AMP·sin(Nθ) 的参数曲线，旋转复制若干份，叠出钞票防伪花纹 */
+function buildOrnaments(){
+  const NS = 'http://www.w3.org/2000/svg';
+  const R = 130, AMP = 70, N = 6, STEPS = 320;
+  let d = '';
+  for (let i = 0; i <= STEPS; i++){
+    const t = i / STEPS * Math.PI * 2;
+    const r = R + AMP * Math.sin(N * t);
+    d += (i ? 'L' : 'M') + (r * Math.cos(t)).toFixed(1) + ',' + (r * Math.sin(t)).toFixed(1);
+  }
+  document.getElementById('gp').setAttribute('d', d + 'Z');
+
+  const P = 12, step = 360 / (N * P);
+  const g = document.getElementById('rosette');
+  for (let k = 0; k < P; k++){
+    const u = document.createElementNS(NS, 'use');
+    u.setAttribute('href', '#gp');
+    u.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#gp');
+    u.setAttribute('transform', 'rotate(' + (k * step).toFixed(3) + ')');
+    g.appendChild(u);
+  }
+}
+buildOrnaments();
+
 /* ============ 状态 ============ */
-const state = { i:0, scores:[], total:0, result:null, dims:null };
+const state = { i:0, scores:[], drawn:[], opts:[], total:0, result:null, dims:null };
 const $ = id => document.getElementById(id);
 const show = id => {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -462,23 +713,33 @@ const show = id => {
 };
 
 /* ============ 答题 ============ */
+function startQuiz(){
+  state.i = 0;
+  state.scores = [];
+  state.drawn = drawQuiz();
+  // 选项顺序当场打乱；分数跟着选项走，所以打乱不影响计分
+  state.opts = state.drawn.map(q => shuffleArr(q.o.map(o => ({ t:o[0], s:o[1] }))));
+  renderQuestion();
+  show('screen-quiz');
+}
+
 function renderQuestion(){
-  const i = state.i, q = QUESTIONS[i];
+  const i = state.i;
   $('qIdx').textContent = String(i+1).padStart(2,'0');
-  $('qPct').textContent = Math.round((i+1)/QUESTIONS.length*100) + '%';
-  $('qBar').style.width = ((i+1)/QUESTIONS.length*100) + '%';
+  $('qPct').textContent = Math.round((i+1)/QUIZ_LEN*100) + '%';
+  $('qBar').style.width = ((i+1)/QUIZ_LEN*100) + '%';
   $('slipNo').textContent = '第 ' + String(i+1).padStart(2,'0') + ' 问';
-  $('qText').textContent = q.q;
+  $('qText').textContent = state.drawn[i].q;
 
   const box = $('opts');
   box.innerHTML = '';
-  q.o.forEach((opt, idx) => {
+  state.opts[i].forEach((opt, idx) => {
     const b = document.createElement('button');
     b.className = 'opt';
     b.type = 'button';
     b.innerHTML = '<span class="k">' + 'ABC'[idx] + '</span><span class="t"></span>';
-    b.querySelector('.t').textContent = opt[0];
-    b.addEventListener('click', () => choose(b, opt[1]));
+    b.querySelector('.t').textContent = opt.t;
+    b.addEventListener('click', () => choose(b, opt.s));
     box.appendChild(b);
   });
 
@@ -503,7 +764,7 @@ function choose(el, score){
 
   setTimeout(() => {
     locked = false;
-    if (state.i < QUESTIONS.length - 1){
+    if (state.i < QUIZ_LEN - 1){
       state.i++;
       renderQuestion();
     } else {
@@ -517,11 +778,13 @@ function finish(){
   state.total = state.scores.reduce((a,b)=>a+b,0);
   state.result = RESULTS.find(r => state.total >= r.min && state.total <= r.max) || RESULTS[0];
 
-  const dims = RADAR_DIMS.map(d => {
-    const sum = d.q.reduce((acc,qno) => acc + state.scores[qno-1], 0);
-    return { name:d.name, pct: Math.max(20, Math.min(95, Math.round(sum / d.max * 100))) };
-  });
-  state.dims = dims;
+  // 每个维度的满分 = 本次抽到的该维度题数 × 3，所以抽到的题不同也不会失真
+  const sum = [0,0,0], cnt = [0,0,0];
+  state.drawn.forEach((q, i) => { sum[q.d] += state.scores[i]; cnt[q.d]++; });
+  state.dims = DIM_META.map((m, d) => ({
+    name: m.name,
+    pct: Math.max(20, Math.min(95, Math.round(sum[d] / (cnt[d] * 3) * 100)))
+  }));
 
   renderResult();
   show('screen-result');
@@ -630,6 +893,12 @@ function buildPoster(){
   g.beginPath(); g.moveTo(PX, PY + PH);
   for (let x = PX; x < PX + PW; x += tooth){ g.lineTo(x + tooth/2, PY + PH + amp); g.lineTo(x + tooth, PY + PH); }
   g.lineTo(PX + PW, PY + PH); g.closePath(); g.fill();
+
+  // 纸面防伪纹（裁在票面内，只在顶端露一截）
+  g.save();
+  g.beginPath(); g.rect(PX, PY, PW, PH); g.clip();
+  drawRosette(g, PX + PW - 70, 190, 120, 46, 6, 12, 200, '#9A6F22', .085);
+  g.restore();
 
   // 头部
   g.fillStyle = '#6E7A72';
@@ -752,6 +1021,24 @@ function buildPoster(){
   return c.toDataURL('image/png');
 }
 
+function drawRosette(g, cx, cy, R, amp, N, P, steps, color, alpha){
+  g.save();
+  g.strokeStyle = color; g.globalAlpha = alpha; g.lineWidth = 0.9;
+  for (let k = 0; k < P; k++){
+    const rot = k * 2 * Math.PI / (N * P);
+    g.beginPath();
+    for (let i = 0; i <= steps; i++){
+      const t = i / steps * Math.PI * 2;
+      const r = R + amp * Math.sin(N * t);
+      const a = t + rot;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.stroke();
+  }
+  g.restore();
+}
+
 function wrapLines(g, text, maxW){
   const out = []; let line = '';
   for (const ch of text){
@@ -764,11 +1051,7 @@ function wrapLines(g, text, maxW){
 
 /* ============ 交互 ============ */
 
-$('btnStart').addEventListener('click', () => {
-  state.i = 0; state.scores = [];
-  renderQuestion();
-  show('screen-quiz');
-});
+$('btnStart').addEventListener('click', startQuiz);
 
 function openPeek(id){
   const r = RESULTS.find(x => x.id === id);
@@ -794,11 +1077,7 @@ $('btnPoster').addEventListener('click', () => {
 });
 
 $('btnCloseModal').addEventListener('click', () => $('modal').classList.remove('on'));
-$('btnAgain').addEventListener('click', () => {
-  state.i = 0; state.scores = [];
-  renderQuestion();
-  show('screen-quiz');
-});
+$('btnAgain').addEventListener('click', startQuiz);
 
 $('btnShare').addEventListener('click', async () => {
   const url = location.href;
