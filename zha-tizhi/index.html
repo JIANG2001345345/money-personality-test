@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#C9B78F">
+<title>你的吸渣体质有多强 · 情感风控档案</title>
+<meta name="description" content="为什么受伤的总是你？20 道题测出你的情感风控等级。仅供娱乐，不构成任何情感建议。">
+<style>
+/* ===== 吸渣体质 · 牛皮纸卷宗 ===== */
+:root{
+  --kraft:#C9B78F; --kraft-d:#B6A176; --paper:#EDE3CD; --paper-2:#E5D9BE;
+  --ink:#241E16; --ink-2:#4A4034; --muted:#6E6250;
+  --red:#9E3B22; --olive:#59674B;
+  --mono:"Courier New",ui-monospace,"SFMono-Regular",monospace;
+  --sans:"PingFang SC","Microsoft YaHei","Heiti SC",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--kraft);
+  background-image:
+    repeating-linear-gradient(0deg,rgba(60,45,20,.035) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(60,45,20,.025) 0 1px,transparent 1px 4px);
+  color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;
+}
+.app{max-width:430px;margin:0 auto;position:relative;min-height:100vh;min-height:100dvh}
+/* 左侧打孔 */
+.app::before{
+  content:"";position:fixed;left:0;top:0;bottom:0;width:18px;pointer-events:none;z-index:5;
+  background-image:radial-gradient(circle at 9px 26px,rgba(0,0,0,.28) 5px,transparent 5.5px);
+  background-size:18px 78px;background-repeat:repeat-y;
+  opacity:.45;
+}
+.screen{display:none;flex-direction:column;min-height:100vh;min-height:100dvh;
+  padding:22px 18px calc(24px + env(safe-area-inset-bottom)) 30px}
+.screen.active{display:flex}
+.mono{font-family:var(--mono);letter-spacing:.04em}
+
+/* ---------- 按钮 ---------- */
+.btn{
+  display:block;width:100%;border:1px solid var(--ink);background:transparent;color:var(--ink);
+  font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:.14em;
+  padding:15px 12px;border-radius:1px;cursor:pointer;
+}
+.btn.red{background:var(--red);border-color:var(--red);color:#F6EFDF}
+.btn.red:active{transform:translateY(1px)}
+.btn.ghost{font-weight:500;font-size:13.5px;letter-spacing:.1em}
+
+/* ---------- 封面 ---------- */
+.cover-band{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.26em;color:var(--ink-2);
+  border-bottom:1px solid rgba(36,30,22,.35);padding-bottom:8px;
+  display:flex;justify-content:space-between;
+}
+.cover-file{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  position:relative;padding:26px 0;
+}
+.file-head{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.file-no{
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--ink-2);
+  border:1px solid rgba(36,30,22,.4);padding:3px 7px;
+}
+.file-tag{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--red);
+  border:1px dashed rgba(158,59,34,.6);padding:3px 7px;
+}
+.cover-title{
+  font-family:var(--sans);font-size:clamp(30px,9vw,38px);font-weight:800;
+  line-height:1.24;letter-spacing:.01em;margin:0;color:var(--ink);
+}
+.cover-title em{font-style:normal;border-bottom:6px solid rgba(158,59,34,.55)}
+.cover-sub{
+  font-size:13.5px;line-height:1.85;color:var(--ink-2);margin:20px 0 0;max-width:19em;
+}
+.cover-sub b{font-weight:600;color:var(--ink)}
+.cover-note{
+  font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);margin:16px 0 0;
+}
+/* 红章 */
+.stamp{
+  position:absolute;right:4px;bottom:6px;width:96px;height:96px;
+  border:3px solid var(--red);border-radius:50%;color:var(--red);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:800;letter-spacing:.1em;
+  transform:rotate(-14deg);opacity:.72;
+  box-shadow:inset 0 0 0 3px rgba(158,59,34,.18);
+}
+.stamp::after{
+  content:"";position:absolute;inset:7px;border:1.5px solid var(--red);border-radius:50%;opacity:.7;
+}
+.cover-foot{display:flex;flex-direction:column;gap:14px}
+.facts{display:flex;gap:14px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em}
+.facts span::before{content:"· ";color:var(--red)}
+
+/* ---------- 答题 ---------- */
+.qbar{
+  display:flex;align-items:baseline;gap:6px;font-family:var(--mono);font-size:12px;
+  letter-spacing:.1em;color:var(--ink-2);margin-bottom:10px;
+}
+.qbar .big{font-size:20px;font-weight:700;color:var(--red)}
+.qbar .pct{margin-left:auto;color:var(--muted)}
+.qline{height:2px;background:rgba(36,30,22,.14);margin-bottom:22px;position:relative}
+.qline i{position:absolute;left:0;top:0;bottom:0;background:var(--red);width:0;transition:width .35s ease}
+.sheet{
+  flex:1;background:var(--paper);border:1px solid rgba(36,30,22,.22);
+  padding:22px 18px 18px;position:relative;
+  box-shadow:3px 4px 0 rgba(36,30,22,.16);
+  background-image:repeating-linear-gradient(180deg,transparent 0 33px,rgba(36,30,22,.055) 33px 34px);
+  background-position:0 12px;
+}
+.sheet-head{
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--muted);
+  border-bottom:1px dashed rgba(36,30,22,.3);padding-bottom:8px;margin-bottom:16px;
+}
+.qtext{
+  font-size:17.5px;font-weight:600;line-height:1.65;margin:0 0 20px;color:var(--ink);
+}
+.opts{display:flex;flex-direction:column;background:var(--paper)}
+.opt{
+  display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
+  background:transparent;border:0;border-bottom:1px solid rgba(36,30,22,.16);
+  padding:14px 2px;cursor:pointer;color:var(--ink);font-family:var(--sans);
+  font-size:14.5px;line-height:1.6;
+}
+.opt:last-child{border-bottom:0}
+.opt .box{
+  flex:0 0 auto;width:16px;height:16px;border:1.5px solid var(--ink-2);margin-top:3px;
+  position:relative;background:var(--paper);
+}
+.opt .k{
+  flex:0 0 auto;font-family:var(--mono);font-size:12px;color:var(--muted);
+  width:16px;margin-top:2px;
+}
+.opt.sel .box::after{
+  content:"";position:absolute;inset:-1.5px;
+  background:
+    linear-gradient(45deg,transparent 46%,var(--red) 46%,var(--red) 54%,transparent 54%),
+    linear-gradient(-45deg,transparent 46%,var(--red) 46%,var(--red) 54%,transparent 54%);
+}
+.opt.sel{color:var(--red)}
+.hint{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--muted);
+  text-align:center;margin:16px 0 0;
+}
+
+/* ---------- 结果 ---------- */
+.report{
+  background:var(--paper);border:1px solid rgba(36,30,22,.25);
+  box-shadow:4px 5px 0 rgba(36,30,22,.18);
+  padding:20px 18px 22px;position:relative;
+  animation:slipIn .5s cubic-bezier(.2,.8,.3,1) both;
+}
+@keyframes slipIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.r-top{display:flex;justify-content:space-between;font-family:var(--mono);
+  font-size:10px;letter-spacing:.18em;color:var(--muted);border-bottom:1px solid rgba(36,30,22,.28);padding-bottom:8px}
+.r-kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--red);margin:16px 0 6px}
+.r-title{font-size:30px;font-weight:800;line-height:1.22;margin:0;letter-spacing:.01em}
+.r-tag{
+  display:inline-block;margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  color:var(--red);border:1px solid rgba(158,59,34,.55);padding:3px 8px;
+}
+.r-risk{display:flex;align-items:flex-end;justify-content:space-between;margin-top:22px}
+.r-risk .lb{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--muted)}
+.r-risk .val{font-family:var(--mono);font-size:32px;line-height:1;font-weight:700}
+.r-risk .val small{font-size:13px;color:var(--muted);font-weight:400}
+.riskbar{position:relative;height:10px;margin-top:12px;border:1px solid rgba(36,30,22,.5);
+  background:repeating-linear-gradient(90deg,rgba(36,30,22,.08) 0 1px,transparent 1px 8px)}
+.riskbar i{display:block;height:100%;width:0;background:repeating-linear-gradient(45deg,var(--red) 0 4px,rgba(158,59,34,.7) 4px 8px);
+  transition:width 1s cubic-bezier(.2,.9,.3,1) .25s}
+.scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;color:var(--muted);margin-top:4px}
+
+.dim-block{margin-top:20px;border-top:1px dashed rgba(36,30,22,.3);padding-top:14px}
+.dim-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.dim-row .n{font-size:12px;color:var(--ink-2);width:62px;flex:0 0 auto;letter-spacing:.04em}
+.dim-row .track{flex:1;height:6px;background:rgba(36,30,22,.1);position:relative}
+.dim-row .track i{position:absolute;left:0;top:0;bottom:0;background:var(--olive);width:0;
+  transition:width .8s cubic-bezier(.2,.9,.3,1) .5s}
+.dim-row .v{font-family:var(--mono);font-size:11px;color:var(--muted);width:30px;text-align:right}
+
+.sec{margin-top:20px}
+.sec-h{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--muted);
+  border-bottom:1px solid rgba(36,30,22,.22);padding-bottom:6px;margin-bottom:10px}
+.body-text{font-size:14px;line-height:1.95;color:var(--ink-2);margin:0;text-align:justify}
+.traits{display:flex;flex-wrap:wrap;gap:8px}
+.traits span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  border:1px solid rgba(36,30,22,.3);padding:4px 9px;color:var(--ink-2)}
+.quote{
+  margin:18px 0 0;padding:14px 16px;background:rgba(158,59,34,.07);
+  border-left:4px solid var(--red);font-size:15px;line-height:1.8;font-weight:600;color:var(--ink);
+}
+.advice{margin:18px 0 0;font-size:13.5px;line-height:1.9;color:var(--ink-2);
+  border-top:1px dashed rgba(36,30,22,.3);padding-top:14px}
+.advice b{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--red);display:block;margin-bottom:6px;font-weight:400}
+.mini-stamp{
+  position:absolute;right:14px;bottom:16px;font-family:var(--mono);font-size:9px;
+  letter-spacing:.2em;color:rgba(158,59,34,.55);border:1px solid rgba(158,59,34,.35);
+  padding:4px 6px;transform:rotate(-6deg);
+}
+.acts{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.acts-row{display:flex;gap:10px}
+.acts-row .btn{flex:1}
+
+/* ---------- 弹层适配 ---------- */
+.modal-tip{color:#D8CCAE}
+.modal-x{border-color:rgba(216,204,174,.4);color:#D8CCAE}
+
+
+/* ---------- 共用弹层 ---------- */
+.modal{position:fixed;inset:0;background:rgba(8,10,9,.9);display:none;z-index:80;
+  padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal.on{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.modal-card{width:100%;max-width:380px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.poster-img{width:100%;display:block;border-radius:3px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.modal-tip{font-size:12.5px;line-height:1.8;text-align:center;opacity:.62;margin:0}
+.modal-x{margin-top:4px;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;
+  font-size:13px;padding:9px 26px;border-radius:2px;letter-spacing:.08em;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,12px);
+  background:rgba(20,20,20,.92);color:#fff;font-size:13px;padding:10px 18px;border-radius:3px;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:90;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 封面 -->
+  <section class="screen active" id="s-cover">
+    <div class="cover-band"><span>CASE FILE · 情感风控档案</span><span>NO.0917</span></div>
+    <div class="cover-file">
+      <div class="file-head">
+        <span class="file-no">档号 D-0917</span>
+        <span class="file-tag">仅限本人查看</span>
+      </div>
+      <h1 class="cover-title">你的<br>吸渣体质<br><em>有多强</em></h1>
+      <p class="cover-sub">为什么受伤的总是你？<b>不是运气差，是你身上有某种信号。</b>20 道题，测出你的情感风控等级。</p>
+      <p class="cover-note">题库 45 道 · 每次随机抽 20 道 · 题目和选项都重新洗牌</p>
+      <div class="stamp">机密</div>
+    </div>
+    <div class="cover-foot">
+      <div class="facts"><span>20 题</span><span>约 90 秒</span><span>无需登录</span></div>
+      <button class="btn red" id="btnStart">开始填写笔录</button>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section class="screen" id="s-quiz">
+    <div class="qbar">
+      <span class="big mono" id="qIdx">01</span>
+      <span class="mono">/ 20</span>
+      <span class="pct mono" id="qPct">5%</span>
+    </div>
+    <div class="qline"><i id="qBar"></i></div>
+    <div class="sheet">
+      <div class="sheet-head">
+        <span>询问笔录 · 第 <b id="slipNo">01</b> 项</span>
+        <span>RECORD</span>
+      </div>
+      <h2 class="qtext" id="qText"></h2>
+      <div class="opts" id="opts"></div>
+    </div>
+    <p class="hint">凭第一反应作答 · 不要思考</p>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="s-result">
+    <div class="report" id="report"></div>
+    <div class="acts">
+      <button class="btn red" id="btnPoster">生成我的档案卡</button>
+      <div class="acts-row">
+        <button class="btn ghost" id="btnShare">复制链接</button>
+        <button class="btn ghost" id="btnAgain">再测一次</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card" id="modalBody"></div>
+  <button class="modal-x" onclick="closeModal()">关闭</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ===== 吸渣体质 · 数据 ===== */
+const TEST = {
+  id: "zha-tizhi",
+  quizLen: 20,
+  slots: [7, 7, 6],
+  pctFloor: 6,
+  dims: [{ name: "识人雷达" }, { name: "边界硬度" }, { name: "情绪依赖" }],
+  qrImage: "",
+  qrCaption: "扫码测你的吸渣体质",
+  customLine: "",
+
+  /* d:0 识人雷达  d:1 边界硬度  d:2 情绪依赖 */
+  bank: [
+    { d:0, q:"刚认识三天的人就开始叫你“宝宝”，你会？", o:[
+      ["心里一甜，回得更亲热",1],["有点怪，但不好意思说",2],["直接冷下来，这人不对劲",3]] },
+    { d:0, q:"他说“我跟我女朋友早就没感情了”，你会？", o:[
+      ["心疼他，觉得自己才是特别的",1],["半信半疑，先看看",2],["一句“那你怎么还不分”堵回去",3]] },
+    { d:0, q:"一个人全程都在讲自己多有钱、多有人脉，你会？", o:[
+      ["觉得他好厉害",1],["听着，但不全信",2],["心里打分：这人在掩饰什么",3]] },
+    { d:0, q:"对方朋友圈全是深夜 emo 文案，你会？", o:[
+      ["觉得他好有故事",1],["觉得有点表演",2],["直接划过去",3]] },
+    { d:0, q:"他嘴上说爱你，却从不主动找你，你会？", o:[
+      ["替他找理由，他可能忙",1],["心里不舒服，但不说",2],["看清楚：嘴和腿，信腿",3]] },
+    { d:0, q:"刚认识的人问你“你一个人住吗”，你会？", o:[
+      ["老实回答",1],["含糊过去",2],["反问“你问这个干嘛”",3]] },
+    { d:0, q:"认识两周，他跟你借钱说下周还，你会？", o:[
+      ["借了，不好意思拒绝",1],["借一点，试试他",2],["不借，认识两周就借钱，红灯",3]] },
+    { d:0, q:"他对服务员的态度很差，你会？", o:[
+      ["没太注意",1],["有点不舒服",2],["记下来，这就是以后的你",3]] },
+    { d:0, q:"他说“我这人就这样，你受不了就算了”，你会？", o:[
+      ["觉得他真性情",1],["委屈但不吭声",2],["翻译一下：我懒得改",3]] },
+    { d:0, q:"他对你很好，对你的闺蜜也很好，你会？", o:[
+      ["觉得他人品好",1],["有点不舒服",2],["看他是不是对谁都这样",3]] },
+    { d:0, q:"第一次约会他迟到了四十分钟，你会？", o:[
+      ["没关系，路上堵",1],["嘴上说没事，心里记着",2],["看他下次还迟不迟",3]] },
+    { d:0, q:"他每句话都带“我妈说……”，你会？", o:[
+      ["觉得他孝顺",1],["觉得有点怪",2],["知道以后有你受的",3]] },
+    { d:0, q:"聊天时他永远只讲他自己，你会？", o:[
+      ["觉得他只是话多",1],["耐心听着",2],["发现他根本没在听你说",3]] },
+    { d:0, q:"他说“你不化妆也挺好看的，就是……”，你会？", o:[
+      ["有点受伤，想改",1],["尴尬地笑笑",2],["闻到打压的味道",3]] },
+    { d:0, q:"你判断一个人靠不靠谱，主要看？", o:[
+      ["感觉",1],["他对我说了什么",2],["他对别人、对钱、对承诺怎么做",3]] },
+
+    { d:1, q:"别人让你不舒服了，你会当场说出来吗？", o:[
+      ["不会，怕气氛尴尬",1],["事后才想起来该说",2],["当场就说，说得很平静",3]] },
+    { d:1, q:"他提出要翻你手机，你会？", o:[
+      ["有点不舒服但还是给了",1],["犹豫一下还是给了",2],["直接拒绝，这是底线",3]] },
+    { d:1, q:"你不想去他的聚会，他一直磨你，你会？", o:[
+      ["最后还是去了",1],["去了但摆脸色",2],["说不去就不去",3]] },
+    { d:1, q:"分手后他说“做朋友吧”，你会？", o:[
+      ["答应了，还留着微信",1],["答应了但很少回",2],["直接删，朋友不当",3]] },
+    { d:1, q:"他第一次对你吼，事后又来道歉，你会？", o:[
+      ["原谅了，他也不是故意的",1],["原谅但心里有疙瘩",2],["记下来，这是第一次，也是底线",3]] },
+    { d:1, q:"有人插队站在你前面，你会？", o:[
+      ["算了",1],["瞪一眼",2],["直接说“队尾在后面”",3]] },
+    { d:1, q:"他要求你随时报备行程，你会？", o:[
+      ["乖乖报，反正也没什么",1],["报一部分",2],["先问清楚，这是关心还是控制",3]] },
+    { d:1, q:"朋友约会总让你多等半小时，你会？", o:[
+      ["继续等",1],["抱怨两句还是等",2],["下次直接走，或者不来",3]] },
+    { d:1, q:"你会因为怕分手而妥协吗？", o:[
+      ["经常",1],["有时候",2],["不会，怕分手就该分了",3]] },
+    { d:1, q:"他当着朋友的面开你玩笑，你不舒服，你会？", o:[
+      ["笑一笑算了",1],["回家才说",2],["当场说“这个不好笑”",3]] },
+    { d:1, q:"你今晚本来有安排，他临时叫你出去，你会？", o:[
+      ["推掉自己的事",1],["看心情",2],["先说好我今晚有安排",3]] },
+    { d:1, q:"对方提了一个你完全不想答应的要求，你会？", o:[
+      ["勉强答应",1],["拖着，等他自己忘",2],["直接说不",3]] },
+    { d:1, q:"你上一次为自己拒绝别人，是什么时候？", o:[
+      ["想不起来了",1],["上个月",2],["这周就有",3]] },
+    { d:1, q:"他说“你要是真的爱我，就该……”，你会？", o:[
+      ["照做",1],["心里别扭但还是照做",2],["听懂了，这是话术",3]] },
+    { d:1, q:"一段关系让你很累，你会？", o:[
+      ["继续忍",1],["找人吐槽",2],["评估一下，该走就走",3]] },
+
+    { d:2, q:"他两小时没回消息，你会？", o:[
+      ["开始胡思乱想",1],["隔一会儿看一下手机",2],["可能他真在忙",3]] },
+    { d:2, q:"分手之后，你多久能缓过来？", o:[
+      ["半年都缓不过来",1],["几个月",2],["难过，但日子照过",3]] },
+    { d:2, q:"一个人的周末，你会难受吗？", o:[
+      ["会，空得慌",1],["有点无聊",2],["挺享受的",3]] },
+    { d:2, q:"你的情绪主要由谁决定？", o:[
+      ["对方的脸色",1],["今天发生的事",2],["我自己",3]] },
+    { d:2, q:"恋爱的时候，你会推掉朋友吗？", o:[
+      ["经常",1],["偶尔",2],["不会，朋友是我的地基",3]] },
+    { d:2, q:"他说“没有你我活不下去”，你会？", o:[
+      ["心疼，觉得被需要",1],["有点压力",2],["警惕，这是绑架",3]] },
+    { d:2, q:"你有没有一个和恋爱完全无关的爱好？", o:[
+      ["没有",1],["有，但荒废了",2],["有，而且一直在做",3]] },
+    { d:2, q:"他不开心的时候，你必须马上哄好吗？", o:[
+      ["是，不然我睡不着",1],["大多数时候是",2],["他也要为自己的情绪负责",3]] },
+    { d:2, q:"你会反复重读他的消息吗？", o:[
+      ["经常",1],["偶尔",2],["很少",3]] },
+    { d:2, q:"关系结束后，你会反复想“是不是我的错”吗？", o:[
+      ["会，想很久",1],["会想一阵",2],["想过，然后放下",3]] },
+    { d:2, q:"你的安全感主要来自？", o:[
+      ["他",1],["他，加上一点点自己",2],["我自己的能力和存款",3]] },
+    { d:2, q:"如果明天分手，你的生活会塌吗？", o:[
+      ["会",1],["会乱一阵",2],["会很烦，但不塌",3]] },
+    { d:2, q:"你会为了不孤单而将就吗？", o:[
+      ["会",1],["怕，但尽量不",2],["宁可一个人",3]] },
+    { d:2, q:"他心情不好，你会自动觉得是自己的问题吗？", o:[
+      ["会",1],["有时候",2],["先问清楚，不自己脑补",3]] },
+    { d:2, q:"你觉得一个人也可以过得很好吗？", o:[
+      ["不行",1],["理论上可以",2],["我现在就是",3]] }
+  ],
+
+  results: [
+    { min:20, max:27, title:"渣男收割机", tag:"专业对口型",
+      analysis:"你不是运气差，你是信号太亮。你心软、共情力强、愿意相信别人说的每一句好话，这些在正常人身上是优点，在有心人眼里是入口。你最大的问题不是看不出来，是看出来了还替他找理由。你不需要变冷漠，你需要变慢：任何关系，先观察三个月再交心。",
+      traits:["情绪易感体质","过度共情","解释型人格"],
+      line:"我不是不会看人，我是太会替人开脱。",
+      advice:"给自己定一条硬规矩：认识三个月内，不借钱、不搬家、不删朋友。" },
+    { min:28, max:35, title:"恋爱脑晚期", tag:"劝不动的那个",
+      analysis:"你一谈恋爱就自动关掉一半大脑。朋友说的每一句劝，你都在心里翻译成“他们不懂”。你不是傻，你只是太想被确认，于是把对方的每一个小动作都读成爱的证据。你的解药不是理智，是时间差：把决定推迟一天，让脑子上线。",
+      traits:["上头即真理","劝说免疫","自我说服高手"],
+      line:"全世界都在劝我，只有他懂我。",
+      advice:"重要决定一律隔夜再答。隔完还想去，才是真的想去。" },
+    { min:36, max:43, title:"心软型选手", tag:"嘴上清醒",
+      analysis:"你其实什么都懂。你能一眼看出对方的问题，也能跟朋友分析得头头是道，直到事情落到自己头上。你的清醒只在旁观时生效。你缺的不是判断力，是把判断说出口的那一口气。从最小的事开始拒绝，边界是练出来的，不是想出来的。",
+      traits:["旁观者清","心软成瘾","事后复盘专家"],
+      line:"道理我都懂，可那是他啊。",
+      advice:"这周至少拒绝一次让你不舒服的小请求，不用解释理由。" },
+    { min:44, max:51, title:"边界感在线", tag:"能止损的成年人",
+      analysis:"你有一套自己的判断标准，而且愿意为它承担后果。你不会因为对方说得好听就把脑子交出去，也不会因为怕孤单就留下来。你偶尔还是心软，但你的心软有底线，过了线你会走。你这种人最大的风险不是被伤害，是被人说太冷。别改，冷一点没关系。",
+      traits:["边界清晰","情绪自持","干脆利落"],
+      line:"我可以很喜欢你，但我不需要你。",
+      advice:"继续保持。唯一提醒：别把“不需要人”练成不让人靠近。" },
+    { min:52, max:60, title:"人间清醒监察官", tag:"你才是那个让人怕的",
+      analysis:"你几乎不吃套路。对方话说到一半，你已经在心里给他归档了。这种能力让你很少受伤，但也让你很难真正靠近一个人，因为你太早看见结局。你要练的不是识别，是允许：允许自己在看得清的前提下，仍然去试一试。清醒不等于提前退场。",
+      traits:["套路免疫","高倍率雷达","防御过当"],
+      line:"别演了，你三句话我就知道你要干嘛。",
+      advice:"遇到还不错的人，试着晚一点下判断，给人一次表现的机会。" }
+  ]
+};
+
+/* ===== 共用引擎：抽题 / 打乱 / 计分 / 弹层 / 通用画笔 =====
+   每个主题只提供 SKIN 对象和 TEST 数据，其余都走这里。 */
+
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ---------- 二维码（每套主题在 data.js 里配） ---------- */
+let QR_IMG = null;
+if (TEST.qrImage){
+  QR_IMG = new Image();
+  QR_IMG.src = TEST.qrImage;
+}
+
+/* ---------- 工具 ---------- */
+function shuffleArr(a){
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* 按维度配比抽题：slots 之和 = TEST.quizLen */
+function drawQuiz(){
+  const picked = [];
+  const slots = shuffleArr(TEST.slots.slice());
+  TEST.dims.forEach((m, di) => {
+    const pool = shuffleArr(TEST.bank.filter(x => x.d === di));
+    picked.push.apply(picked, pool.slice(0, slots[di]));
+  });
+  return shuffleArr(picked);
+}
+
+/* ---------- 状态 ---------- */
+const state = { i:0, scores:[], drawn:[], opts:[], total:0, result:null, dims:null };
+let locked = false;
+
+/* ---------- 流程 ---------- */
+function startQuiz(){
+  state.i = 0;
+  state.scores = [];
+  state.drawn = drawQuiz();
+  state.opts = state.drawn.map(q => shuffleArr(q.o.map(o => ({ t:o[0], s:o[1] }))));
+  locked = false;
+  SKIN.goQuiz();
+  SKIN.renderQuestion();
+}
+
+function choose(score, el){
+  if (locked) return;
+  locked = true;
+  if (el) el.classList.add('sel');
+  state.scores.push(score);
+  SKIN.afterChoose(el, score);
+  setTimeout(() => {
+    locked = false;
+    if (state.i < TEST.quizLen - 1){
+      state.i++;
+      SKIN.renderQuestion();
+    } else {
+      finish();
+    }
+  }, SKIN.advanceDelay || 240);
+}
+
+function finish(){
+  state.total = state.scores.reduce((a,b) => a + b, 0);
+  state.result = TEST.results.find(r => state.total >= r.min && state.total <= r.max) || TEST.results[0];
+
+  const sum = [0,0,0], cnt = [0,0,0];
+  state.drawn.forEach((q, i) => { sum[q.d] += state.scores[i]; cnt[q.d]++; });
+  state.dims = TEST.dims.map((m, d) => ({
+    name: m.name,
+    pct: Math.max(TEST.pctFloor || 6, Math.min(100, Math.round(sum[d] / (cnt[d] * 3) * 100)))
+  }));
+
+  SKIN.goResult();
+  SKIN.renderResult();
+  window.scrollTo(0,0);
+}
+
+/* ---------- 弹层 ---------- */
+function openModal(html){
+  $('modalBody').innerHTML = html;
+  $('modal').classList.add('on');
+}
+function closeModal(){ $('modal').classList.remove('on'); }
+
+function showPoster(){
+  const url = SKIN.buildPoster();
+  openModal('<img class="poster-img" src="' + url + '" alt="测试结果海报">'
+    + '<p class="modal-tip">长按图片保存到相册<br>电脑上右键另存为</p>');
+}
+
+function copyLink(){
+  const url = location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(
+      () => toast('链接已复制'),
+      () => toast('长按地址栏复制链接')
+    );
+  } else {
+    toast('长按地址栏复制链接');
+  }
+}
+
+let toastTimer;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 1900);
+}
+
+/* ---------- 画布通用件 ---------- */
+function makeCanvas(w, h){
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return c;
+}
+function wrapLines(g, text, maxW){
+  const out = []; let line = '';
+  for (const ch of text){
+    if (g.measureText(line + ch).width > maxW && line){ out.push(line); line = ch; }
+    else line += ch;
+  }
+  if (line) out.push(line);
+  return out;
+}
+/* 防伪扭索纹：r = R + A·sin(Nθ) 旋转复制 */
+function drawRosette(g, cx, cy, R, amp, N, P, steps, color, alpha, lw){
+  g.save();
+  g.strokeStyle = color; g.globalAlpha = alpha; g.lineWidth = lw || 0.9;
+  for (let k = 0; k < P; k++){
+    const rot = k * 2 * Math.PI / (N * P);
+    g.beginPath();
+    for (let i = 0; i <= steps; i++){
+      const t = i / steps * Math.PI * 2;
+      const r = R + amp * Math.sin(N * t);
+      const a = t + rot;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.stroke();
+  }
+  g.restore();
+}
+function roundRect(g, x, y, w, h, r){
+  g.beginPath();
+  g.moveTo(x + r, y);
+  g.arcTo(x + w, y, x + w, y + h, r);
+  g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r);
+  g.arcTo(x, y, x + w, y, r);
+  g.closePath();
+}
+
+/* ===== 吸渣体质 · 界面层 ===== */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+const SKIN = {
+  advanceDelay: 240,
+
+  goQuiz(){ show('s-quiz'); },
+  goResult(){ show('s-result'); },
+
+  renderQuestion(){
+    const i = state.i;
+    $('qIdx').textContent = String(i + 1).padStart(2, '0');
+    $('qPct').textContent = Math.round((i + 1) / TEST.quizLen * 100) + '%';
+    $('qBar').style.width = ((i + 1) / TEST.quizLen * 100) + '%';
+    $('slipNo').textContent = String(i + 1).padStart(2, '0');
+    $('qText').textContent = state.drawn[i].q;
+
+    const box = $('opts');
+    box.innerHTML = '';
+    state.opts[i].forEach((o, idx) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      const k = document.createElement('span'); k.className = 'k'; k.textContent = '甲乙丙'[idx];
+      const c = document.createElement('span'); c.className = 'box';
+      const t = document.createElement('span'); t.className = 't'; t.textContent = o.t;
+      b.appendChild(c); b.appendChild(k); b.appendChild(t);
+      b.addEventListener('click', () => choose(o.s, b));
+      box.appendChild(b);
+    });
+  },
+
+  afterChoose(el){ /* 复选框打叉由 .sel 的 CSS 完成 */ },
+
+  renderResult(){
+    const r = state.result, t = state.total;
+    const pct = Math.max(3, Math.round((t - 20) / 40 * 100));
+    const dims = state.dims.map(d =>
+      '<div class="dim-row"><span class="n">' + d.name + '</span>'
+      + '<span class="track"><i></i></span><span class="v">' + d.pct + '</span></div>'
+    ).join('');
+
+    $('report').innerHTML =
+      '<div class="r-top"><span>结案报告</span><span>NO.' + String(t).padStart(2, '0') + '</span></div>'
+      + '<div class="r-kicker">C O N C L U S I O N</div>'
+      + '<h2 class="r-title">' + r.title + '</h2>'
+      + '<span class="r-tag">' + r.tag + '</span>'
+      + '<div class="r-risk"><span class="lb">防渣指数</span>'
+      +   '<span class="val">' + t + '<small>/60</small></span></div>'
+      + '<div class="riskbar"><i></i></div>'
+      + '<div class="scale"><span>易被套路</span><span>人间清醒</span></div>'
+      + '<div class="dim-block">' + dims + '</div>'
+      + '<div class="sec"><div class="sec-h">CASE ANALYSIS</div>'
+      +   '<p class="body-text">' + r.analysis + '</p></div>'
+      + '<div class="sec"><div class="sec-h">HIDDEN TRAITS</div>'
+      +   '<div class="traits">' + r.traits.map(x => '<span>' + x + '</span>').join('') + '</div></div>'
+      + '<p class="quote">' + r.line + '</p>'
+      + '<p class="advice"><b>D I S P O S A L</b>' + r.advice + '</p>'
+      + '<span class="mini-stamp">已 结 案</span>';
+
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.dim-row .track i').forEach((el, i) => {
+        el.style.width = state.dims[i].pct + '%';
+      });
+      document.querySelector('.riskbar i').style.width = pct + '%';
+    });
+  },
+
+  buildPoster(){
+    const W = 750, H = 1200;
+    const c = makeCanvas(W, H), g = c.getContext('2d');
+    const r = state.result, t = state.total;
+    const PX = 54, PY = 70, PW = W - PX * 2, PH = 1060;
+    const L = PX + 46, R = PX + PW - 40;
+
+    g.fillStyle = '#C9B78F'; g.fillRect(0, 0, W, H);
+    // 纸影
+    g.fillStyle = 'rgba(48,38,22,.22)'; g.fillRect(PX + 10, PY + 12, PW, PH);
+    g.fillStyle = '#EDE3CD'; g.fillRect(PX, PY, PW, PH);
+    // 左侧红条
+    g.fillStyle = '#9E3B22'; g.fillRect(PX, PY, 11, PH);
+
+    // 抬头
+    g.fillStyle = '#6E6250';
+    g.font = '20px "Courier New",monospace';
+    g.fillText('CASE FILE · 情感风控档案', L, 128);
+    g.textAlign = 'right';
+    g.fillText('NO.' + String(t).padStart(2, '0'), R, 128);
+    g.textAlign = 'left';
+
+    g.strokeStyle = 'rgba(36,30,22,.35)'; g.lineWidth = 1.5;
+    g.setLineDash([6, 6]);
+    g.beginPath(); g.moveTo(L, 148); g.lineTo(R, 148); g.stroke();
+    g.setLineDash([]);
+
+    // 档案照框
+    const pw = 168, ph = 212, bx = R - pw, by = 176;
+    g.strokeStyle = 'rgba(36,30,22,.4)';
+    g.setLineDash([5, 5]);
+    g.strokeRect(bx, by, pw, ph);
+    g.setLineDash([]);
+    g.fillStyle = '#8B7C63';
+    g.font = '17px "Courier New",monospace';
+    g.textAlign = 'center';
+    g.fillText('档 案 照', bx + pw / 2, by + ph / 2 - 6);
+    g.fillText('P H O T O', bx + pw / 2, by + ph / 2 + 22);
+    g.textAlign = 'left';
+
+    // 标题
+    g.fillStyle = '#241E16';
+    g.font = '700 56px "PingFang SC","Microsoft YaHei",sans-serif';
+    const titleLines = wrapLines(g, r.title, pw + 46);
+    titleLines.forEach((ln, i) => g.fillText(ln, L, 262 + i * 66));
+
+    // 标签
+    const tagY = 262 + titleLines.length * 66 + 10;
+    g.font = '20px "Courier New",monospace';
+    const tw = g.measureText(r.tag).width;
+    g.strokeStyle = 'rgba(158,59,34,.6)'; g.lineWidth = 1.5;
+    g.strokeRect(L, tagY, tw + 26, 38);
+    g.fillStyle = '#9E3B22';
+    g.fillText(r.tag, L + 13, tagY + 26);
+
+    // 防渣指数
+    const sy = tagY + 84;
+    g.fillStyle = '#6E6250';
+    g.font = '19px "Courier New",monospace';
+    g.fillText('防渣指数', L, sy);
+    g.fillStyle = '#241E16';
+    g.font = '700 52px "Courier New",monospace';
+    g.textAlign = 'right';
+    g.fillText(t + ' / 60', R, sy + 6);
+    g.textAlign = 'left';
+
+    const barY = sy + 24;
+    g.strokeStyle = 'rgba(36,30,22,.45)'; g.lineWidth = 1.5;
+    g.strokeRect(L, barY, R - L, 14);
+    g.fillStyle = '#9E3B22';
+    g.fillRect(L + 1.5, barY + 1.5, (R - L - 3) * Math.max(.02, (t - 20) / 40), 11);
+
+    // 三维
+    let dy = barY + 62;
+    state.dims.forEach(d => {
+      g.fillStyle = '#4A4034';
+      g.font = '20px "PingFang SC","Microsoft YaHei",sans-serif';
+      g.fillText(d.name, L, dy + 14);
+      const tx = L + 138, twid = R - tx - 52;
+      g.fillStyle = 'rgba(36,30,22,.12)'; g.fillRect(tx, dy, twid, 9);
+      g.fillStyle = '#59674B'; g.fillRect(tx, dy, twid * d.pct / 100, 9);
+      g.fillStyle = '#6E6250';
+      g.font = '16px "Courier New",monospace';
+      g.textAlign = 'right';
+      g.fillText(String(d.pct), R, dy + 12);
+      g.textAlign = 'left';
+      dy += 40;
+    });
+
+    // 结论金句
+    const qy = dy + 18;
+    g.fillStyle = '#241E16';
+    g.font = '700 27px "PingFang SC","Microsoft YaHei",sans-serif';
+    const qlines = wrapLines(g, r.line, R - L - 40);
+    const qh = qlines.length * 42 + 34;
+    g.fillStyle = 'rgba(158,59,34,.08)';
+    g.fillRect(L - 12, qy, R - L + 24, qh);
+    g.fillStyle = '#9E3B22';
+    g.fillRect(L - 12, qy, 6, qh);
+    g.fillStyle = '#241E16';
+    qlines.forEach((ln, i) => g.fillText(ln, L + 12, qy + 42 + i * 42));
+
+    // 建议
+    g.fillStyle = '#4A4034';
+    g.font = '19px "PingFang SC","Microsoft YaHei",sans-serif';
+    const aLines = wrapLines(g, r.advice, R - L - 10).slice(0, 3);
+    aLines.forEach((ln, i) => g.fillText(ln, L, qy + qh + 44 + i * 30));
+
+    // 防伪纹水印（填空档，同时是卷宗质感）
+    const wmY = qy + qh + 44 + aLines.length * 30 + 20;
+    const footTop = PY + PH - 96;
+    drawRosette(g, (L + R) / 2, (wmY + footTop) / 2 - 6, 74, 26, 7, 14, 260,
+                '#9E3B22', .14, 1);
+
+    // 底部
+    const footY = PY + PH - 96;
+    g.strokeStyle = 'rgba(36,30,22,.28)'; g.setLineDash([6, 6]); g.lineWidth = 1.4;
+    g.beginPath(); g.moveTo(L, footY); g.lineTo(R, footY); g.stroke();
+    g.setLineDash([]);
+
+    const qs = 108, qx = R - qs, qyy = footY + 18;
+    if (QR_IMG){
+      g.fillStyle = '#fff'; g.fillRect(qx - 7, qyy - 7, qs + 14, qs + 14);
+      g.drawImage(QR_IMG, qx, qyy, qs, qs);
+    } else {
+      g.strokeStyle = 'rgba(36,30,22,.35)'; g.lineWidth = 1.5;
+      g.strokeRect(qx, qyy, qs, qs);
+      g.fillStyle = '#8B7C63';
+      g.font = '15px "PingFang SC","Microsoft YaHei",sans-serif';
+      g.textAlign = 'center';
+      g.fillText('二维码', qx + qs / 2, qyy + 52);
+      g.fillText('放这里', qx + qs / 2, qyy + 74);
+      g.textAlign = 'left';
+    }
+
+    g.fillStyle = '#241E16';
+    g.font = '600 22px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText(TEST.qrCaption, L, footY + 52);
+    g.fillStyle = '#8B7C63';
+    g.font = '16px "Courier New",monospace';
+    g.fillText('仅供娱乐 · 不构成任何情感建议', L, footY + 84);
+    if (TEST.customLine){
+      g.fillStyle = '#6E6250';
+      g.font = '16px "Courier New",monospace';
+      g.fillText(TEST.customLine, L, footY + 108);
+    }
+
+    return c.toDataURL('image/png');
+  }
+};
+
+/* ---------- 绑定 ---------- */
+$('btnStart').addEventListener('click', startQuiz);
+$('btnAgain').addEventListener('click', startQuiz);
+$('btnPoster').addEventListener('click', showPoster);
+$('btnShare').addEventListener('click', copyLink);
+
+</script>
+</body>
+</html>
