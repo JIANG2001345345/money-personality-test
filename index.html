@@ -302,6 +302,25 @@
 <div class="toast" id="toast"></div>
 
 <script>
+/* ============ 可配置项（每交付一个客户，只改这里） ============ */
+const CONFIG = {
+  // 海报二维码：放你自己的微信/闲鱼码，不要放测试链接。
+  // 填法一：图片放同目录，写 "wx.png"；填法二：直接贴 base64（"data:image/png;base64,..."）
+  qrImage: '',
+  // 二维码左边那句话
+  qrCaption: '扫码测你的财富人格',
+  // 海报最底部小字，例如 "同款测试定制 · 微信 abc123"；留空则不显示
+  customLine: ''
+};
+
+// 预加载二维码，等用户答完 20 题时早就加载好了
+let QR_IMG = null;
+if (CONFIG.qrImage){
+  QR_IMG = new Image();
+  QR_IMG.onload = () => {};
+  QR_IMG.src = CONFIG.qrImage;
+}
+
 /* ============ 题库数据 ============ */
 const QUESTIONS = [
   { q:"如果明天你突然中奖100万，你的第一反应是？", o:[
@@ -702,21 +721,33 @@ function buildPoster(){
   g.setLineDash([]);
 
   const qs = 110, qx = R - qs, qy = 896;
-  g.strokeStyle = 'rgba(26,33,29,.3)'; g.lineWidth = 2;
-  g.strokeRect(qx, qy, qs, qs);
-  g.fillStyle = '#9AA59D';
-  g.font = '400 17px "PingFang SC","Microsoft YaHei",sans-serif';
-  g.textAlign = 'center';
-  g.fillText('二维码', qx + qs/2, qy + 52);
-  g.fillText('放这里', qx + qs/2, qy + 76);
-  g.textAlign = 'left';
+  if (QR_IMG){
+    // 二维码白底，保证深色/米色背景上也能扫出来
+    g.fillStyle = '#FFFFFF';
+    g.fillRect(qx - 8, qy - 8, qs + 16, qs + 16);
+    g.drawImage(QR_IMG, qx, qy, qs, qs);
+  } else {
+    g.strokeStyle = 'rgba(26,33,29,.3)'; g.lineWidth = 2;
+    g.strokeRect(qx, qy, qs, qs);
+    g.fillStyle = '#9AA59D';
+    g.font = '400 17px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.textAlign = 'center';
+    g.fillText('二维码', qx + qs/2, qy + 52);
+    g.fillText('放这里', qx + qs/2, qy + 76);
+    g.textAlign = 'left';
+  }
 
   g.fillStyle = '#2A322D';
   g.font = '400 22px "PingFang SC","Microsoft YaHei",sans-serif';
-  g.fillText('扫码测你的财富人格', L, 936);
+  g.fillText(CONFIG.qrCaption, L, 936);
   g.fillStyle = '#9AA59D';
   g.font = '400 17px "PingFang SC","Microsoft YaHei",sans-serif';
   g.fillText('仅供娱乐 · 不构成任何投资建议', L, 970);
+  if (CONFIG.customLine){
+    g.fillStyle = '#6E7A72';
+    g.font = '400 18px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText(CONFIG.customLine, L, 1006);
+  }
 
   return c.toDataURL('image/png');
 }
