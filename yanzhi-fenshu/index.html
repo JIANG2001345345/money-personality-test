@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FFF7F6">
+<title>测测你在异性眼里的真实颜值分数 · 他们第一眼看到的是什么</title>
+<meta name="description" content="不是你觉得，是他们第一眼看到的你。20 道题，测出你的颜值分数，以及你在人群里是哪一种好看。">
+<style>
+/* ===== 真实颜值分数 · 玫瑰评分卡 ===== */
+:root{
+  --bg:#FFF7F6; --ink:#2A1219; --rose:#E5346B; --blush:#F8CBD7;
+  --dim:#9A7F88; --line:#EEDCE0; --cream:#FFFCFA;
+  --serif:"Songti SC","STSong","Noto Serif SC",serif;
+  --sans:"PingFang SC","Microsoft YaHei","Heiti SC",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(48% 32% at 88% 2%,rgba(248,203,215,.85),transparent 68%),
+    radial-gradient(52% 36% at 4% 88%,rgba(248,203,215,.55),transparent 70%),
+    radial-gradient(40% 24% at 50% 46%,rgba(255,255,255,.85),transparent 72%);
+}
+.app{max-width:430px;margin:0 auto;position:relative;min-height:100vh;min-height:100dvh}
+.screen{display:none;flex-direction:column;min-height:100vh;min-height:100dvh;
+  padding:22px 22px calc(26px + env(safe-area-inset-bottom))}
+.screen.active{display:flex}
+.eyebrow{font-size:9px;letter-spacing:.34em;color:var(--dim);text-transform:uppercase}
+
+/* ---------- 标尺 ---------- */
+.ruler{position:relative;height:24px;
+  background-image:
+    repeating-linear-gradient(90deg,rgba(42,18,25,.42) 0 1px,transparent 1px 30px),
+    repeating-linear-gradient(90deg,rgba(42,18,25,.18) 0 1px,transparent 1px 6px);
+  background-size:100% 18px,100% 9px;
+  background-position:0 100%,0 100%;
+  background-repeat:repeat-x;
+  border-bottom:1px solid rgba(42,18,25,.4);
+}
+.pointer{position:absolute;bottom:-1px;width:2px;height:26px;background:var(--rose);
+  margin-left:-1px;transition:left .9s cubic-bezier(.2,.9,.3,1)}
+.pointer::after{content:'';position:absolute;top:-6px;left:-4px;width:10px;height:10px;
+  border-radius:50%;background:var(--rose)}
+
+/* ---------- 按钮 ---------- */
+.btn{
+  display:block;width:100%;border:0;border-radius:2px;background:var(--rose);color:#fff;
+  font-family:var(--sans);font-size:15px;letter-spacing:.28em;text-indent:.28em;
+  padding:16px 12px;cursor:pointer;box-shadow:0 12px 26px -16px rgba(229,52,107,.9);
+}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid rgba(42,18,25,.22);
+  box-shadow:none;font-size:12.5px;letter-spacing:.14em;text-indent:.14em;padding:12px 8px}
+
+/* ---------- 封面 ---------- */
+.cover{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6px 0 16px}
+.cf{border:1px solid rgba(42,18,25,.18);background:rgba(255,255,255,.42);
+  padding:24px 22px 28px;backdrop-filter:blur(2px)}
+.c-no{display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px solid var(--line);padding-bottom:10px}
+.c-title{font-family:var(--serif);font-size:clamp(38px,11.5vw,48px);line-height:1.35;
+  letter-spacing:.08em;margin:26px 0 0;font-weight:600}
+.c-title small{display:block;font-family:var(--sans);font-size:12px;font-weight:400;
+  letter-spacing:.34em;color:var(--dim);margin-bottom:16px}
+.lede{font-size:12.5px;color:#7A5F68;line-height:2;margin:18px 0 0;letter-spacing:.04em}
+.cover-scale{margin-top:34px}
+.cover-scale .ruler{margin-top:0}
+.c-scale-lab{display:flex;justify-content:space-between;font-size:9.5px;color:var(--dim);
+  letter-spacing:.16em;margin-top:10px}
+.cover-foot{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+.facts{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.16em;color:var(--dim)}
+
+/* ---------- 答题 ---------- */
+.qtop{display:flex;justify-content:space-between;align-items:baseline;padding-top:6px;
+  border-bottom:1px solid var(--line);padding-bottom:10px}
+.qtop .n{font-family:var(--serif);font-size:16px;letter-spacing:.1em}
+.qtop .n b{color:var(--rose);font-size:20px}
+.qtrack{height:2px;background:rgba(42,18,25,.07);margin-top:10px;position:relative;overflow:hidden}
+.qtrack i{position:absolute;left:0;top:0;bottom:0;background:var(--rose);width:var(--w,0);
+  transition:width .35s ease}
+.qwrap{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 0 58px}
+.qtext{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.75;
+  letter-spacing:.05em;margin:0 0 26px}
+.opts{display:flex;flex-direction:column}
+.opt{position:relative;border:0;border-bottom:1px solid var(--line);background:transparent;
+  padding:16px 2px;text-align:left;cursor:pointer;font-family:var(--sans);font-size:15px;
+  color:#4A3239;transition:color .16s}
+.opt.sel{color:var(--rose)}
+.opt.sel::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;
+  background:var(--rose);transform-origin:left;animation:sweep .32s ease both}
+@keyframes sweep{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hint{text-align:center;font-size:10px;letter-spacing:.24em;color:rgba(154,127,136,.85);margin:14px 0 0}
+
+/* ---------- 结果 ---------- */
+.rhead{display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px solid var(--line);padding:6px 0 10px}
+.slabel{font-size:11.5px;letter-spacing:.14em;color:#7A5F68;margin:26px 0 0}
+.score{display:flex;align-items:baseline;gap:10px;margin-top:2px}
+.score b{font-family:var(--serif);font-size:82px;font-weight:600;line-height:1.1;color:var(--rose);
+  letter-spacing:-.01em}
+.score span{font-size:12px;color:var(--dim);letter-spacing:.1em}
+.scale{margin-top:6px}
+.bands{position:relative;height:18px;margin-top:8px}
+.bands span{font-size:9.5px;color:var(--dim);letter-spacing:.04em;position:relative;padding-top:7px}
+.bands span::before{content:'';position:absolute;top:0;left:50%;margin-left:-1px;width:1px;height:4px;
+  background:rgba(42,18,25,.25)}
+.bands span.on{color:var(--rose);font-weight:600}
+.bands span.on::before{background:var(--rose)}
+.type{margin:26px 0 0}
+.type h2{font-family:var(--serif);font-size:34px;font-weight:600;letter-spacing:.14em;margin:0}
+.type .tag{display:inline-block;margin-top:8px;font-size:10.5px;letter-spacing:.1em;color:var(--rose)}
+.dims{margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
+.dim-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.dim-row .n{font-size:11.5px;color:#7A5F68;width:46px;flex:0 0 auto;letter-spacing:.06em}
+.dim-row .dots{display:flex;gap:5px;flex:1}
+.dim-row .dots i{width:7px;height:7px;border-radius:50%;background:rgba(42,18,25,.11)}
+.dim-row .dots i.on{background:var(--rose);animation:dotin .35s ease both}
+@keyframes dotin{from{transform:scale(.2);opacity:.2}to{transform:scale(1);opacity:1}}
+.dim-row .v{font-size:10px;color:var(--dim);width:22px;text-align:right}
+.sec{margin-top:24px}
+.sec h3{font-family:var(--serif);font-size:12.5px;font-weight:600;letter-spacing:.3em;
+  color:var(--ink);margin:0 0 10px}
+.body-text{font-size:13.5px;line-height:2.05;color:#4A3239;margin:0;text-align:justify}
+.traits{display:flex;flex-wrap:wrap;gap:8px}
+.traits span{font-size:11px;letter-spacing:.1em;color:var(--rose);border:1px solid rgba(229,52,107,.35);
+  border-radius:999px;padding:5px 12px;background:rgba(255,255,255,.6)}
+.quote{margin:26px 0 0;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  font-family:var(--serif);font-size:16.5px;line-height:1.95;letter-spacing:.06em;color:var(--ink)}
+.advice{margin:22px 0 0;font-size:12.5px;line-height:1.95;color:#7A5F68}
+.advice b{display:block;font-family:var(--serif);font-size:10.5px;letter-spacing:.28em;
+  color:var(--rose);margin-bottom:7px}
+.acts{display:flex;flex-direction:column;gap:10px;margin-top:28px}
+.acts-row{display:flex;gap:10px}
+.acts-row .btn{flex:1}
+.rfoot{margin:30px 0 0;text-align:center;font-size:9px;letter-spacing:.26em;color:rgba(154,127,136,.7)}
+
+/* ---------- 弹层适配 ---------- */
+.modal-tip{color:#E3C9D1}
+.modal-x{border-color:rgba(255,255,255,.32)}
+
+
+/* ---------- 共用弹层 ---------- */
+.modal{position:fixed;inset:0;background:rgba(8,10,9,.9);display:none;z-index:80;
+  padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal.on{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.modal-card{width:100%;max-width:380px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.poster-img{width:100%;display:block;border-radius:3px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.modal-tip{font-size:12.5px;line-height:1.8;text-align:center;opacity:.62;margin:0}
+.modal-x{margin-top:4px;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;
+  font-size:13px;padding:9px 26px;border-radius:2px;letter-spacing:.08em;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,12px);
+  background:rgba(20,20,20,.92);color:#fff;font-size:13px;padding:10px 18px;border-radius:3px;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:90;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 封面 -->
+  <section class="screen active" id="s-cover">
+    <div class="cover">
+      <div class="cf">
+        <div class="c-no">
+          <span class="eyebrow">Beauty Rating</span>
+          <span class="eyebrow">NO. 09</span>
+        </div>
+        <h1 class="c-title"><small>在 异 性 眼 里</small>你的真实颜值</h1>
+        <p class="lede">不是你觉得，是他们第一眼看到的那个人。<br>20 道题，测出你被看见的样子。</p>
+
+        <div class="cover-scale">
+          <div class="ruler"></div>
+          <div class="c-scale-lab"><span>平淡</span><span>好看</span><span>惊艳</span></div>
+        </div>
+      </div>
+
+      <div class="cover-foot">
+        <button class="btn" id="btnStart">开 始 评 分</button>
+        <div class="facts"><span>20 题</span><span>约 90 秒</span><span>无需登录</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section class="screen" id="s-quiz">
+    <div class="qtop"><span class="n">第 <b id="qIdx">07</b> 题</span><span class="eyebrow" id="qPct">35%</span></div>
+    <div class="qtrack"><i id="qBar"></i></div>
+    <div class="qwrap">
+      <h2 class="qtext" id="qText"></h2>
+      <div class="opts" id="opts"></div>
+    </div>
+    <p class="hint">凭第一直觉 · 没有标准答案</p>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="s-result">
+    <div class="rhead"><span class="eyebrow">Beauty Report</span><span class="eyebrow" id="rNo">NO.0900</span></div>
+
+    <p class="slabel">在异性眼里，你的真实颜值是</p>
+    <div class="score"><b id="rScore">0</b><span>/ 100 分</span></div>
+    <div class="scale">
+      <div class="ruler"><i class="pointer" id="rMark"></i></div>
+      <div class="bands" id="rBands"></div>
+    </div>
+
+    <div class="type">
+      <h2 id="rTitle"></h2>
+      <span class="tag" id="rTag"></span>
+    </div>
+
+    <div class="dims" id="rDims"></div>
+
+    <div class="sec"><h3>他 们 看 到 的 你</h3><p class="body-text" id="rAnalysis"></p></div>
+    <div class="sec"><h3>你 的 看 点</h3><div class="traits" id="rTraits"></div></div>
+    <p class="quote" id="rLine"></p>
+    <p class="advice"><b>给 你 的 话</b><span id="rAdvice"></span></p>
+
+    <div class="acts">
+      <button class="btn" id="btnPoster">生成我的颜值卡</button>
+      <div class="acts-row">
+        <button class="btn ghost" id="btnShare">复制链接</button>
+        <button class="btn ghost" id="btnAgain">再测一次</button>
+      </div>
+    </div>
+    <p class="rfoot">BEAUTY RATING · NO.09</p>
+  </section>
+
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card" id="modalBody"></div>
+  <button class="modal-x" onclick="closeModal()">关闭</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ===== 真实颜值分数 · 数据 ===== */
+const TEST = {
+  id: "yanzhi-fenshu",
+  quizLen: 20,
+  slots: [7, 7, 6],
+  pctFloor: 5,
+  dims: [{ name: "打理度" }, { name: "松弛感" }, { name: "辨识度" }],
+  qrImage: "",
+  qrCaption: "扫码看看你的颜值分",
+  customLine: "",
+
+  /* 3 = 在这件事上更强 */
+  bank: [
+    { d:0, q:"出门前你会花多久收拾自己？", o:[
+      ["五分钟搞定",1],["二十分钟",2],["一小时以上",3]] },
+    { d:0, q:"你的衣柜？", o:[
+      ["能穿就行",1],["有几套固定搭配",2],["按场合分得很细",3]] },
+    { d:0, q:"拍照之前，你会？", o:[
+      ["举起来就拍",1],["找个角度",2],["调好光再拍",3]] },
+    { d:0, q:"你清楚自己适合什么吗？", o:[
+      ["没想过",1],["大概知道",2],["很清楚",3]] },
+    { d:0, q:"晚上回到家，你会？", o:[
+      ["洗把脸就睡",1],["水乳抹一下",2],["一整套流程",3]] },
+    { d:0, q:"你的发型？", o:[
+      ["随手一扎",1],["定期去修",2],["按脸型打理过",3]] },
+    { d:0, q:"出门会喷香水吗？", o:[
+      ["不会",1],["偶尔",2],["有固定的味道",3]] },
+    { d:0, q:"你的鞋子？", o:[
+      ["干净就行",1],["有几双搭衣服",2],["会为一套搭配换鞋",3]] },
+    { d:0, q:"重要场合之前，你会？", o:[
+      ["到了再说",1],["换身衣服",2],["提前想好整套",3]] },
+    { d:0, q:"你会注意手和指甲吗？", o:[
+      ["不太在意",1],["剪干净",2],["会专门打理",3]] },
+    { d:0, q:"你的包？", o:[
+      ["能装东西就行",1],["挑过",2],["和衣服是一套的",3]] },
+    { d:0, q:"买衣服时你更看？", o:[
+      ["舒服",1],["好看",2],["好看，而且适合我",3]] },
+    { d:0, q:"你照镜子的频率？", o:[
+      ["很少",1],["出门前",2],["路过就会看一眼",3]] },
+    { d:0, q:"别人给你穿搭建议，你会？", o:[
+      ["不太听",1],["听听",2],["会去试",3]] },
+    { d:0, q:"你的风格？", o:[
+      ["没想过",1],["跟着流行",2],["有自己的路子",3]] },
+
+    { d:1, q:"被夸好看，你会？", o:[
+      ["自然地道谢",3],["说“没有没有”",2],["浑身不自在",1]] },
+    { d:1, q:"不化妆出门，你会？", o:[
+      ["完全没问题",3],["有点不自在",2],["一定要化",1]] },
+    { d:1, q:"在镜头前，你？", o:[
+      ["能放松",3],["有点僵",2],["很抗拒",1]] },
+    { d:1, q:"你笑的时候？", o:[
+      ["想笑就笑",3],["会下意识捂着",2],["尽量不露齿",1]] },
+    { d:1, q:"人多的场合，你会？", o:[
+      ["自然待着",3],["找个角落",2],["想赶紧走",1]] },
+    { d:1, q:"你对身材？", o:[
+      ["基本接受",3],["有点在意",2],["天天焦虑",1]] },
+    { d:1, q:"别人盯着你看，你会？", o:[
+      ["不太在意",3],["有点慌",2],["紧张到不行",1]] },
+    { d:1, q:"你会因为长相否定自己吗？", o:[
+      ["不会",3],["偶尔",2],["经常",1]] },
+    { d:1, q:"素颜照片你敢发吗？", o:[
+      ["敢",3],["挑着发",2],["不敢",1]] },
+    { d:1, q:"朋友拍到你一张丑照，你会？", o:[
+      ["笑笑就过",3],["让他删掉",2],["难受好几天",1]] },
+    { d:1, q:"你觉得好看是？", o:[
+      ["先给自己看",3],["两者都有",2],["给别人看的",1]] },
+    { d:1, q:"试衣服不好看，你会？", o:[
+      ["换一件",3],["有点沮丧",2],["觉得是自己身材的问题",1]] },
+    { d:1, q:"你站着的时候？", o:[
+      ["很放松",3],["有点含胸",2],["总在收紧",1]] },
+    { d:1, q:"在陌生场合，你更常？", o:[
+      ["做自己",3],["模仿别人",2],["手足无措",1]] },
+    { d:1, q:"你怎么看自己的长相？", o:[
+      ["接受并喜欢",3],["一般般",2],["不太满意",1]] },
+
+    { d:2, q:"别人第一次见你，最常说？", o:[
+      ["“你很有特点”",3],["“你挺好看的”",2],["说不出什么",1]] },
+    { d:2, q:"你会尝试不一样的风格吗？", o:[
+      ["经常",3],["偶尔",2],["不太敢",1]] },
+    { d:2, q:"你拍的照片？", o:[
+      ["有很强的个人风格",3],["好看的普通照片",2],["不太拍照",1]] },
+    { d:2, q:"你更愿意？", o:[
+      ["有点特别",3],["大众一点",2],["别引人注意",1]] },
+    { d:2, q:"你的发型或打扮，别人问过吗？", o:[
+      ["经常问",3],["偶尔",2],["没人问过",1]] },
+    { d:2, q:"你有“标志性”的东西吗？", o:[
+      ["有",3],["算有吧",2],["没有",1]] },
+    { d:2, q:"你笑起来？", o:[
+      ["很有记忆点",3],["普通",2],["很少笑",1]] },
+    { d:2, q:"你更欣赏？", o:[
+      ["有故事的脸",3],["标准的好看",2],["说不清",1]] },
+    { d:2, q:"在人群里，你？", o:[
+      ["会被记住",3],["混在中间",2],["容易被忽略",1]] },
+    { d:2, q:"有人模仿过你的打扮吗？", o:[
+      ["有",3],["好像有",2],["没有",1]] },
+    { d:2, q:"你的风格？", o:[
+      ["有很鲜明的标签",3],["中规中矩",2],["说不上来",1]] },
+    { d:2, q:"别人形容你，通常用？", o:[
+      ["一个很具体的词",3],["泛泛的好词",2],["一句“挺好的”",1]] },
+    { d:2, q:"你敢穿亮色或夸张的东西吗？", o:[
+      ["敢",3],["偶尔",2],["不太敢",1]] },
+    { d:2, q:"你相信？", o:[
+      ["好看有很多种",3],["好看是有标准的",2],["我不在其中",1]] },
+    { d:2, q:"你希望别人记住你什么？", o:[
+      ["记住“我这个人”",3],["记住我好看",2],["记不记住都行",1]] }
+  ],
+
+  results: [
+    { min:20, max:27, title:"邻家感", short:"邻家", tag:"40–49 分 · 38% 的人在这档",
+      analysis:"你属于那种“第一眼不惊艳，但越看越顺眼”的类型。你的好看没有攻击性，像楼下便利店的灯，不亮，但一直在。男生对你的描述通常不是“漂亮”，而是“和你待着很舒服”——这在长期关系里，比漂亮值钱得多。",
+      traits:["无攻击性","耐看","让人放松"],
+      line:"我不是第一眼就让人心动的类型，但我会留在他们后来的回忆里。",
+      advice:"试着在细节上花一点心思：换一个发型、换一副眼镜。你的底子比你以为的好。" },
+    { min:28, max:35, title:"白开水系", short:"白水", tag:"50–59 分 · 31% 的人在这档",
+      analysis:"干净的皮肤、清爽的头发、不挑人的气质——你是那种“素颜也敢出门”的类型。你的颜值不靠浓妆撑，靠的是状态。缺点是：在人群里你太容易被淹没了，你不吵、不抢、不显眼，很多时候别人要多看两眼才发现你好看。",
+      traits:["清爽","素颜感","低存在感"],
+      line:"化妆和不化妆的我，差别没有你想的那么大。",
+      advice:"偶尔试试和平时完全不一样的风格。你需要一次“被看见”。" },
+    { min:36, max:43, title:"氛围美人", short:"氛围", tag:"60–69 分 · 21% 的人在这档",
+      analysis:"你的五官单拿出来未必最出挑，但整体放在一起很抓人。你懂自己的优点在哪，也知道怎么把它放大——一个角度、一件衣服、一种表情。别人说不上来你哪里好看，但拍照的时候，最容易被选中的往往是你。",
+      traits:["整体感强","会放大优点","上镜"],
+      line:"我说不出自己哪里好看，但照片会替我说。",
+      advice:"别只在熟悉的风格里打转。你的可塑性比你用出来的多。" },
+    { min:44, max:51, title:"高级脸", short:"高级", tag:"70–79 分 · 8% 的人在这档",
+      analysis:"你的脸有结构感，骨相好，镜头很吃你这一套。你不太适合甜美的路线，稍微冷一点、简一点，反而更贵。问题是距离感太强：很多人觉得你好看，但不敢搭话。你不是不好接近，你只是长得不像好接近的人。",
+      traits:["骨相好","冷感","距离感"],
+      line:"他们说我看起来不好接近。其实我只是没在笑。",
+      advice:"想被更多人喜欢，就多笑一次。不想的话，保持这样也很好。" },
+    { min:52, max:60, title:"危险美人", short:"危险", tag:"80–90 分 · 2% 的人在这档",
+      analysis:"你的好看是有攻击性的：第一眼就记住，第二眼还想看。你身上有一种“不确定感”——亲近了会怎样，拒绝了又会怎样。这种气质很贵，也很容易被误读。你不需要讨好谁，但要小心，别把别人的紧张当成自己的错。",
+      traits:["高记忆点","强存在感","不好驾驭"],
+      line:"我知道我站在那儿，很多人会先看我再低头。",
+      advice:"偶尔露出一点笨拙。太完美的人，没人敢真的爱你。" }
+  ]
+};
+
+/* ===== 共用引擎：抽题 / 打乱 / 计分 / 弹层 / 通用画笔 =====
+   每个主题只提供 SKIN 对象和 TEST 数据，其余都走这里。 */
+
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ---------- 二维码（每套主题在 data.js 里配） ---------- */
+let QR_IMG = null;
+if (TEST.qrImage){
+  QR_IMG = new Image();
+  QR_IMG.src = TEST.qrImage;
+}
+
+/* ---------- 工具 ---------- */
+function shuffleArr(a){
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* 按维度配比抽题：slots 之和 = TEST.quizLen */
+function drawQuiz(){
+  const picked = [];
+  const slots = shuffleArr(TEST.slots.slice());
+  TEST.dims.forEach((m, di) => {
+    const pool = shuffleArr(TEST.bank.filter(x => x.d === di));
+    picked.push.apply(picked, pool.slice(0, slots[di]));
+  });
+  return shuffleArr(picked);
+}
+
+/* ---------- 状态 ---------- */
+const state = { i:0, scores:[], drawn:[], opts:[], total:0, result:null, dims:null };
+let locked = false;
+
+/* ---------- 流程 ---------- */
+function startQuiz(){
+  state.i = 0;
+  state.scores = [];
+  state.drawn = drawQuiz();
+  state.opts = state.drawn.map(q => shuffleArr(q.o.map(o => ({ t:o[0], s:o[1] }))));
+  locked = false;
+  SKIN.goQuiz();
+  SKIN.renderQuestion();
+}
+
+function choose(score, el){
+  if (locked) return;
+  locked = true;
+  if (el) el.classList.add('sel');
+  state.scores.push(score);
+  SKIN.afterChoose(el, score);
+  setTimeout(() => {
+    locked = false;
+    if (state.i < TEST.quizLen - 1){
+      state.i++;
+      SKIN.renderQuestion();
+    } else {
+      finish();
+    }
+  }, SKIN.advanceDelay || 240);
+}
+
+function finish(){
+  state.total = state.scores.reduce((a,b) => a + b, 0);
+  state.result = TEST.results.find(r => state.total >= r.min && state.total <= r.max) || TEST.results[0];
+
+  const sum = [0,0,0], cnt = [0,0,0];
+  state.drawn.forEach((q, i) => { sum[q.d] += state.scores[i]; cnt[q.d]++; });
+  state.dims = TEST.dims.map((m, d) => ({
+    name: m.name,
+    pct: Math.max(TEST.pctFloor || 6, Math.min(100, Math.round(sum[d] / (cnt[d] * 3) * 100)))
+  }));
+
+  SKIN.goResult();
+  SKIN.renderResult();
+  window.scrollTo(0,0);
+}
+
+/* ---------- 弹层 ---------- */
+function openModal(html){
+  $('modalBody').innerHTML = html;
+  $('modal').classList.add('on');
+}
+function closeModal(){ $('modal').classList.remove('on'); }
+
+function showPoster(){
+  const url = SKIN.buildPoster();
+  openModal('<img class="poster-img" src="' + url + '" alt="测试结果海报">'
+    + '<p class="modal-tip">长按图片保存到相册<br>电脑上右键另存为</p>');
+}
+
+function copyLink(){
+  const url = location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(
+      () => toast('链接已复制'),
+      () => toast('长按地址栏复制链接')
+    );
+  } else {
+    toast('长按地址栏复制链接');
+  }
+}
+
+let toastTimer;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 1900);
+}
+
+/* ---------- 画布通用件 ---------- */
+function makeCanvas(w, h){
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return c;
+}
+function wrapLines(g, text, maxW){
+  const out = []; let line = '';
+  for (const ch of text){
+    if (g.measureText(line + ch).width > maxW && line){ out.push(line); line = ch; }
+    else line += ch;
+  }
+  if (line) out.push(line);
+  return out;
+}
+/* 防伪扭索纹：r = R + A·sin(Nθ) 旋转复制 */
+function drawRosette(g, cx, cy, R, amp, N, P, steps, color, alpha, lw){
+  g.save();
+  g.strokeStyle = color; g.globalAlpha = alpha; g.lineWidth = lw || 0.9;
+  for (let k = 0; k < P; k++){
+    const rot = k * 2 * Math.PI / (N * P);
+    g.beginPath();
+    for (let i = 0; i <= steps; i++){
+      const t = i / steps * Math.PI * 2;
+      const r = R + amp * Math.sin(N * t);
+      const a = t + rot;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.stroke();
+  }
+  g.restore();
+}
+function roundRect(g, x, y, w, h, r){
+  g.beginPath();
+  g.moveTo(x + r, y);
+  g.arcTo(x + w, y, x + w, y + h, r);
+  g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r);
+  g.arcTo(x, y, x + w, y, r);
+  g.closePath();
+}
+
+/* ===== 真实颜值分数 · 界面层 ===== */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+const SERIF = '"Songti SC","STSong","Noto Serif SC",serif';
+const SANS = '"PingFang SC","Microsoft YaHei","Heiti SC",sans-serif';
+/* 20–60 折成 40–90 分，五档正好 40-49 / 50-59 / 60-69 / 70-79 / 80-90 */
+function scoreOf(t){ return 40 + Math.round((t - 20) * 1.25); }
+const BAND_LO = 40, BAND_HI = 90;
+
+const SKIN = {
+  advanceDelay: 240,
+
+  goQuiz(){ show('s-quiz'); },
+  goResult(){ show('s-result'); },
+
+  renderQuestion(){
+    const i = state.i;
+    $('qIdx').textContent = String(i + 1).padStart(2, '0');
+    $('qPct').textContent = Math.round((i + 1) / TEST.quizLen * 100) + '%';
+    $('qBar').style.width = ((i + 1) / TEST.quizLen * 100) + '%';
+    $('qText').textContent = state.drawn[i].q;
+
+    const box = $('opts');
+    box.innerHTML = '';
+    state.opts[i].forEach(o => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      b.textContent = o.t;
+      b.addEventListener('click', () => choose(o.s, b));
+      box.appendChild(b);
+    });
+  },
+
+  afterChoose(el){ /* 玫瑰下划线由 CSS 画出 */ },
+
+  renderResult(){
+    const r = state.result, t = state.total, sc = scoreOf(t);
+    const idx = TEST.results.indexOf(r);
+
+    $('rNo').textContent = 'NO.' + String(9000 + t * 13).slice(-4);
+    $('rScore').textContent = sc;
+    $('rTitle').textContent = r.title;
+    $('rTag').textContent = r.tag;
+    $('rAnalysis').textContent = r.analysis;
+    $('rTraits').innerHTML = r.traits.map(x => '<span>' + x + '</span>').join('');
+    $('rLine').textContent = r.line;
+    $('rAdvice').textContent = r.advice;
+
+    $('rMark').style.left = Math.max(0, Math.min(100, (sc - 0) / 100 * 100)) + '%';
+
+    // 五档刻度条：40%–90% 均分五段
+    const span = (BAND_HI - BAND_LO) / TEST.results.length;
+    $('rBands').innerHTML = TEST.results.map((x, i) =>
+      '<span class="' + (i === idx ? 'on' : '') + '" style="position:absolute;text-align:center;'
+      + 'left:' + (BAND_LO + i * span) + '%;width:' + span + '%">' + x.short + '</span>'
+    ).join('');
+
+    $('rDims').innerHTML = state.dims.map(d => {
+      const on = Math.round(d.pct / 10);
+      let dots = '';
+      for (let k = 0; k < 10; k++){
+        dots += '<i class="' + (k < on ? 'on' : '') + '" style="animation-delay:' + (k * 40) + 'ms"></i>';
+      }
+      return '<div class="dim-row"><span class="n">' + d.name + '</span>'
+        + '<span class="dots">' + dots + '</span>'
+        + '<span class="v">' + d.pct + '</span></div>';
+    }).join('');
+  },
+
+  buildPoster(){
+    const W = 750, H = 1200;
+    const c = makeCanvas(W, H), g = c.getContext('2d');
+    const r = state.result, t = state.total, sc = scoreOf(t);
+    const idx = TEST.results.indexOf(r);
+    const M = 60, R = W - M;
+
+    // 米白底
+    g.fillStyle = '#FFF7F6'; g.fillRect(0, 0, W, H);
+    let gr = g.createRadialGradient(W - 40, 40, 30, W - 40, 40, 520);
+    gr.addColorStop(0, 'rgba(248,203,215,.95)'); gr.addColorStop(1, 'rgba(248,203,215,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, W, 760);
+    gr = g.createRadialGradient(60, H - 40, 20, 60, H - 40, 420);
+    gr.addColorStop(0, 'rgba(248,203,215,.55)'); gr.addColorStop(1, 'rgba(248,203,215,0)');
+    g.fillStyle = gr; g.fillRect(0, H - 620, W, 620);
+
+    // 细边框
+    g.strokeStyle = 'rgba(42,18,25,.16)'; g.lineWidth = 1;
+    g.strokeRect(36.5, 36.5, W - 73, H - 73);
+
+    // 抬头
+    g.fillStyle = '#9A7F88';
+    g.font = '12px ' + SANS;
+    g.letterSpacing = '4px';
+    g.fillText('BEAUTY RATING', M, 92);
+    g.textAlign = 'right';
+    g.fillText('NO.' + String(9000 + t * 13).slice(-4), R, 92);
+    g.textAlign = 'left';
+    g.letterSpacing = '0px';
+    g.fillStyle = 'rgba(42,18,25,.12)'; g.fillRect(M, 108, R - M, 1);
+
+    // 分数
+    g.fillStyle = '#7A5F68';
+    g.font = '15px ' + SANS;
+    g.fillText('在异性眼里，你的真实颜值是', M, 172);
+
+    g.fillStyle = '#E5346B';
+    g.font = '600 168px ' + SERIF;
+    g.fillText(String(sc), M - 4, 302);
+    const sw = g.measureText(String(sc)).width;
+    g.fillStyle = '#9A7F88';
+    g.font = '15px ' + SANS;
+    g.fillText('/ 100 分', M + sw + 12, 300);
+
+    // 标尺
+    const ry = 366;
+    g.strokeStyle = 'rgba(42,18,25,.4)'; g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(M, ry); g.lineTo(R, ry); g.stroke();
+    for (let i = 0; i <= 100; i++){
+      const x = M + (R - M) * i / 100;
+      const h = i % 10 === 0 ? 18 : (i % 2 === 0 ? 9 : 5);
+      g.strokeStyle = i % 10 === 0 ? 'rgba(42,18,25,.42)' : 'rgba(42,18,25,.18)';
+      g.beginPath(); g.moveTo(x, ry); g.lineTo(x, ry - h); g.stroke();
+    }
+    g.fillStyle = '#9A7F88';
+    g.font = '11px ' + SANS;
+    ['0', '25', '50', '75', '100'].forEach((s, i) => {
+      const x = M + (R - M) * (i * 25) / 100;
+      g.textAlign = i === 0 ? 'left' : (i === 4 ? 'right' : 'center');
+      g.fillText(s, x, ry + 20);
+    });
+    g.textAlign = 'left';
+
+    // 指针
+    const px = M + (R - M) * sc / 100;
+    g.fillStyle = '#E5346B';
+    g.fillRect(px - 1.5, ry - 26, 3, 30);
+    g.beginPath(); g.arc(px, ry - 32, 6, 0, Math.PI * 2); g.fill();
+
+    // 五档
+    const span = (BAND_HI - BAND_LO) / TEST.results.length;
+    g.font = '12px ' + SANS;
+    TEST.results.forEach((x, i) => {
+      const cx = M + (R - M) * (BAND_LO + i * span + span / 2) / 100;
+      g.textAlign = 'center';
+      g.fillStyle = i === idx ? '#E5346B' : '#B49AA2';
+      g.fillText(x.short, cx, ry + 46);
+    });
+    g.textAlign = 'left';
+
+    // 类型
+    g.fillStyle = '#2A1219';
+    g.font = '600 58px ' + SERIF;
+    g.fillText(r.title, M, 486);
+
+    g.fillStyle = '#E5346B';
+    g.font = '14px ' + SANS;
+    g.fillText(r.tag, M, 526);
+
+    // 三维点阵
+    let dy = 588;
+    state.dims.forEach(d => {
+      g.fillStyle = '#7A5F68';
+      g.font = '14px ' + SANS;
+      g.fillText(d.name, M, dy + 4);
+      const on = Math.round(d.pct / 10);
+      for (let k = 0; k < 10; k++){
+        g.beginPath();
+        g.arc(M + 96 + k * 26, dy, 5.5, 0, Math.PI * 2);
+        g.fillStyle = k < on ? '#E5346B' : 'rgba(42,18,25,.11)';
+        g.fill();
+      }
+      g.fillStyle = '#9A7F88';
+      g.font = '12px ' + SANS;
+      g.fillText(String(d.pct), M + 96 + 9 * 26 + 22, dy + 5);
+      dy += 40;
+    });
+
+    // 特征
+    let tx = M;
+    const ty = 736;
+    g.font = '13px ' + SANS;
+    r.traits.forEach(x => {
+      const w3 = g.measureText(x).width + 26;
+      roundRect(g, tx, ty, w3, 34, 17);
+      g.strokeStyle = 'rgba(229,52,107,.4)'; g.lineWidth = 1; g.stroke();
+      g.fillStyle = '#E5346B';
+      g.fillText(x, tx + 13, ty + 22);
+      tx += w3 + 9;
+    });
+
+    // 金句
+    g.fillStyle = 'rgba(42,18,25,.12)';
+    g.fillRect(M, 838, R - M, 1);
+    g.fillStyle = '#2A1219';
+    g.font = '500 28px ' + SERIF;
+    const ql = wrapLines(g, r.line, 560);
+    ql.slice(0, 2).forEach((ln, i) => g.fillText(ln, M, 886 + i * 42));
+    g.fillStyle = 'rgba(42,18,25,.12)';
+    g.fillRect(M, 886 + Math.min(ql.length, 2) * 42 - 12, R - M, 1);
+
+    // 底部
+    const fy = 1030;
+    const qs = 96, qx = R - qs, qy2 = fy + 6;
+    g.fillStyle = '#fff'; g.fillRect(qx - 6, qy2 - 6, qs + 12, qs + 12);
+    g.strokeStyle = 'rgba(42,18,25,.16)'; g.lineWidth = 1;
+    g.strokeRect(qx - 6, qy2 - 6, qs + 12, qs + 12);
+    if (QR_IMG) g.drawImage(QR_IMG, qx, qy2, qs, qs);
+    else {
+      g.fillStyle = '#C0A9B1';
+      g.font = '13px ' + SANS;
+      g.textAlign = 'center';
+      g.fillText('二维码', qx + qs / 2, qy2 + 44);
+      g.fillText('放这里', qx + qs / 2, qy2 + 64);
+      g.textAlign = 'left';
+    }
+    g.fillStyle = '#2A1219';
+    g.font = '600 19px ' + SERIF;
+    g.fillText(TEST.qrCaption, M, fy + 44);
+    g.fillStyle = '#9A7F88';
+    g.font = '13px ' + SANS;
+    g.fillText('仅供娱乐 · 不构成任何外貌评价', M, fy + 76);
+
+    // 颗粒
+    grain(g, W, H, .07);
+
+    return c.toDataURL('image/png');
+  }
+};
+
+function grain(g, W, H, alpha){
+  const n = makeCanvas(110, 110), ng = n.getContext('2d');
+  const img = ng.createImageData(110, 110), d = img.data;
+  for (let i = 0; i < d.length; i += 4){
+    const v = 128 + (Math.random() * 52 - 26);
+    d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255;
+  }
+  ng.putImageData(img, 0, 0);
+  g.save();
+  g.globalAlpha = alpha;
+  g.globalCompositeOperation = 'overlay';
+  g.fillStyle = g.createPattern(n, 'repeat');
+  g.fillRect(0, 0, W, H);
+  g.restore();
+}
+
+/* ---------- 绑定 ---------- */
+$('btnStart').addEventListener('click', startQuiz);
+$('btnAgain').addEventListener('click', startQuiz);
+$('btnPoster').addEventListener('click', showPoster);
+$('btnShare').addEventListener('click', copyLink);
+
+</script>
+</body>
+</html>
