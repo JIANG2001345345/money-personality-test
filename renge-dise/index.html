@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0D1412">
+<title>测测你的隐藏人格底色 · 心里到底住着什么野兽</title>
+<meta name="description" content="褪掉社交外壳之后，你心里那只动物是什么样的。20 道题，看你的底色温度、硬度和明度。">
+<style>
+/* ===== 隐藏人格底色 · 水墨 ===== */
+:root{
+  --ink:#0D1412; --ink-2:#16201D; --ink-3:#1F2C28;
+  --paper:#E7E0CB; --paper-2:#CDC6B0;
+  --cinnabar:#C4452F; --jade:#7C9A82; --dim:#7C8175;
+  --serif:"Songti SC","STSong","Noto Serif SC",serif;
+  --sans:"PingFang SC","Microsoft YaHei","Heiti SC",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ink);color:var(--paper);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  background-image:
+    radial-gradient(70% 44% at 78% 8%,rgba(124,154,130,.16),transparent 72%),
+    radial-gradient(60% 40% at 10% 96%,rgba(196,69,47,.12),transparent 72%),
+    repeating-linear-gradient(96deg,rgba(255,255,255,.012) 0 2px,transparent 2px 5px);
+  background-attachment:fixed;
+}
+.app{max-width:430px;margin:0 auto;position:relative;min-height:100vh;min-height:100dvh}
+.screen{display:none;flex-direction:column;min-height:100vh;min-height:100dvh;
+  padding:24px 20px calc(24px + env(safe-area-inset-bottom))}
+.screen.active{display:flex}
+.zh{font-family:var(--serif)}
+
+/* ---------- 按钮 ---------- */
+.btn{
+  display:block;width:100%;border:1px solid rgba(231,224,203,.55);background:transparent;
+  color:var(--paper);font-family:var(--serif);font-size:16px;letter-spacing:.34em;text-indent:.34em;
+  padding:15px 12px;cursor:pointer;border-radius:0;
+}
+.btn.solid{background:var(--cinnabar);border-color:var(--cinnabar);color:#F6EFE4}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{font-size:13px;letter-spacing:.2em;text-indent:.2em;border-color:rgba(231,224,203,.28);
+  color:var(--paper-2);padding:12px 8px}
+
+/* ---------- 封面 ---------- */
+.cover{flex:1;display:flex;gap:20px;justify-content:center;align-items:center;padding:6px 0 10px;position:relative}
+.enso{position:absolute;left:-78px;top:-52px;width:218px;height:218px;opacity:.20;pointer-events:none}
+.vtxt{writing-mode:vertical-rl;text-orientation:upright;font-size:11.5px;letter-spacing:.36em;
+  color:var(--dim);align-self:center}
+.vmain{writing-mode:vertical-rl;text-orientation:upright;align-self:center}
+.title-v{
+  font-family:var(--serif);font-size:clamp(34px,10vw,42px);font-weight:600;
+  letter-spacing:.3em;line-height:1.25;color:var(--paper);margin:0;
+}
+.title-v em{font-style:normal;color:var(--cinnabar)}
+.sub-v{
+  font-family:var(--serif);font-size:14px;letter-spacing:.34em;color:var(--paper-2);
+  margin:0 0 26px;
+}
+.rule-v{width:1px;flex:1;background:linear-gradient(180deg,rgba(231,224,203,.5),transparent);margin:0 auto}
+.seal{
+  width:62px;height:62px;background:var(--cinnabar);color:#F6EFE4;
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+  font-family:var(--serif);font-size:18px;line-height:1;place-items:center;
+  align-self:center;opacity:.92;transform:rotate(3deg);
+  box-shadow:0 0 0 1px rgba(246,239,228,.28);
+}
+.cover-foot{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.facts{display:flex;justify-content:space-between;font-size:10.5px;letter-spacing:.2em;color:var(--dim)}
+
+/* ---------- 答题 ---------- */
+.qtop{display:flex;justify-content:space-between;font-size:11.5px;letter-spacing:.24em;
+  color:var(--dim);padding-top:14px}
+.qtop b{font-family:var(--serif);font-size:17px;color:var(--cinnabar);letter-spacing:.06em;
+  font-weight:600;vertical-align:-1px}
+.qtop .pct{color:var(--dim)}
+.qwrap{flex:1;display:flex;flex-direction:column;justify-content:center;padding:18px 0 6px}
+.qtext{
+  font-family:var(--serif);font-size:22px;line-height:1.95;font-weight:600;letter-spacing:.06em;
+  margin:0 0 30px;color:var(--paper);
+}
+.opts{display:flex;flex-direction:column}
+.opt{
+  display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;background:transparent;
+  border:0;border-bottom:1px solid rgba(231,224,203,.14);padding:15px 2px;cursor:pointer;
+  color:var(--paper-2);font-family:var(--serif);font-size:15.5px;line-height:1.7;letter-spacing:.04em;
+  transition:color .15s,border-color .15s;
+}
+.opt .k{flex:0 0 auto;font-size:12px;color:var(--dim);width:16px;padding-top:3px}
+.opt.sel{color:var(--cinnabar);border-color:var(--cinnabar)}
+.opt.sel .k{color:var(--cinnabar)}
+.progress{margin:14px 0 0;height:1px;background:rgba(231,224,203,.16);position:relative}
+.progress i{position:absolute;left:0;top:-1px;height:3px;background:var(--cinnabar);width:var(--w,0);
+  transition:width .3s ease}
+.hint{font-size:10.5px;letter-spacing:.26em;color:var(--dim);text-align:center;margin:16px 0 0}
+
+/* ---------- 结果 ---------- */
+.rhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-top:6px}
+.r-kicker{font-size:10px;letter-spacing:.3em;color:var(--dim);margin:0 0 10px}
+.r-title{
+  font-family:var(--serif);font-size:clamp(40px,12vw,52px);font-weight:600;letter-spacing:.2em;
+  line-height:1.3;margin:0;color:var(--paper);
+}
+.r-tag{display:inline-block;margin-top:12px;font-size:11px;letter-spacing:.14em;color:var(--cinnabar);
+  border:1px solid rgba(196,69,47,.6);padding:5px 10px}
+.r-seal{width:56px;height:56px;flex:0 0 auto;margin-top:4px}
+.dims{margin:26px 0 0}
+.dim-row{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.dim-row .n{font-family:var(--serif);font-size:13px;letter-spacing:.12em;color:var(--paper-2);width:72px;flex:0 0 auto}
+.dim-row .track{flex:1;height:2px;background:rgba(231,224,203,.16);position:relative;overflow:hidden}
+.dim-row .track i{position:absolute;left:0;top:0;bottom:0;background:var(--jade);width:var(--w,0);
+  transform-origin:left center;animation:grow .9s cubic-bezier(.2,.9,.3,1) .25s both}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.dim-row .v{font-size:11px;color:var(--dim);width:26px;text-align:right}
+.sec{margin-top:28px}
+.sec h3{
+  font-family:var(--serif);font-size:13px;font-weight:600;letter-spacing:.4em;
+  color:var(--cinnabar);margin:0 0 12px;
+}
+.body-text{font-size:14px;line-height:2.15;color:#B9B8A6;margin:0;text-align:justify;letter-spacing:.03em}
+.traits{display:flex;flex-wrap:wrap;gap:10px}
+.traits span{font-family:var(--serif);font-size:13px;letter-spacing:.14em;color:var(--paper-2);
+  border:1px solid rgba(231,224,203,.3);padding:6px 12px}
+.quote{
+  margin:28px 0 0;padding:20px 0 20px 18px;border-left:2px solid var(--cinnabar);
+  font-family:var(--serif);font-size:17px;line-height:2;letter-spacing:.08em;color:var(--paper);
+}
+.advice{margin:24px 0 0;font-size:13px;line-height:2;color:var(--dim);letter-spacing:.03em}
+.advice b{display:block;font-family:var(--serif);font-size:11px;letter-spacing:.34em;
+  color:var(--cinnabar);margin-bottom:8px}
+.acts{display:flex;flex-direction:column;gap:10px;margin-top:28px}
+.acts-row{display:flex;gap:10px}
+.acts-row .btn{flex:1}
+.rfoot{margin:40px 0 4px;text-align:center;font-family:var(--serif);font-size:10.5px;
+  letter-spacing:.3em;color:rgba(124,129,117,.7)}
+
+/* ---------- 弹层适配 ---------- */
+.modal-tip{color:#B9B8A6}
+.modal-x{border-color:rgba(231,224,203,.35);color:var(--cinnabar)}
+
+
+/* ---------- 共用弹层 ---------- */
+.modal{position:fixed;inset:0;background:rgba(8,10,9,.9);display:none;z-index:80;
+  padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal.on{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.modal-card{width:100%;max-width:380px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.poster-img{width:100%;display:block;border-radius:3px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.modal-tip{font-size:12.5px;line-height:1.8;text-align:center;opacity:.62;margin:0}
+.modal-x{margin-top:4px;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;
+  font-size:13px;padding:9px 26px;border-radius:2px;letter-spacing:.08em;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,12px);
+  background:rgba(20,20,20,.92);color:#fff;font-size:13px;padding:10px 18px;border-radius:3px;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:90;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 封面 -->
+  <section class="screen active" id="s-cover">
+    <div class="cover">
+      <svg class="enso" viewBox="0 0 240 240" aria-hidden="true">
+        <circle cx="120" cy="120" r="94" fill="none" stroke="#7C9A82" stroke-width="14"
+                stroke-linecap="round" stroke-dasharray="466 124" transform="rotate(-38 120 120)"/>
+        <circle cx="120" cy="120" r="94" fill="none" stroke="#E7E0CB" stroke-width="2"
+                stroke-linecap="round" stroke-dasharray="286 304" opacity=".5" transform="rotate(26 120 120)"/>
+        <circle cx="120" cy="120" r="94" fill="none" stroke="#7C9A82" stroke-width="2.5"
+                stroke-linecap="round" stroke-dasharray="9 581" transform="rotate(104 120 120)"/>
+        <circle cx="196" cy="46" r="3.6" fill="#7C9A82"/>
+        <circle cx="212" cy="64" r="1.8" fill="#7C9A82" opacity=".7"/>
+      </svg>
+      <div class="vtxt side-l">撕开伪装 · 看见底色</div>
+      <div class="vmain">
+        <h1 class="title-v">隐藏人格<em>底色</em></h1>
+        <p class="sub-v">你心里到底住着什么野兽</p>
+      </div>
+      <div class="seal"><span>人</span><span>格</span><span>底</span><span>色</span></div>
+    </div>
+    <div class="cover-foot">
+      <div class="facts"><span>20 题</span><span>约 90 秒</span><span>无需登录</span></div>
+      <button class="btn solid" id="btnStart">开 始 窥 探</button>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section class="screen" id="s-quiz">
+    <div class="qtop">
+      <span>第 <b id="qIdx">07</b> 问 / 20</span>
+      <span class="pct" id="qPct">35%</span>
+    </div>
+    <div class="progress"><i id="qBar"></i></div>
+    <div class="qwrap">
+      <h2 class="qtext" id="qText"></h2>
+      <div class="opts" id="opts"></div>
+    </div>
+    <p class="hint">凭第一反应 · 别想太久</p>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="s-result">
+    <div class="rhead">
+      <div>
+        <p class="r-kicker">你 的 底 色 是</p>
+        <h2 class="r-title" id="rTitle"></h2>
+        <span class="r-tag" id="rTag"></span>
+      </div>
+      <div class="seal r-seal"><span>底</span><span>色</span><span>已</span><span>显</span></div>
+    </div>
+
+    <div class="dims" id="rDims"></div>
+
+    <div class="sec"><h3>底 色 解 读</h3><p class="body-text" id="rAnalysis"></p></div>
+    <div class="sec"><h3>野 兽 特 征</h3><div class="traits" id="rTraits"></div></div>
+    <p class="quote" id="rLine"></p>
+    <p class="advice"><b>给 你 的 话</b><span id="rAdvice"></span></p>
+
+    <div class="acts">
+      <button class="btn solid" id="btnPoster">生成我的底色图</button>
+      <div class="acts-row">
+        <button class="btn ghost" id="btnShare">复制链接</button>
+        <button class="btn ghost" id="btnAgain">再测一次</button>
+      </div>
+    </div>
+
+    <p class="rfoot">人 格 底 色 · 档 案 NO.06</p>
+  </section>
+
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card" id="modalBody"></div>
+  <button class="modal-x" onclick="closeModal()">关闭</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ===== 隐藏人格底色 · 数据 ===== */
+const TEST = {
+  id: "renge-dise",
+  quizLen: 20,
+  slots: [7, 7, 6],
+  pctFloor: 5,
+  dims: [{ name: "底色温度" }, { name: "底色硬度" }, { name: "底色明度" }],
+  qrImage: "",
+  qrCaption: "扫码看看你的底色",
+  customLine: "",
+
+  /* 3 = 更暖 / 更硬 / 更亮 */
+  bank: [
+    { d:0, q:"朋友难过时，你的第一反应？", o:[
+      ["递张纸巾",1],["问一句怎么了",2],["直接抱一下",3]] },
+    { d:0, q:"你对陌生人的默认态度？", o:[
+      ["警惕",1],["客气",2],["友善",3]] },
+    { d:0, q:"看到流浪猫，你会？", o:[
+      ["绕开",1],["看一眼",2],["想喂它",3]] },
+    { d:0, q:"别人跟你倾诉，你会？", o:[
+      ["帮他分析问题",1],["安静听着",2],["先接住他的情绪",3]] },
+    { d:0, q:"你更容易被什么打动？", o:[
+      ["逻辑",1],["一个故事",2],["细节里的善意",3]] },
+    { d:0, q:"有人在你面前哭，你会？", o:[
+      ["有点不自在",1],["递纸",2],["跟着难过",3]] },
+    { d:0, q:"你更喜欢的天气？", o:[
+      ["阴天",1],["晴天",2],["下雪",3]] },
+    { d:0, q:"你说话时更常？", o:[
+      ["直接给结论",1],["不冷不热",2],["带着情绪",3]] },
+    { d:0, q:"你会主动安慰人吗？", o:[
+      ["不会",1],["看情况",2],["会",3]] },
+    { d:0, q:"你对待弱者的态度？", o:[
+      ["各管各的",1],["会同情",2],["想帮一把",3]] },
+    { d:0, q:"你更难忍受？", o:[
+      ["冷漠",1],["虚伪",2],["伤害",3]] },
+    { d:0, q:"你更容易记住？", o:[
+      ["伤害过你的人",1],["帮过你的人",2],["对你好过的细节",3]] },
+    { d:0, q:"你笑的时候？", o:[
+      ["很少",1],["礼貌地笑",2],["真的会笑出声",3]] },
+    { d:0, q:"你看电影会哭吗？", o:[
+      ["不会",1],["偶尔",2],["经常",3]] },
+    { d:0, q:"你更愿意？", o:[
+      ["一个人待着",1],["两三个人",2],["热闹一点",3]] },
+
+    { d:1, q:"被冒犯时，你会？", o:[
+      ["忍着",1],["看情况",2],["当场回击",3]] },
+    { d:1, q:"有人踩到你的底线，你会？", o:[
+      ["退一步",1],["提醒一句",2],["直接翻脸",3]] },
+    { d:1, q:"你会为了不冲突而妥协吗？", o:[
+      ["经常",1],["有时候",2],["很少",3]] },
+    { d:1, q:"别人求你办事，你？", o:[
+      ["很难拒绝",1],["看关系",2],["不想就直接说不",3]] },
+    { d:1, q:"你更怕？", o:[
+      ["得罪人",1],["委屈自己",2],["被人控制",3]] },
+    { d:1, q:"被人误解，你会解释吗？", o:[
+      ["会解释很久",1],["简单说一句",2],["懒得解释",3]] },
+    { d:1, q:"你的原则？", o:[
+      ["可以商量",1],["分事",2],["不能碰",3]] },
+    { d:1, q:"遇到不公平，你会？", o:[
+      ["忍着",1],["私下抱怨",2],["站出来说",3]] },
+    { d:1, q:"结束一段关系后，你会？", o:[
+      ["反复纠缠",1],["慢慢放下",2],["直接断干净",3]] },
+    { d:1, q:"别人夸你，你会？", o:[
+      ["很受用",1],["客气一下",2],["其实不太信",3]] },
+    { d:1, q:"你更愿意？", o:[
+      ["被人喜欢",1],["被人尊重",2],["被人忌惮",3]] },
+    { d:1, q:"面对压力，你会？", o:[
+      ["退缩",1],["扛着",2],["硬顶回去",3]] },
+    { d:1, q:"你会记仇吗？", o:[
+      ["不会",1],["记得",2],["记得，而且会还",3]] },
+    { d:1, q:"有人插队，你会？", o:[
+      ["算了",1],["皱一下眉",2],["直接说一句",3]] },
+    { d:1, q:"你更像？", o:[
+      ["棉花",1],["木头",2],["石头",3]] },
+
+    { d:2, q:"你的房间通常是？", o:[
+      ["灯光很暗",1],["正常",2],["很亮",3]] },
+    { d:2, q:"你更喜欢？", o:[
+      ["深夜",1],["黄昏",2],["清晨",3]] },
+    { d:2, q:"你更常想的是？", o:[
+      ["过去",1],["现在",2],["以后",3]] },
+    { d:2, q:"独处的时候你在？", o:[
+      ["发呆",1],["想事情",2],["做事",3]] },
+    { d:2, q:"你的情绪更像？", o:[
+      ["湖底",1],["水面",2],["太阳",3]] },
+    { d:2, q:"别人形容你最多的词是？", o:[
+      ["沉",1],["稳",2],["亮",3]] },
+    { d:2, q:"你更喜欢的颜色是？", o:[
+      ["黑",1],["灰",2],["黄",3]] },
+    { d:2, q:"你的社交状态？", o:[
+      ["隐身",1],["偶尔冒泡",2],["比较活跃",3]] },
+    { d:2, q:"你更看重？", o:[
+      ["安全感",1],["稳定",2],["可能性",3]] },
+    { d:2, q:"你的手机是？", o:[
+      ["深色模式",1],["自动",2],["浅色模式",3]] },
+    { d:2, q:"你更怕？", o:[
+      ["被忘记",1],["被误解",2],["被浪费",3]] },
+    { d:2, q:"你的精力更常在？", o:[
+      ["深夜",1],["白天",2],["随时",3]] },
+    { d:2, q:"你更愿意去？", o:[
+      ["待在家里",1],["熟悉的地方",2],["没去过的地方",3]] },
+    { d:2, q:"你的笑容？", o:[
+      ["很少见",1],["温和",2],["明亮",3]] },
+    { d:2, q:"你更相信？", o:[
+      ["命运",1],["自己",2],["可能性",3]] }
+  ],
+
+  results: [
+    { min:20, max:27, title:"林间鹿", tag:"稀有度 18% · 警觉而温柔", swatch:"#B7B0A0", swatchName:"浅灰",
+      analysis:"你的底色是浅灰里透一点暖。你敏感、警觉，习惯先观察再靠近，看起来安静，其实心里一直在判断这个人安不安全。你不喜欢冲突，但也绝不会真的任人摆布——你的方式是退，退到安全的距离，然后安静地看着。你需要的不是变强，是一个让你确定不用再观察的人。",
+      traits:["高敏锐","低攻击","退守型"],
+      line:"我不是胆小，我只是先看清再决定要不要靠近。",
+      advice:"试着把“我先看看”改成“我试试”。有些人是值得冒险的。" },
+    { min:28, max:35, title:"水中鱼", tag:"稀有度 26% · 流动不居", swatch:"#6E8C8A", swatchName:"青灰",
+      analysis:"你的底色是青灰，介于冷和暖之间。你不属于任何一边：既能融入，也能抽离；既不强硬，也不软弱。你最大的能力是适应，最大的问题是没人真的抓住过你。你习惯在任何关系里保留一条退路，久了连自己都不知道自己真正想要什么。",
+      traits:["高适应","边界模糊","抽离感"],
+      line:"我好像哪里都能待，但哪里都不是家。",
+      advice:"选一件小事，不给自己留退路地做到底。你会知道自己是谁。" },
+    { min:36, max:43, title:"山中狐", tag:"稀有度 15% · 聪明而多疑", swatch:"#A9673B", swatchName:"赭石",
+      analysis:"你的底色是赭石，暖里带一点算计。你看得懂人心，也愿意对人好，但你的好是有条件的：你得先确认对方值得。你很少被骗，代价是你也很难完全相信一个人。你不是不信别人，你是不信“无条件”这件事本身。",
+      traits:["洞察力强","防御性善意","算得清"],
+      line:"我可以对你好，但我得先知道你为什么靠近我。",
+      advice:"找一个你说不出理由也愿意对他好的人。试一次。" },
+    { min:44, max:51, title:"夜里猫", tag:"稀有度 9% · 独立且冷淡", swatch:"#3A423E", swatchName:"深墨",
+      analysis:"你的底色是深墨，安静、密度高、不需要被理解。你不怕孤独，甚至有点享受。你可以很温柔，但只在你想的时候；你也可以一整天不回消息，而且一点都不觉得抱歉。你的问题不是冷漠，是太习惯一个人扛，久到忘了怎么开口求助。",
+      traits:["高自足","情绪自持","不解释"],
+      line:"我不需要谁的陪伴，我只是偶尔需要一盏灯。",
+      advice:"今晚把一件烦心事说给一个人听。不用解决，说出来就行。" },
+    { min:52, max:60, title:"荒野狼", tag:"稀有度 4% · 稀有隐藏款", swatch:"#B33A2A", swatchName:"朱砂",
+      analysis:"你的底色是朱砂压在墨上：有温度，也有獠牙。你敢爱敢恨，认定的事不讲道理，被背叛会记很久。你的能量很强，强到会吓到一部分人。你不缺力量，你缺的是一个能接住你的力量、又不会被它伤到的人。这种人很少，但值得等。",
+      traits:["高能量","爱憎分明","攻击性"],
+      line:"我可以为你挡刀，也可以转身不认人。",
+      advice:"把锋利留给外面，把软留给里面。你不需要对所有人都硬。" }
+  ]
+};
+
+/* ===== 共用引擎：抽题 / 打乱 / 计分 / 弹层 / 通用画笔 =====
+   每个主题只提供 SKIN 对象和 TEST 数据，其余都走这里。 */
+
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ---------- 二维码（每套主题在 data.js 里配） ---------- */
+let QR_IMG = null;
+if (TEST.qrImage){
+  QR_IMG = new Image();
+  QR_IMG.src = TEST.qrImage;
+}
+
+/* ---------- 工具 ---------- */
+function shuffleArr(a){
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* 按维度配比抽题：slots 之和 = TEST.quizLen */
+function drawQuiz(){
+  const picked = [];
+  const slots = shuffleArr(TEST.slots.slice());
+  TEST.dims.forEach((m, di) => {
+    const pool = shuffleArr(TEST.bank.filter(x => x.d === di));
+    picked.push.apply(picked, pool.slice(0, slots[di]));
+  });
+  return shuffleArr(picked);
+}
+
+/* ---------- 状态 ---------- */
+const state = { i:0, scores:[], drawn:[], opts:[], total:0, result:null, dims:null };
+let locked = false;
+
+/* ---------- 流程 ---------- */
+function startQuiz(){
+  state.i = 0;
+  state.scores = [];
+  state.drawn = drawQuiz();
+  state.opts = state.drawn.map(q => shuffleArr(q.o.map(o => ({ t:o[0], s:o[1] }))));
+  locked = false;
+  SKIN.goQuiz();
+  SKIN.renderQuestion();
+}
+
+function choose(score, el){
+  if (locked) return;
+  locked = true;
+  if (el) el.classList.add('sel');
+  state.scores.push(score);
+  SKIN.afterChoose(el, score);
+  setTimeout(() => {
+    locked = false;
+    if (state.i < TEST.quizLen - 1){
+      state.i++;
+      SKIN.renderQuestion();
+    } else {
+      finish();
+    }
+  }, SKIN.advanceDelay || 240);
+}
+
+function finish(){
+  state.total = state.scores.reduce((a,b) => a + b, 0);
+  state.result = TEST.results.find(r => state.total >= r.min && state.total <= r.max) || TEST.results[0];
+
+  const sum = [0,0,0], cnt = [0,0,0];
+  state.drawn.forEach((q, i) => { sum[q.d] += state.scores[i]; cnt[q.d]++; });
+  state.dims = TEST.dims.map((m, d) => ({
+    name: m.name,
+    pct: Math.max(TEST.pctFloor || 6, Math.min(100, Math.round(sum[d] / (cnt[d] * 3) * 100)))
+  }));
+
+  SKIN.goResult();
+  SKIN.renderResult();
+  window.scrollTo(0,0);
+}
+
+/* ---------- 弹层 ---------- */
+function openModal(html){
+  $('modalBody').innerHTML = html;
+  $('modal').classList.add('on');
+}
+function closeModal(){ $('modal').classList.remove('on'); }
+
+function showPoster(){
+  const url = SKIN.buildPoster();
+  openModal('<img class="poster-img" src="' + url + '" alt="测试结果海报">'
+    + '<p class="modal-tip">长按图片保存到相册<br>电脑上右键另存为</p>');
+}
+
+function copyLink(){
+  const url = location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(
+      () => toast('链接已复制'),
+      () => toast('长按地址栏复制链接')
+    );
+  } else {
+    toast('长按地址栏复制链接');
+  }
+}
+
+let toastTimer;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 1900);
+}
+
+/* ---------- 画布通用件 ---------- */
+function makeCanvas(w, h){
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return c;
+}
+function wrapLines(g, text, maxW){
+  const out = []; let line = '';
+  for (const ch of text){
+    if (g.measureText(line + ch).width > maxW && line){ out.push(line); line = ch; }
+    else line += ch;
+  }
+  if (line) out.push(line);
+  return out;
+}
+/* 防伪扭索纹：r = R + A·sin(Nθ) 旋转复制 */
+function drawRosette(g, cx, cy, R, amp, N, P, steps, color, alpha, lw){
+  g.save();
+  g.strokeStyle = color; g.globalAlpha = alpha; g.lineWidth = lw || 0.9;
+  for (let k = 0; k < P; k++){
+    const rot = k * 2 * Math.PI / (N * P);
+    g.beginPath();
+    for (let i = 0; i <= steps; i++){
+      const t = i / steps * Math.PI * 2;
+      const r = R + amp * Math.sin(N * t);
+      const a = t + rot;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.stroke();
+  }
+  g.restore();
+}
+function roundRect(g, x, y, w, h, r){
+  g.beginPath();
+  g.moveTo(x + r, y);
+  g.arcTo(x + w, y, x + w, y + h, r);
+  g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r);
+  g.arcTo(x, y, x + w, y, r);
+  g.closePath();
+}
+
+/* ===== 隐藏人格底色 · 界面层 ===== */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+const SKIN = {
+  advanceDelay: 260,
+
+  goQuiz(){ show('s-quiz'); },
+  goResult(){ show('s-result'); },
+
+  renderQuestion(){
+    const i = state.i;
+    $('qIdx').textContent = String(i + 1).padStart(2, '0');
+    $('qPct').textContent = Math.round((i + 1) / TEST.quizLen * 100) + '%';
+    $('qBar').style.width = ((i + 1) / TEST.quizLen * 100) + '%';
+    $('qText').textContent = state.drawn[i].q;
+
+    const box = $('opts');
+    box.innerHTML = '';
+    state.opts[i].forEach((o, idx) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      const k = document.createElement('span'); k.className = 'k'; k.textContent = '甲乙丙'[idx];
+      const t = document.createElement('span'); t.className = 't'; t.textContent = o.t;
+      b.appendChild(k); b.appendChild(t);
+      b.addEventListener('click', () => choose(o.s, b));
+      box.appendChild(b);
+    });
+  },
+
+  afterChoose(el){ /* .sel 变色由 CSS 完成 */ },
+
+  renderResult(){
+    const r = state.result;
+    $('rTitle').textContent = r.title;
+    $('rTag').textContent = r.tag;
+    $('rAnalysis').textContent = r.analysis;
+    $('rTraits').innerHTML = r.traits.map(x => '<span>' + x + '</span>').join('');
+    $('rLine').textContent = r.line;
+    $('rAdvice').textContent = r.advice;
+    $('rDims').innerHTML = state.dims.map(d =>
+      '<div class="dim-row"><span class="n">' + d.name + '</span>'
+      + '<span class="track"><i style="--w:' + d.pct + '%"></i></span>'
+      + '<span class="v">' + d.pct + '</span></div>'
+    ).join('');
+  },
+
+  buildPoster(){
+    const W = 750, H = 1200;
+    const c = makeCanvas(W, H), g = c.getContext('2d');
+    const r = state.result, t = state.total;
+    const PAD = 64;
+
+    g.fillStyle = '#0D1412'; g.fillRect(0, 0, W, H);
+
+    // 水墨晕
+    let gr = g.createRadialGradient(W * .78, 240, 20, W * .78, 240, 420);
+    gr.addColorStop(0, 'rgba(124,154,130,.20)'); gr.addColorStop(1, 'rgba(124,154,130,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, W, 760);
+    gr = g.createRadialGradient(W * .2, H - 120, 20, W * .2, H - 120, 380);
+    gr.addColorStop(0, 'rgba(196,69,47,.14)'); gr.addColorStop(1, 'rgba(196,69,47,0)');
+    g.fillStyle = gr; g.fillRect(0, H - 600, W, 600);
+
+    // 纸纹
+    g.strokeStyle = 'rgba(255,255,255,.022)'; g.lineWidth = 1;
+    for (let x = -H; x < W; x += 7){ g.beginPath(); g.moveTo(x, 0); g.lineTo(x + H, H); g.stroke(); }
+
+    // 抬头
+    g.fillStyle = '#7C8175';
+    g.font = '17px "Songti SC","STSong",serif';
+    g.fillText('人 格 底 色 档 案', PAD, 82);
+    g.textAlign = 'right';
+    g.fillText('NO.06 / ' + String(3000 + t * 7).slice(-4), W - PAD, 82);
+    g.textAlign = 'left';
+    g.fillStyle = 'rgba(231,224,203,.22)';
+    g.fillRect(PAD, 100, W - PAD * 2, 1);
+
+    // 竖排标题（右侧）
+    const chars = Array.from(r.title);
+    const vx = W - 118, vy = 190, step = 84;
+    g.textAlign = 'center';
+    g.font = '600 66px "Songti SC","STSong",serif';
+    chars.forEach((ch, i) => {
+      g.fillStyle = i === chars.length - 1 ? '#C4452F' : '#E7E0CB';
+      g.fillText(ch, vx, vy + i * step);
+    });
+    g.textAlign = 'left';
+
+    // 印章（紧接标题末尾，收住这一列）
+    const sealY = vy + (chars.length - 1) * step + 30;
+    g.fillStyle = '#C4452F';
+    g.fillRect(vx - 31, sealY, 62, 62);
+    g.fillStyle = '#F6EFE4';
+    g.font = '600 22px "Songti SC","STSong",serif';
+    g.textAlign = 'center';
+    g.fillText('底', vx - 14, sealY + 28);
+    g.fillText('色', vx + 14, sealY + 28);
+    g.fillText('已', vx - 14, sealY + 52);
+    g.fillText('显', vx + 14, sealY + 52);
+    g.textAlign = 'left';
+
+    // 竖线
+    g.fillStyle = 'rgba(231,224,203,.18)';
+    g.fillRect(W - 176, 126, 1, sealY + 76);
+
+    // 左栏
+    const L = PAD, R = W - 230;
+    g.fillStyle = '#7C8175';
+    g.font = '15px "Songti SC","STSong",serif';
+    g.fillText('你 的 底 色 是', L, 172);
+
+    g.fillStyle = '#C4452F';
+    g.font = '17px "Songti SC","STSong",serif';
+    const tw = g.measureText(r.tag).width + 26;
+    g.strokeStyle = 'rgba(196,69,47,.6)'; g.lineWidth = 1.4;
+    g.strokeRect(L, 194, tw, 38);
+    g.fillText(r.tag, L + 13, 220);
+
+    // 三维
+    let dy = 300;
+    state.dims.forEach(d => {
+      g.fillStyle = '#CDC6B0';
+      g.font = '19px "Songti SC","STSong",serif';
+      g.fillText(d.name, L, dy + 6);
+      const tx = L + 122, twid = R - tx - 44;
+      g.fillStyle = 'rgba(231,224,203,.14)'; g.fillRect(tx, dy, twid, 2);
+      g.fillStyle = '#7C9A82'; g.fillRect(tx, dy, twid * d.pct / 100, 2);
+      g.fillStyle = '#7C8175';
+      g.font = '15px "Songti SC","STSong",serif';
+      g.textAlign = 'right';
+      g.fillText(String(d.pct), R, dy + 8);
+      g.textAlign = 'left';
+      dy += 46;
+    });
+
+    // 金句
+    const qy = dy + 44;
+    g.font = '600 30px "Songti SC","STSong",serif';
+    const ql = wrapLines(g, r.line, R - L - 26);
+    g.fillStyle = '#C4452F'; g.fillRect(L, qy, 2, (ql.length - 1) * 44 + 50);
+    g.fillStyle = '#E7E0CB';
+    ql.forEach((ln, i) => g.fillText(ln, L + 22, qy + 34 + i * 44));
+
+    // 建议
+    g.fillStyle = '#7C8175';
+    g.font = '19px "PingFang SC","Microsoft YaHei",sans-serif';
+    const adviceY = qy + 104 + (ql.length - 1) * 44;
+    const al = wrapLines(g, r.advice, R - L).slice(0, 2);
+    al.forEach((ln, i) => g.fillText(ln, L, adviceY + i * 30));
+
+    // 特征
+    let px = L;
+    const py = adviceY + (al.length - 1) * 30 + 42;
+    g.font = '17px "Songti SC","STSong",serif';
+    r.traits.forEach(tr => {
+      const w3 = g.measureText(tr).width + 26;
+      g.strokeStyle = 'rgba(231,224,203,.3)'; g.lineWidth = 1;
+      g.strokeRect(px, py, w3, 38);
+      g.fillStyle = '#CDC6B0';
+      g.fillText(tr, px + 13, py + 26);
+      px += w3 + 12;
+    });
+
+    // 底色标本
+    const specY = py + 104;
+    g.fillStyle = '#7C8175';
+    g.font = '14px "Songti SC","STSong",serif';
+    g.fillText('底 色 标 本', L, specY);
+    g.textAlign = 'right';
+    g.fillText('B A S E   C O L O R', R, specY);
+    g.textAlign = 'left';
+    g.fillStyle = 'rgba(231,224,203,.14)';
+    g.fillRect(L, specY + 14, R - L, 1);
+
+    const blotY = specY + 96;
+    // 晕
+    const bg = g.createRadialGradient(196, blotY, 10, 196, blotY, 118);
+    bg.addColorStop(0, 'rgba(255,255,255,.05)'); bg.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = bg;
+    g.beginPath(); g.arc(196, blotY, 118, 0, Math.PI * 2); g.fill();
+    // 墨团
+    g.beginPath();
+    for (let i = 0; i <= 54; i++){
+      const a = i / 54 * Math.PI * 2;
+      const rr = 74 * (1 + .06 * Math.sin(3 * a + 1.1) + .038 * Math.sin(5 * a + 2.4) + .018 * Math.sin(7 * a + .7));
+      const x = 196 + Math.cos(a) * rr, y = blotY + Math.sin(a) * rr;
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.closePath();
+    g.fillStyle = r.swatch; g.fill();
+    // 飞白
+    g.globalAlpha = .10; g.fillStyle = '#F6EFE4';
+    g.beginPath(); g.ellipse(170, blotY - 30, 15, 4, -.6, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.ellipse(222, blotY + 26, 9, 3, .5, 0, Math.PI * 2); g.fill();
+    g.globalAlpha = 1;
+    // 溅点
+    g.fillStyle = r.swatch; g.globalAlpha = .55;
+    g.beginPath(); g.arc(300, blotY - 62, 3.5, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.arc(122, blotY + 74, 2.6, 0, Math.PI * 2); g.fill();
+    g.globalAlpha = 1;
+
+    // 标本名称
+    g.fillStyle = '#E7E0CB';
+    g.font = '600 42px "Songti SC","STSong",serif';
+    g.fillText(r.swatchName, 320, blotY - 4);
+    g.fillStyle = '#7C8175';
+    g.font = '15px Consolas,"Courier New",monospace';
+    g.fillText(r.swatch.toUpperCase(), 322, blotY + 28);
+    g.fillStyle = '#CDC6B0';
+    g.font = '15px "Songti SC","STSong",serif';
+    g.fillText('这 就 是 你 的 底 色', 322, blotY + 62);
+
+    // 底部
+    const fy = 1046;
+    g.fillStyle = 'rgba(231,224,203,.18)'; g.fillRect(PAD, fy, W - PAD * 2, 1);
+    const qs = 96, qx = W - PAD - qs, qy2 = fy + 20;
+    g.fillStyle = '#fff'; g.fillRect(qx - 6, qy2 - 6, qs + 12, qs + 12);
+    if (QR_IMG) g.drawImage(QR_IMG, qx, qy2, qs, qs);
+    else {
+      g.fillStyle = '#9A9C8E';
+      g.font = '14px "PingFang SC","Microsoft YaHei",sans-serif';
+      g.textAlign = 'center';
+      g.fillText('二维码', qx + qs / 2, qy2 + 44);
+      g.fillText('放这里', qx + qs / 2, qy2 + 66);
+      g.textAlign = 'left';
+    }
+    g.fillStyle = '#E7E0CB';
+    g.font = '600 21px "Songti SC","STSong",serif';
+    g.fillText(TEST.qrCaption, PAD, fy + 54);
+    g.fillStyle = '#7C8175';
+    g.font = '15px "PingFang SC","Microsoft YaHei",sans-serif';
+    g.fillText('仅供娱乐 · 不构成任何心理测评', PAD, fy + 86);
+
+    return c.toDataURL('image/png');
+  }
+};
+
+/* ---------- 绑定 ---------- */
+$('btnStart').addEventListener('click', startQuiz);
+$('btnAgain').addEventListener('click', startQuiz);
+$('btnPoster').addEventListener('click', showPoster);
+$('btnShare').addEventListener('click', copyLink);
+
+</script>
+</body>
+</html>
