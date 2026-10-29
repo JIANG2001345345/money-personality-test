@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F1EEF5">
+<title>测测你的精神内耗指数 · 脑子里的那个声音有多吵</title>
+<meta name="description" content="反刍、自责、预演——20 道题算出你的内耗指数，看看是哪一种想法在偷偷消耗你。">
+<style>
+/* ===== 精神内耗指数 · 雾紫 ===== */
+:root{
+  --mist:#F1EEF5; --ink:#262038; --violet:#7C6AE8; --lilac:#C3B4E4;
+  --dim:#8C86A0; --line:rgba(38,32,56,.10); --card:rgba(255,255,255,.62);
+  --sans:"PingFang SC","Microsoft YaHei","Heiti SC",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--mist);color:var(--ink);font-family:var(--sans);line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(46% 30% at 78% 6%,rgba(195,180,228,.55),transparent 70%),
+    radial-gradient(52% 34% at 8% 92%,rgba(124,106,232,.14),transparent 72%),
+    radial-gradient(40% 26% at 50% 52%,rgba(255,255,255,.9),transparent 70%);
+}
+.app{max-width:430px;margin:0 auto;position:relative;min-height:100vh;min-height:100dvh}
+.screen{display:none;flex-direction:column;min-height:100vh;min-height:100dvh;
+  padding:22px 22px calc(26px + env(safe-area-inset-bottom))}
+.screen.active{display:flex}
+
+/* ---------- 按钮 ---------- */
+.btn{
+  display:block;width:100%;border:0;border-radius:999px;background:var(--violet);color:#fff;
+  font-family:var(--sans);font-size:15px;letter-spacing:.3em;text-indent:.3em;
+  padding:16px 12px;cursor:pointer;box-shadow:0 10px 26px -10px rgba(124,106,232,.7);
+  transition:transform .16s ease,box-shadow .16s ease;
+}
+.btn:active{transform:translateY(2px);box-shadow:0 4px 12px -8px rgba(124,106,232,.7)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid rgba(38,32,56,.2);
+  box-shadow:none;font-size:13px;letter-spacing:.16em;text-indent:.16em;padding:13px 8px}
+.btn.ghost:active{background:rgba(255,255,255,.6)}
+
+/* ---------- 封面 ---------- */
+.cover{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding-bottom:6px}
+.ripple{width:214px;height:214px;display:block;margin-bottom:10px;opacity:.9}
+.rp{transform-box:fill-box;transform-origin:center;
+  animation:breathe 7.5s ease-in-out infinite alternate}
+@keyframes breathe{from{transform:scale(1)}to{transform:scale(1.05)}}
+.ttl{font-size:clamp(30px,8.6vw,37px);font-weight:300;letter-spacing:.34em;text-indent:.34em;
+  line-height:1.6;margin:0;color:var(--ink)}
+.ttl b{font-weight:600;color:var(--violet)}
+.rule{width:30px;height:1px;background:rgba(38,32,56,.26);margin:20px 0 18px}
+.sub{font-size:13px;line-height:2.1;color:#6B6480;margin:0;letter-spacing:.05em}
+.cover-foot{width:100%;max-width:300px;margin-top:auto;display:flex;flex-direction:column;gap:14px}
+.facts{text-align:center;font-size:11px;letter-spacing:.16em;color:var(--dim)}
+
+/* ---------- 答题 ---------- */
+.qhead{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;
+  letter-spacing:.14em;color:var(--dim);padding-top:8px}
+.qhead b{font-size:12px;color:var(--ink);letter-spacing:.06em}
+.qtrack{height:2px;background:rgba(38,32,56,.09);margin-top:12px;position:relative;overflow:hidden}
+.qtrack i{position:absolute;left:0;top:0;bottom:0;background:var(--violet);width:var(--w,0);
+  transition:width .35s ease}
+.qwrap{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 0 64px}
+.qtext{font-size:20px;font-weight:500;line-height:1.8;margin:0 0 24px;letter-spacing:.03em}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;cursor:pointer;
+  background:var(--card);border:1px solid rgba(38,32,56,.07);border-radius:15px;
+  padding:15px 16px;font-family:var(--sans);font-size:14.5px;line-height:1.6;color:#3A3350;
+  transition:background .16s,border-color .16s,box-shadow .16s}
+.opt .k{flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:rgba(38,32,56,.18);
+  transition:background .16s,transform .16s}
+.opt.sel{background:#fff;border-color:rgba(124,106,232,.65);box-shadow:0 8px 22px -12px rgba(38,32,56,.45)}
+.opt.sel .k{background:var(--violet);transform:scale(1.25)}
+.hint{text-align:center;font-size:10.5px;letter-spacing:.2em;color:rgba(140,134,160,.85);margin:14px 0 0}
+
+/* ---------- 结果 ---------- */
+.gauge{display:block;width:206px;height:206px;margin:2px auto 0}
+.g-num{font-family:var(--sans);font-size:58px;font-weight:300;fill:var(--ink);letter-spacing:-.02em}
+.g-lab{font-family:var(--sans);font-size:10.5px;fill:var(--dim);letter-spacing:.24em}
+.ring{transition:stroke-dashoffset 1.1s cubic-bezier(.25,.9,.3,1)}
+.stage{text-align:center;margin-top:-6px}
+.stage h2{font-size:29px;font-weight:600;letter-spacing:.12em;margin:0;text-indent:.12em}
+.stage .tag{display:inline-block;margin-top:9px;font-size:11px;letter-spacing:.1em;color:var(--violet)}
+.dims{width:100%;max-width:300px;margin:24px auto 0}
+.dim-row{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+.dim-row .n{font-size:11.5px;color:#6B6480;width:44px;flex:0 0 auto;letter-spacing:.06em}
+.dim-row .track{flex:1;height:3px;background:rgba(38,32,56,.09);border-radius:2px;position:relative;overflow:hidden}
+.dim-row .track i{position:absolute;left:0;top:0;bottom:0;background:var(--lilac);width:var(--w,0);
+  border-radius:2px;transform-origin:left center;animation:grow .9s cubic-bezier(.2,.9,.3,1) .3s both}
+.dim-row i.hot{background:var(--violet)}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.dim-row .v{font-size:10.5px;color:var(--dim);width:24px;text-align:right}
+.sec{margin-top:26px}
+.sec h3{font-size:10.5px;font-weight:600;letter-spacing:.26em;color:var(--dim);margin:0 0 10px}
+.card{background:var(--card);border:1px solid rgba(38,32,56,.06);border-radius:16px;
+  padding:16px 16px;font-size:13.5px;line-height:2;color:#443C5C;margin:0;text-align:justify}
+.traits{display:flex;flex-wrap:wrap;gap:8px}
+.traits span{font-size:11.5px;letter-spacing:.08em;color:#5B5375;background:rgba(255,255,255,.7);
+  border:1px solid rgba(38,32,56,.07);border-radius:999px;padding:6px 13px}
+.quote{margin:26px 0 0;text-align:center;font-size:16px;line-height:2;font-weight:500;
+  letter-spacing:.04em;color:var(--ink)}
+.quote::before{content:'';display:block;width:24px;height:1px;background:rgba(38,32,56,.24);
+  margin:0 auto 16px}
+.advice{margin:22px 0 0;font-size:12.5px;line-height:1.95;color:#6B6480;text-align:center}
+.advice b{display:block;font-size:10px;letter-spacing:.24em;color:var(--violet);margin-bottom:7px;
+  font-weight:600}
+.acts{display:flex;flex-direction:column;gap:10px;margin-top:28px}
+.acts-row{display:flex;gap:10px}
+.acts-row .btn{flex:1}
+.rfoot{margin:30px 0 0;text-align:center;font-size:9.5px;letter-spacing:.24em;color:rgba(140,134,160,.7)}
+
+/* ---------- 弹层适配 ---------- */
+.modal-tip{color:#CFC8E0}
+.modal-x{border-color:rgba(255,255,255,.3)}
+
+
+/* ---------- 共用弹层 ---------- */
+.modal{position:fixed;inset:0;background:rgba(8,10,9,.9);display:none;z-index:80;
+  padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal.on{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.modal-card{width:100%;max-width:380px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.poster-img{width:100%;display:block;border-radius:3px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.modal-tip{font-size:12.5px;line-height:1.8;text-align:center;opacity:.62;margin:0}
+.modal-x{margin-top:4px;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;
+  font-size:13px;padding:9px 26px;border-radius:2px;letter-spacing:.08em;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,12px);
+  background:rgba(20,20,20,.92);color:#fff;font-size:13px;padding:10px 18px;border-radius:3px;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:90;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 封面 -->
+  <section class="screen active" id="s-cover">
+    <div class="cover">
+      <svg class="ripple" viewBox="0 0 240 240" aria-hidden="true">
+        <g class="rp">
+          <circle cx="120" cy="120" r="5" fill="#7C6AE8"/>
+          <circle cx="120" cy="120" r="24" fill="none" stroke="#262038" stroke-opacity=".30" stroke-width="1"/>
+          <circle cx="120" cy="120" r="46" fill="none" stroke="#262038" stroke-opacity=".22" stroke-width="1"/>
+          <circle cx="120" cy="120" r="68" fill="none" stroke="#262038" stroke-opacity=".15" stroke-width="1"/>
+          <circle cx="120" cy="120" r="90" fill="none" stroke="#262038" stroke-opacity=".09" stroke-width="1"/>
+          <circle cx="120" cy="120" r="112" fill="none" stroke="#262038" stroke-opacity=".055" stroke-width="1"/>
+          <circle cx="120" cy="120" r="57" fill="none" stroke="#7C6AE8" stroke-opacity=".55"
+                  stroke-width="1" stroke-dasharray="2 7"/>
+        </g>
+      </svg>
+      <h1 class="ttl">精神内耗<br><b>指数</b></h1>
+      <div class="rule"></div>
+      <p class="sub">你脑子里那个一直在说话的声音<br>今天，有多吵？</p>
+    </div>
+    <div class="cover-foot">
+      <button class="btn" id="btnStart">开 始 测 定</button>
+      <div class="facts">20 题 · 约 90 秒</div>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section class="screen" id="s-quiz">
+    <div class="qhead"><span>第 <b id="qIdx">07</b> 题</span><span id="qPct">35%</span></div>
+    <div class="qtrack"><i id="qBar"></i></div>
+    <div class="qwrap">
+      <h2 class="qtext" id="qText"></h2>
+      <div class="opts" id="opts"></div>
+    </div>
+    <p class="hint">按第一反应作答</p>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="s-result">
+    <svg class="gauge" viewBox="0 0 200 200" aria-hidden="true">
+      <circle cx="100" cy="100" r="86" fill="none" stroke="rgba(38,32,56,.08)" stroke-width="7"/>
+      <circle class="ring" id="rRing" cx="100" cy="100" r="86" fill="none" stroke="#7C6AE8"
+              stroke-width="7" stroke-linecap="round" transform="rotate(-90 100 100)"
+              stroke-dasharray="540.35" stroke-dashoffset="540.35"/>
+      <text class="g-num" x="100" y="108" text-anchor="middle" id="rIdx">0</text>
+      <text class="g-lab" x="100" y="136" text-anchor="middle">内 耗 指 数</text>
+    </svg>
+
+    <div class="stage">
+      <h2 id="rTitle"></h2>
+      <span class="tag" id="rTag"></span>
+    </div>
+
+    <div class="dims" id="rDims"></div>
+
+    <div class="sec"><h3>内 耗 结 构</h3><p class="card" id="rAnalysis"></p></div>
+    <div class="sec"><h3>你 的 特 征</h3><div class="traits" id="rTraits"></div></div>
+    <p class="quote" id="rLine"></p>
+    <p class="advice"><b>给 你 的 话</b><span id="rAdvice"></span></p>
+
+    <div class="acts">
+      <button class="btn" id="btnPoster">生成我的内耗报告</button>
+      <div class="acts-row">
+        <button class="btn ghost" id="btnShare">复制链接</button>
+        <button class="btn ghost" id="btnAgain">再测一次</button>
+      </div>
+    </div>
+    <p class="rfoot">MIND INDEX · NO.08</p>
+  </section>
+
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card" id="modalBody"></div>
+  <button class="modal-x" onclick="closeModal()">关闭</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ===== 精神内耗指数 · 数据 ===== */
+const TEST = {
+  id: "jingshen-neihao",
+  quizLen: 20,
+  slots: [7, 7, 6],
+  pctFloor: 4,
+  dims: [{ name: "反刍" }, { name: "自责" }, { name: "预演" }],
+  qrImage: "",
+  qrCaption: "扫码测测你的内耗指数",
+  customLine: "",
+
+  /* 3 = 内耗更重 */
+  bank: [
+    { d:0, q:"说错一句话，你会在心里回放多久？", o:[
+      ["几分钟就过去了",1],["到晚上",2],["好几天",3]] },
+    { d:0, q:"晚上躺下，你会想起白天的事吗？", o:[
+      ["很少",1],["有时候",2],["几乎每天",3]] },
+    { d:0, q:"别人说了句模棱两可的话，你会？", o:[
+      ["不去想",1],["想一下",2],["反复琢磨他什么意思",3]] },
+    { d:0, q:"发出去的消息，你会？", o:[
+      ["发完就忘",1],["偶尔再看一眼",2],["盯着看有没有回",3]] },
+    { d:0, q:"三年前的尴尬事，你还会想起来吗？", o:[
+      ["不会",1],["偶尔",2],["经常，而且还是会脸红",3]] },
+    { d:0, q:"你写的东西，会反复检查吗？", o:[
+      ["不会",1],["看一遍",2],["改好几遍还是不放心",3]] },
+    { d:0, q:"你更容易想起？", o:[
+      ["开心的事",1],["都有",2],["那些没做好的事",3]] },
+    { d:0, q:"别人没回你消息，你会？", o:[
+      ["无所谓",1],["过一会儿再看",2],["想是不是自己说错了",3]] },
+    { d:0, q:"做完一个决定，你会？", o:[
+      ["就不管了",1],["偶尔想想",2],["反复想如果选另一个会怎样",3]] },
+    { d:0, q:"你的脑子？", o:[
+      ["能停下来",1],["有时候停不下来",2],["一直在转",3]] },
+    { d:0, q:"睡前你通常？", o:[
+      ["很快睡着",1],["想一会儿",2],["越想越清醒",3]] },
+    { d:0, q:"看到别人玩得开心，而你没有去，你会？", o:[
+      ["没什么感觉",1],["有点在意",2],["反复想自己是不是被排除了",3]] },
+    { d:0, q:"一段对话结束，你会？", o:[
+      ["就过去了",1],["大概记得",2],["在心里逐句复盘",3]] },
+    { d:0, q:"有人夸你，你会？", o:[
+      ["挺开心",1],["觉得他客气",2],["想他是不是有事求我",3]] },
+    { d:0, q:"你发完的朋友圈？", o:[
+      ["发了就不看",1],["偶尔点开",2],["反复看谁点了赞",3]] },
+
+    { d:1, q:"事情没做好，你会？", o:[
+      ["找原因",1],["有点难受",2],["觉得都是我的问题",3]] },
+    { d:1, q:"别人不高兴，你会？", o:[
+      ["看情况再说",1],["会注意到",2],["立刻想是不是我做错了",3]] },
+    { d:1, q:"你对自己？", o:[
+      ["挺满意",1],["还行",2],["永远不够好",3]] },
+    { d:1, q:"犯了错，你会？", o:[
+      ["改了就行",1],["郁闷一会儿",2],["在心里骂自己很久",3]] },
+    { d:1, q:"拒绝别人之后，你会？", o:[
+      ["没什么",1],["有点过意不去",2],["内疚很久",3]] },
+    { d:1, q:"你更常说的是？", o:[
+      ["“可以啊”",1],["“还好吧”",2],["“对不起”",3]] },
+    { d:1, q:"别人难过的时候，你会？", o:[
+      ["正常安慰",1],["有点紧张",2],["觉得是自己没做好",3]] },
+    { d:1, q:"遇到失败，你会？", o:[
+      ["下次再来",1],["总结一下",2],["觉得自己不行",3]] },
+    { d:1, q:"你会拿自己和别人比吗？", o:[
+      ["很少",1],["有时候",2],["几乎每天都在比",3]] },
+    { d:1, q:"照镜子的时候，你在想什么？", o:[
+      ["还行",1],["挑挑毛病",2],["从头到脚都不满意",3]] },
+    { d:1, q:"你更怕？", o:[
+      ["事情失败",1],["别人失望",2],["让别人失望的那个人是我",3]] },
+    { d:1, q:"别人夸你，你会？", o:[
+      ["收下",1],["有点不好意思",2],["觉得他说的不是我",3]] },
+    { d:1, q:"你原谅自己容易吗？", o:[
+      ["容易",1],["看事情",2],["很难",3]] },
+    { d:1, q:"事情变成这样，你会想？", o:[
+      ["各种原因都有",1],["我也有责任",2],["都怪我",3]] },
+    { d:1, q:"你会在心里骂自己吗？", o:[
+      ["不会",1],["偶尔",2],["经常，而且很狠",3]] },
+
+    { d:2, q:"明天有件重要的事，你今晚？", o:[
+      ["睡得很好",1],["想一会儿",2],["在脑子里演一遍",3]] },
+    { d:2, q:"出门前，你会？", o:[
+      ["直接走",1],["检查一遍",2],["反复确认",3]] },
+    { d:2, q:"要见一个不熟的人，你会？", o:[
+      ["没什么感觉",1],["想想要说什么",2],["提前想好每一句话",3]] },
+    { d:2, q:"等一个结果的时候，你会？", o:[
+      ["等就等",1],["有点担心",2],["已经把最坏的想完了",3]] },
+    { d:2, q:"你的手机电量？", o:[
+      ["随便",1],["一半就充",2],["低于 60% 就开始焦虑",3]] },
+    { d:2, q:"出门旅行前，你会？", o:[
+      ["收拾好就走",1],["列个清单",2],["检查五遍还是不放心",3]] },
+    { d:2, q:"一件事还没开始，你会先想？", o:[
+      ["怎么做",1],["可能遇到的问题",2],["所有可能出错的地方",3]] },
+    { d:2, q:"要拒绝别人，你会提前想好措辞吗？", o:[
+      ["不会",1],["想一下",2],["连他会怎么回都想好了",3]] },
+    { d:2, q:"手机响了，你会？", o:[
+      ["直接接",1],["看一眼是谁",2],["先紧张一下",3]] },
+    { d:2, q:"明天要开会，你？", o:[
+      ["到点去",1],["准备好材料",2],["提前想好每一句可能被问到的话",3]] },
+    { d:2, q:"你对未来的态度？", o:[
+      ["走一步看一步",1],["有大致计划",2],["总担心会出事",3]] },
+    { d:2, q:"事情没按计划走，你会？", o:[
+      ["随机应变",1],["有点慌",2],["整个人乱掉",3]] },
+    { d:2, q:"做一件事之前，你会？", o:[
+      ["直接开始",1],["想一下步骤",2],["想到做不完就不想开始",3]] },
+    { d:2, q:"你更常担心？", o:[
+      ["现在的事",1],["明天的事",2],["还没发生的事",3]] },
+    { d:2, q:"睡前的你？", o:[
+      ["放下手机就睡",1],["刷一会儿",2],["越想明天越睡不着",3]] }
+  ],
+
+  results: [
+    { min:20, max:27, title:"心如止水", tag:"只有 6% 的人能这么安静",
+      analysis:"你的脑子是安静的。事情过去了就是过去了，别人一句话你也不会反复解读。你不是没心没肺，是心里那杆秤很稳——你知道什么值得想，什么不值得。很多人拼命想练成的“钝感力”，你天生就有。",
+      traits:["低反刍","情绪稳定","钝感力"],
+      line:"想不通的事，我一般就不想了。",
+      advice:"保留这份安静，但也别把情绪压得太死。偶尔难受，不是坏事。" },
+    { min:28, max:35, title:"偶尔起浪", tag:"最常见的一类 · 35%",
+      analysis:"大部分时候你是稳的，只有真正在意的事才会让你翻来覆去。你会复盘、会自责，但都在可控范围内，第二天基本就能翻篇。你不是没有内耗，你的内耗有开关——这已经比很多人强了。",
+      traits:["有边界的内耗","能翻篇","自我调节"],
+      line:"我不是不在意，我只是知道在意也没用。",
+      advice:"记住那些让你翻篇的动作：散个步、洗个澡、睡一觉。它们对你是有效的。" },
+    { min:36, max:43, title:"中度内耗", tag:"43% 的人和你一样",
+      analysis:"你的脑子有一半时间是别人的。一句话、一个眼神、一条没回的消息，都能在你心里跑好几圈。你表面上应付自如，实际上常常在夜里给自己开审判会。你缺的不是想通，是允许自己想不通。",
+      traits:["高敏感","习惯复盘","情绪劳动"],
+      line:"我知道想这些没用，但我就是停不下来。",
+      advice:"给自己设一个“想它的时间”：每天 15 分钟，专门想。时间一到就停。" },
+    { min:44, max:51, title:"高敏感区", tag:"13% 的人总在提前担心",
+      analysis:"你活得很用力。别人一句无心的话，你要拆成三层意思；一件事还没发生，你已经替它准备了三种结局。你的敏感让你比别人看得更细，也让你比别人更累。你不是玻璃心，你是雷达太灵，关不掉。",
+      traits:["过度解读","提前焦虑","共情过载"],
+      line:"我不是想太多，我是把每一种可能都替你想到了。",
+      advice:"把“他是不是讨厌我”换成“他可能只是很忙”。这两种解释成本一样。" },
+    { min:52, max:60, title:"内耗漩涡", tag:"只有 3% 的人这样活着",
+      analysis:"你的内耗已经成了一种生活方式。你反复咀嚼过去、审判自己、预演未来，一刻不停。最消耗你的不是事情本身，是你对事情的看法。你不是不够好，你是对自己太严格了——严格到没有一秒是放松的。",
+      traits:["反刍成瘾","自我审判","持续紧绷"],
+      line:"我没有在生活，我只是在不停地想我该怎么生活。",
+      advice:"今天做一件没有意义的小事：发会儿呆、走一段没走过的路。什么都不为。" }
+  ]
+};
+
+/* ===== 共用引擎：抽题 / 打乱 / 计分 / 弹层 / 通用画笔 =====
+   每个主题只提供 SKIN 对象和 TEST 数据，其余都走这里。 */
+
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ---------- 二维码（每套主题在 data.js 里配） ---------- */
+let QR_IMG = null;
+if (TEST.qrImage){
+  QR_IMG = new Image();
+  QR_IMG.src = TEST.qrImage;
+}
+
+/* ---------- 工具 ---------- */
+function shuffleArr(a){
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* 按维度配比抽题：slots 之和 = TEST.quizLen */
+function drawQuiz(){
+  const picked = [];
+  const slots = shuffleArr(TEST.slots.slice());
+  TEST.dims.forEach((m, di) => {
+    const pool = shuffleArr(TEST.bank.filter(x => x.d === di));
+    picked.push.apply(picked, pool.slice(0, slots[di]));
+  });
+  return shuffleArr(picked);
+}
+
+/* ---------- 状态 ---------- */
+const state = { i:0, scores:[], drawn:[], opts:[], total:0, result:null, dims:null };
+let locked = false;
+
+/* ---------- 流程 ---------- */
+function startQuiz(){
+  state.i = 0;
+  state.scores = [];
+  state.drawn = drawQuiz();
+  state.opts = state.drawn.map(q => shuffleArr(q.o.map(o => ({ t:o[0], s:o[1] }))));
+  locked = false;
+  SKIN.goQuiz();
+  SKIN.renderQuestion();
+}
+
+function choose(score, el){
+  if (locked) return;
+  locked = true;
+  if (el) el.classList.add('sel');
+  state.scores.push(score);
+  SKIN.afterChoose(el, score);
+  setTimeout(() => {
+    locked = false;
+    if (state.i < TEST.quizLen - 1){
+      state.i++;
+      SKIN.renderQuestion();
+    } else {
+      finish();
+    }
+  }, SKIN.advanceDelay || 240);
+}
+
+function finish(){
+  state.total = state.scores.reduce((a,b) => a + b, 0);
+  state.result = TEST.results.find(r => state.total >= r.min && state.total <= r.max) || TEST.results[0];
+
+  const sum = [0,0,0], cnt = [0,0,0];
+  state.drawn.forEach((q, i) => { sum[q.d] += state.scores[i]; cnt[q.d]++; });
+  state.dims = TEST.dims.map((m, d) => ({
+    name: m.name,
+    pct: Math.max(TEST.pctFloor || 6, Math.min(100, Math.round(sum[d] / (cnt[d] * 3) * 100)))
+  }));
+
+  SKIN.goResult();
+  SKIN.renderResult();
+  window.scrollTo(0,0);
+}
+
+/* ---------- 弹层 ---------- */
+function openModal(html){
+  $('modalBody').innerHTML = html;
+  $('modal').classList.add('on');
+}
+function closeModal(){ $('modal').classList.remove('on'); }
+
+function showPoster(){
+  const url = SKIN.buildPoster();
+  openModal('<img class="poster-img" src="' + url + '" alt="测试结果海报">'
+    + '<p class="modal-tip">长按图片保存到相册<br>电脑上右键另存为</p>');
+}
+
+function copyLink(){
+  const url = location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(
+      () => toast('链接已复制'),
+      () => toast('长按地址栏复制链接')
+    );
+  } else {
+    toast('长按地址栏复制链接');
+  }
+}
+
+let toastTimer;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 1900);
+}
+
+/* ---------- 画布通用件 ---------- */
+function makeCanvas(w, h){
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return c;
+}
+function wrapLines(g, text, maxW){
+  const out = []; let line = '';
+  for (const ch of text){
+    if (g.measureText(line + ch).width > maxW && line){ out.push(line); line = ch; }
+    else line += ch;
+  }
+  if (line) out.push(line);
+  return out;
+}
+/* 防伪扭索纹：r = R + A·sin(Nθ) 旋转复制 */
+function drawRosette(g, cx, cy, R, amp, N, P, steps, color, alpha, lw){
+  g.save();
+  g.strokeStyle = color; g.globalAlpha = alpha; g.lineWidth = lw || 0.9;
+  for (let k = 0; k < P; k++){
+    const rot = k * 2 * Math.PI / (N * P);
+    g.beginPath();
+    for (let i = 0; i <= steps; i++){
+      const t = i / steps * Math.PI * 2;
+      const r = R + amp * Math.sin(N * t);
+      const a = t + rot;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.stroke();
+  }
+  g.restore();
+}
+function roundRect(g, x, y, w, h, r){
+  g.beginPath();
+  g.moveTo(x + r, y);
+  g.arcTo(x + w, y, x + w, y + h, r);
+  g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r);
+  g.arcTo(x, y, x + w, y, r);
+  g.closePath();
+}
+
+/* ===== 精神内耗指数 · 界面层 ===== */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+const SANS = '"PingFang SC","Microsoft YaHei","Heiti SC",sans-serif';
+const RING_C = 540.35;      // 2π·86（屏幕环）
+function idxOf(t){ return Math.max(0, Math.min(100, Math.round((t - 20) / 40 * 100))); }
+
+const SKIN = {
+  advanceDelay: 240,
+
+  goQuiz(){ show('s-quiz'); },
+  goResult(){ show('s-result'); },
+
+  renderQuestion(){
+    const i = state.i;
+    $('qIdx').textContent = String(i + 1).padStart(2, '0');
+    $('qPct').textContent = Math.round((i + 1) / TEST.quizLen * 100) + '%';
+    $('qBar').style.width = ((i + 1) / TEST.quizLen * 100) + '%';
+    $('qText').textContent = state.drawn[i].q;
+
+    const box = $('opts');
+    box.innerHTML = '';
+    state.opts[i].forEach(o => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      const k = document.createElement('span'); k.className = 'k';
+      const t = document.createElement('span'); t.className = 't'; t.textContent = o.t;
+      b.appendChild(k); b.appendChild(t);
+      b.addEventListener('click', () => choose(o.s, b));
+      box.appendChild(b);
+    });
+  },
+
+  afterChoose(el){ /* .sel 由 CSS 完成 */ },
+
+  renderResult(){
+    const r = state.result, idx = idxOf(state.total);
+    const maxPct = Math.max.apply(null, state.dims.map(d => d.pct));
+
+    $('rIdx').textContent = idx;
+    $('rTitle').textContent = r.title;
+    $('rTag').textContent = r.tag;
+    $('rAnalysis').textContent = r.analysis;
+    $('rTraits').innerHTML = r.traits.map(x => '<span>' + x + '</span>').join('');
+    $('rLine').textContent = r.line;
+    $('rAdvice').textContent = r.advice;
+
+    const ring = $('rRing');
+    ring.getBoundingClientRect();          // 强制一帧，保证过渡能跑
+    ring.style.strokeDashoffset = RING_C * (1 - idx / 100);
+
+    $('rDims').innerHTML = state.dims.map(d =>
+      '<div class="dim-row"><span class="n">' + d.name + '</span>'
+      + '<span class="track"><i class="' + (d.pct === maxPct ? 'hot' : '') + '" style="--w:' + d.pct + '%"></i></span>'
+      + '<span class="v">' + d.pct + '</span></div>'
+    ).join('');
+  },
+
+  buildPoster(){
+    const W = 750, H = 1200;
+    const c = makeCanvas(W, H), g = c.getContext('2d');
+    const r = state.result, idx = idxOf(state.total), t = state.total;
+    const M = 68;
+
+    // 雾紫底
+    g.fillStyle = '#F1EEF5'; g.fillRect(0, 0, W, H);
+    let gr = g.createRadialGradient(W * .76, 120, 20, W * .76, 120, 460);
+    gr.addColorStop(0, 'rgba(195,180,228,.55)'); gr.addColorStop(1, 'rgba(195,180,228,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, W, 700);
+    gr = g.createRadialGradient(W * .12, H - 80, 20, W * .12, H - 80, 420);
+    gr.addColorStop(0, 'rgba(124,106,232,.14)'); gr.addColorStop(1, 'rgba(124,106,232,0)');
+    g.fillStyle = gr; g.fillRect(0, H - 620, W, 620);
+
+    // 抬头
+    g.fillStyle = '#8C86A0';
+    g.font = '15px ' + SANS;
+    g.fillText('精 神 内 耗 报 告', M, 78);
+    g.textAlign = 'right';
+    g.fillText('NO.08 / ' + String(8000 + t * 11).slice(-4), W - M, 78);
+    g.textAlign = 'left';
+    g.fillStyle = 'rgba(38,32,56,.12)'; g.fillRect(M, 96, W - M * 2, 1);
+
+    // 背景大涟漪
+    g.strokeStyle = 'rgba(38,32,56,.03)'; g.lineWidth = 1.5;
+    [212, 262].forEach(rr => { g.beginPath(); g.arc(375, 322, rr, 0, Math.PI * 2); g.stroke(); });
+
+    // 环
+    const CY = 322, R = 148;
+    g.beginPath(); g.arc(375, CY, R, 0, Math.PI * 2);
+    g.strokeStyle = 'rgba(38,32,56,.08)'; g.lineWidth = 11; g.stroke();
+    if (idx > 0){
+      g.beginPath();
+      g.arc(375, CY, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * idx / 100);
+      g.strokeStyle = '#7C6AE8'; g.lineWidth = 11; g.lineCap = 'round'; g.stroke();
+      g.lineCap = 'butt';
+    }
+
+    // 指数
+    g.fillStyle = '#262038';
+    g.textAlign = 'center';
+    g.font = '300 116px ' + SANS;
+    g.fillText(String(idx), 375, CY + 34);
+    g.fillStyle = '#8C86A0';
+    g.font = '15px ' + SANS;
+    g.fillText('内 耗 指 数', 375, CY + 74);
+
+    // 结论
+    g.fillStyle = '#262038';
+    g.font = '600 46px ' + SANS;
+    g.fillText(r.title, 375, 560);
+
+    g.fillStyle = '#7C6AE8';
+    g.font = '15px ' + SANS;
+    g.fillText(r.tag, 375, 596);
+    g.textAlign = 'left';
+
+    // 三维
+    let dy = 650;
+    const L = 176, Rr = 574;
+    state.dims.forEach(d => {
+      g.fillStyle = '#6B6480';
+      g.font = '14px ' + SANS;
+      g.fillText(d.name, L, dy + 5);
+      const tx = L + 58, twid = Rr - tx - 34;
+      g.fillStyle = 'rgba(38,32,56,.09)'; g.fillRect(tx, dy, twid, 3);
+      g.fillStyle = '#B9A8DE'; g.fillRect(tx, dy, twid * d.pct / 100, 3);
+      g.fillStyle = '#8C86A0';
+      g.font = '12px ' + SANS;
+      g.textAlign = 'right';
+      g.fillText(String(d.pct), Rr, dy + 6);
+      g.textAlign = 'left';
+      dy += 42;
+    });
+
+    // 金句
+    g.textAlign = 'center';
+    g.fillStyle = '#262038';
+    g.font = '500 28px ' + SANS;
+    const ql = wrapLines(g, r.line, 540);
+    ql.slice(0, 3).forEach((ln, i) => g.fillText(ln, 375, 800 + i * 42));
+    g.textAlign = 'left';
+
+    // 特征（居中）
+    g.font = '13px ' + SANS;
+    let total = 0;
+    r.traits.forEach(x => { total += g.measureText(x).width + 26 + 8; });
+    let px = (W - total + 8) / 2;
+    const py = 908;
+    r.traits.forEach(x => {
+      const w3 = g.measureText(x).width + 26;
+      roundRect(g, px, py, w3, 34, 17);
+      g.fillStyle = 'rgba(255,255,255,.76)'; g.fill();
+      g.strokeStyle = 'rgba(38,32,56,.08)'; g.lineWidth = 1; g.stroke();
+      g.fillStyle = '#5B5375';
+      g.fillText(x, px + 13, py + 22);
+      px += w3 + 8;
+    });
+
+    // 底部
+    const fy = 1044;
+    g.fillStyle = 'rgba(38,32,56,.12)'; g.fillRect(M, fy, W - M * 2, 1);
+    const qs = 92, qx = W - M - qs, qy2 = fy + 20;
+    g.fillStyle = '#fff'; g.fillRect(qx - 6, qy2 - 6, qs + 12, qs + 12);
+    if (QR_IMG) g.drawImage(QR_IMG, qx, qy2, qs, qs);
+    else {
+      g.fillStyle = '#B4AECA';
+      g.font = '13px ' + SANS;
+      g.textAlign = 'center';
+      g.fillText('二维码', qx + qs / 2, qy2 + 44);
+      g.fillText('放这里', qx + qs / 2, qy2 + 64);
+      g.textAlign = 'left';
+    }
+    g.fillStyle = '#262038';
+    g.font = '600 19px ' + SANS;
+    g.fillText(TEST.qrCaption, M, fy + 54);
+    g.fillStyle = '#8C86A0';
+    g.font = '13px ' + SANS;
+    g.fillText('仅供娱乐 · 不构成任何心理评估', M, fy + 84);
+
+    return c.toDataURL('image/png');
+  }
+};
+
+/* ---------- 绑定 ---------- */
+$('btnStart').addEventListener('click', startQuiz);
+$('btnAgain').addEventListener('click', startQuiz);
+$('btnPoster').addEventListener('click', showPoster);
+$('btnShare').addEventListener('click', copyLink);
+
+</script>
+</body>
+</html>
