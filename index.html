@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0D1210">
+<title>你的搞钱天赋与隐藏财富人格</title>
+<style>
+  :root{
+    --ink:#0D1210;
+    --ink-soft:#16201B;
+    --paper:#F3EEE4;
+    --paper-2:#E9E1D2;
+    --brass:#D9A441;
+    --brass-deep:#9A6F22;
+    --seal:#B8402B;
+    --text:#1A211D;
+    --muted:#6E7A72;
+    --on-dark:#DCD5C7;
+    --on-dark-dim:#8B958E;
+    --line:rgba(26,33,29,.15);
+    --serif:"Songti SC","STSong","SimSun","Noto Serif CJK SC",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,sans-serif;
+    --num:Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--ink);
+    color:var(--on-dark);
+    font-family:var(--sans);
+    min-height:100vh;
+    min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(120% 70% at 50% -10%, rgba(217,164,65,.13), transparent 60%),
+      radial-gradient(80% 50% at 100% 110%, rgba(184,64,43,.10), transparent 60%);
+  }
+  .app{position:relative;z-index:1;display:flex;justify-content:center}
+  .screen{
+    width:100%;max-width:460px;
+    padding:26px 22px calc(30px + env(safe-area-inset-bottom));
+    display:none;flex-direction:column;
+    min-height:100vh;min-height:100dvh;
+  }
+  .screen.active{display:flex;animation:screenIn .4s ease both}
+  @keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .screen.active{animation:none}
+    *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+  }
+
+  /* ---------- 封面 ---------- */
+  .cover-top{flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:8px}
+  .title-wrap{position:relative;width:100%}
+  .cover-title{
+    font-family:var(--serif);
+    font-size:clamp(32px,10vw,42px);
+    line-height:1.16;
+    letter-spacing:.02em;
+    margin:0;
+    font-weight:700;
+    color:var(--paper);
+    white-space:nowrap;
+  }
+  .seal{
+    position:absolute;right:0;bottom:-6px;
+    width:56px;height:56px;border:2.5px solid var(--seal);border-radius:5px;
+    color:var(--seal);font-family:var(--serif);font-weight:700;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    font-size:15px;line-height:1.12;letter-spacing:.06em;
+    transform:rotate(-8deg);opacity:.92;
+    text-align:center;
+  }
+  .cover-sub{
+    margin:34px 0 0;font-size:15px;line-height:1.8;color:var(--on-dark-dim);
+    max-width:19em;
+  }
+  .cover-foot{margin-top:auto;padding-top:36px}
+  .meta-row{display:flex;align-items:center;gap:12px;color:var(--on-dark-dim);font-size:12.5px;margin-bottom:18px}
+  .meta-row .vr{width:1px;height:11px;background:rgba(220,213,199,.22)}
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    width:100%;height:56px;border:0;border-radius:2px;
+    font-family:var(--sans);font-size:16px;font-weight:700;letter-spacing:.06em;
+    cursor:pointer;transition:transform .15s ease, background .2s ease, color .2s ease;
+  }
+  .btn:active{transform:scale(.985)}
+  .btn-primary{background:var(--paper);color:var(--ink)}
+  .btn-primary:hover{background:var(--brass)}
+  .btn-ghost{background:transparent;color:var(--paper);border:1px solid rgba(220,213,199,.3);font-weight:500;font-size:14.5px;height:48px}
+  .btn-ghost:hover{border-color:var(--brass);color:var(--brass)}
+  .btn:focus-visible,.opt:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+
+  /* ---------- 题目 ---------- */
+  .q-head{display:flex;align-items:baseline;justify-content:space-between;margin:6px 0 12px}
+  .q-count{font-family:var(--num);font-size:15px;letter-spacing:.04em;color:var(--on-dark-dim)}
+  .q-count b{font-size:26px;color:var(--brass);font-weight:400;margin-right:2px}
+  .progress{height:2px;background:rgba(220,213,199,.14);margin-bottom:26px;border-radius:2px;overflow:hidden}
+  .progress i{display:block;height:100%;width:0;background:var(--brass);transition:width .42s cubic-bezier(.4,0,.2,1)}
+  .q-stage{flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:26px}
+
+  .slip{
+    position:relative;background:var(--paper);color:var(--text);
+    border-radius:2px;padding:28px 22px 14px;
+    box-shadow:0 22px 46px rgba(0,0,0,.5);
+  }
+  .slip::before,.slip::after{
+    content:"";position:absolute;left:0;right:0;height:9px;pointer-events:none;
+    background-image:radial-gradient(circle at 7px 0, transparent 6.5px, var(--paper) 7px);
+    background-size:14px 9px;background-repeat:repeat-x;
+  }
+  .slip::before{top:-8px}
+  .slip::after{bottom:-8px;transform:scaleY(-1)}
+  .slip-q{
+    font-family:var(--serif);font-weight:700;
+    font-size:20px;line-height:1.62;margin:0 0 6px;text-wrap:pretty;
+  }
+  .slip-no{font-family:var(--num);font-size:11px;color:var(--muted);letter-spacing:.16em;display:block;margin-bottom:12px}
+  .opts{margin-top:10px}
+  .opt{
+    display:flex;gap:12px;width:100%;text-align:left;align-items:flex-start;
+    background:transparent;border:0;border-top:1px solid var(--line);
+    padding:16px 4px;font-family:var(--sans);color:var(--text);
+    font-size:15.5px;line-height:1.6;cursor:pointer;
+    transition:background .18s ease;
+    border-radius:0;
+  }
+  .opt:last-child{border-bottom:1px solid var(--line)}
+  .opt .k{
+    font-family:var(--num);font-size:13px;color:var(--brass-deep);
+    width:16px;flex:none;padding-top:3px;letter-spacing:.05em;
+  }
+  .opt .t{flex:1}
+  .opt:active{background:rgba(217,164,65,.14)}
+  .opt.sel{background:rgba(217,164,65,.22)}
+  .opt.sel .k{color:var(--seal)}
+  .flash{
+    position:absolute;right:18px;top:-6px;
+    font-family:var(--num);font-size:15px;color:var(--seal);
+    opacity:0;animation:flashUp .7s ease forwards;pointer-events:none;
+  }
+  @keyframes flashUp{
+    0%{opacity:0;transform:translateY(6px)}
+    30%{opacity:1}
+    100%{opacity:0;transform:translateY(-18px)}
+  }
+  .q-hint{text-align:center;color:var(--on-dark-dim);font-size:12px;margin-top:22px;letter-spacing:.05em}
+
+  /* ---------- 结果 ---------- */
+  .result-wrap{flex:1;display:flex;flex-direction:column;padding-top:4px}
+  .receipt{
+    background:var(--paper);color:var(--text);border-radius:2px;
+    padding:30px 24px 26px;position:relative;
+    box-shadow:0 26px 60px rgba(0,0,0,.55);
+    animation:printIn .95s cubic-bezier(.22,.8,.24,1) both;
+  }
+  @keyframes printIn{from{clip-path:inset(0 0 100% 0);opacity:.4}to{clip-path:inset(0 0 0 0);opacity:1}}
+  .receipt::before,.receipt::after{
+    content:"";position:absolute;left:0;right:0;height:9px;pointer-events:none;
+    background-image:radial-gradient(circle at 7px 0, transparent 6.5px, var(--paper) 7px);
+    background-size:14px 9px;background-repeat:repeat-x;
+  }
+  .receipt::before{top:-8px}
+  .receipt::after{bottom:-8px;transform:scaleY(-1)}
+  .r-head{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);letter-spacing:.08em}
+  .dash{border:0;border-top:1px dashed rgba(26,33,29,.28);margin:14px 0 18px}
+  .r-title{font-family:var(--serif);font-size:34px;line-height:1.2;margin:0;font-weight:700}
+  .r-tag{
+    display:inline-block;margin-top:12px;padding:5px 12px;
+    border:1px solid rgba(26,33,29,.45);border-radius:2px;
+    font-size:12.5px;letter-spacing:.08em;color:var(--ink);
+  }
+  .score-row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:22px}
+  .score-label{font-size:12px;color:var(--muted);letter-spacing:.06em}
+  .score-num{font-family:var(--num);font-size:30px;line-height:1;color:var(--ink)}
+  .score-num small{font-size:14px;color:var(--muted);margin-left:2px}
+  .meter{height:4px;background:rgba(26,33,29,.12);margin-top:10px;border-radius:2px;overflow:hidden;position:relative}
+  .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brass-deep),var(--brass));transition:width .9s cubic-bezier(.3,.9,.3,1) .3s}
+  .meter-scale{display:flex;justify-content:space-between;font-family:var(--num);font-size:10px;color:var(--muted);margin-top:4px}
+
+  .radar-box{display:flex;justify-content:center;margin:16px 0 6px}
+  .radar-box svg{width:230px;height:230px;overflow:visible}
+  .radar-note{text-align:center;font-size:11px;color:var(--muted);margin:0 0 6px}
+
+  .ledger-row{display:flex;align-items:baseline;gap:8px;margin:26px 0 10px}
+  .ledger-row .lb{font-size:12px;color:var(--muted);letter-spacing:.06em;white-space:nowrap}
+  .ledger-row .dots{flex:1;border-bottom:1px dotted rgba(26,33,29,.25);transform:translateY(-3px)}
+  .body-text{font-size:14.5px;line-height:1.95;margin:0;color:#2A322D;text-align:justify}
+  .traits{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+  .trait{border:1px solid rgba(26,33,29,.25);padding:5px 11px;font-size:12.5px;border-radius:2px;color:#2A322D}
+  .quote{
+    margin:22px 0 0;padding:14px 16px;background:rgba(217,164,65,.16);
+    border-left:3px solid var(--seal);font-family:var(--serif);
+    font-size:16px;line-height:1.7;color:var(--ink);font-weight:700;
+  }
+  .pair{margin-top:20px;border-top:1px dashed rgba(26,33,29,.28);padding-top:16px}
+  .pair-row{display:flex;align-items:center;gap:10px;font-size:13px;padding:7px 0}
+  .pair-row .tag{font-size:11px;color:var(--muted);width:58px;flex:none;letter-spacing:.02em;white-space:nowrap}
+  .pair-row .val{flex:1;color:var(--ink);font-weight:600}
+  .pair-row .go{font-size:11px;color:var(--brass-deep);border-bottom:1px solid rgba(154,111,34,.4);cursor:pointer}
+  .r-foot{margin-top:18px;font-size:11px;color:var(--muted);text-align:center;letter-spacing:.05em;line-height:1.8}
+  .actions{display:flex;flex-direction:column;gap:10px;margin-top:26px}
+  .btn-gold{background:var(--brass);color:#241A05}
+  .btn-gold:hover{background:#E8B75A}
+  .link-row{display:flex;gap:10px}
+  .link-row .btn{flex:1}
+
+  /* ---------- 海报弹层 ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:50;display:none;
+    background:rgba(6,9,8,.92);backdrop-filter:blur(6px);
+    flex-direction:column;align-items:center;justify-content:center;
+    padding:24px;gap:16px;
+  }
+  .modal.on{display:flex}
+  .modal img{max-width:100%;max-height:72vh;border-radius:3px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+  .peek{
+    display:none;background:var(--paper);color:var(--text);
+    width:100%;max-width:330px;padding:28px 24px 24px;
+    box-shadow:0 22px 50px rgba(0,0,0,.55);
+    animation:screenIn .3s ease both;
+  }
+  .peek.on{display:block}
+  .peek .pk-tag{font-size:11px;color:var(--muted);letter-spacing:.08em}
+  .peek .pk-title{font-family:var(--serif);font-size:27px;font-weight:700;margin:10px 0 12px;line-height:1.28}
+  .peek .pk-line{font-size:14px;line-height:1.8;color:#2A322D;border-left:3px solid var(--seal);padding-left:12px;margin:0 0 16px}
+  .peek .pk-traits{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+  .peek .pk-traits span{border:1px solid rgba(26,33,29,.22);font-size:12px;padding:4px 9px;border-radius:2px}
+  .peek .pk-foot{font-size:11.5px;color:var(--muted);line-height:1.7;border-top:1px dashed rgba(26,33,29,.25);padding-top:14px}
+  .modal-tip{font-size:12.5px;color:var(--on-dark-dim);text-align:center;line-height:1.7}
+  .modal .btn{max-width:280px}
+  .toast{
+    position:fixed;left:50%;bottom:36px;transform:translate(-50%,12px);
+    background:var(--paper);color:var(--ink);font-size:13px;
+    padding:10px 18px;border-radius:2px;opacity:0;pointer-events:none;
+    transition:opacity .25s,transform .25s;z-index:60;white-space:nowrap;
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 封面 -->
+  <section class="screen active" id="screen-cover">
+    <div class="cover-top">
+      <div class="title-wrap">
+        <h1 class="cover-title">你的搞钱天赋<br>与隐藏财富人格</h1>
+        <div class="seal" aria-hidden="true"><span>财富</span><span>体检</span></div>
+      </div>
+      <p class="cover-sub">20 个关于钱的下意识反应。不是问你想不想富，是问你在没人看着的时候，手会怎么动。</p>
+    </div>
+    <div class="cover-foot">
+      <div class="meta-row"><span>20 道题</span><i class="vr"></i><span>约 100 秒</span><i class="vr"></i><span>无需登录</span></div>
+      <button class="btn btn-primary" id="btnStart">开始测我的财富人格</button>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section class="screen" id="screen-quiz">
+    <div class="q-head">
+      <span class="q-count"><b id="qIdx">01</b>/ 20</span>
+      <span class="q-count" id="qPct">5%</span>
+    </div>
+    <div class="progress"><i id="qBar"></i></div>
+    <div class="q-stage">
+      <div class="slip" id="slip">
+        <span class="slip-no" id="slipNo">第 01 问</span>
+        <h2 class="slip-q" id="qText"></h2>
+        <div class="opts" id="opts"></div>
+      </div>
+      <p class="q-hint">凭第一反应选，别想太久</p>
+    </div>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="screen-result">
+    <div class="result-wrap">
+      <div class="receipt" id="receipt"></div>
+      <div class="actions">
+        <button class="btn btn-gold" id="btnPoster">生成我的财富人格卡</button>
+        <div class="link-row">
+          <button class="btn btn-ghost" id="btnShare">复制链接</button>
+          <button class="btn btn-ghost" id="btnAgain">再测一次</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="modal">
+  <img id="posterImg" alt="财富人格卡">
+  <div class="peek" id="peek"></div>
+  <div class="modal-tip" id="modalTip">长按图片保存到相册<br>电脑上右键另存为</div>
+  <button class="btn btn-ghost" id="btnCloseModal">关闭</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ 题库数据 ============ */
+const QUESTIONS = [
+  { q:"如果明天你突然中奖100万，你的第一反应是？", o:[
+    ["先吃顿好的，买个平时舍不得买的东西",1],
+    ["存进银行，吃利息",2],
+    ["马上研究怎么用这笔钱做投资或搞副业",3]] },
+  { q:"看到一件很贵但非常喜欢的外套，你会？", o:[
+    ["喜欢就买，钱花了还能再赚",1],
+    ["加入购物车，等大促或者发工资再买",2],
+    ["看看有没有平替，或者去二手平台找找",3]] },
+  { q:"朋友跟你借钱，数目不大但你了解他花钱没数，你会？", o:[
+    ["借，不好意思拒绝，大不了不要了",1],
+    ["少借一点，就当送他了",2],
+    ["找个理由拒绝，或者让他写个借条",3]] },
+  { q:"同事买了个名表/名牌包在办公室炫耀，你心里想的是？", o:[
+    ["好看，我也想要，得想办法搞点钱买",1],
+    ["关我屁事，能当饭吃吗",2],
+    ["这玩意儿保值吗？不如买黄金",3]] },
+  { q:"周末朋友约你去一个网红餐厅吃饭，人均500，你会？", o:[
+    ["去！周末就该享受生活",1],
+    ["去是可以，但这个月其他开销得省着点",2],
+    ["太贵了，不如去菜市场买点好菜自己做",3]] },
+  { q:"你在网上看到“0基础七天理财训练营”，你会？", o:[
+    ["划走，都是割韭菜的",1],
+    ["收藏看看，如果有免费的试听课就听听",2],
+    ["找找有没有不花钱的平替资料，自己研究",3]] },
+  { q:"如果现在给你一份月薪2万但996的工作，和一个月薪1万但朝九晚五的工作，你选？", o:[
+    ["选2万，趁年轻多搞点钱",3],
+    ["选1万，身体健康和生活质量更重要",1],
+    ["看看有没有月薪1.5万，稍微加点班的",2]] },
+  { q:"你的钱一般放在哪里？", o:[
+    ["活期，随时准备花",1],
+    ["余额宝或零钱通，每天看着几毛钱利息很开心",2],
+    ["分散投资，基金、定期、股票都有配置",3]] },
+  { q:"逛街时销售一个劲地夸你，说这件衣服就是为你量身定做的，你会？", o:[
+    ["被夸迷糊了，直接买单",1],
+    ["借口去试衣间，看看吊牌价格再决定",2],
+    ["礼貌微笑，不管多好看，不买就是不买",3]] },
+  { q:"如果在二手平台发现你刚买的全新东西，别人卖得比你便宜一半，你会？", o:[
+    ["气死，感觉亏大了",1],
+    ["算了，买都买了，下次多比比价",2],
+    ["心想：我买的时候怎么没发现这个渠道",3]] },
+  { q:"关于记账，你的习惯是？", o:[
+    ["从来不记，花了多少看余额",1],
+    ["偶尔想起来记一下",2],
+    ["每一笔都记，月底复盘开销",3]] },
+  { q:"假如你办了一张健身卡，去了两次就不想去了，你会？", o:[
+    ["放着落灰，就当交了智商税",1],
+    ["强迫自己去，为了不亏钱",2],
+    ["把卡挂在闲鱼上转让，回点血",3]] },
+  { q:"朋友拉你进一个“内部投资群”，说稳赚不赔，你会？", o:[
+    ["投入一点试试水",1],
+    ["观望几天，看看别人怎么赚的",2],
+    ["直接退群，哪有稳赚不赔的好事",3]] },
+  { q:"你怎么看待“买彩票”？", o:[
+    ["偶尔买个10块钱，买个梦想",1],
+    ["只有奖池积累到几千万时才去凑个热闹",2],
+    ["纯属智商税，概率算一下就知道了",3]] },
+  { q:"如果你喜欢的一个博主推出了99元的定制周边，你会？", o:[
+    ["买，支持一下，反正也不贵",1],
+    ["看看实物值不值这个价",2],
+    ["觉得这是在割粉丝韭菜",3]] },
+  { q:"每个月发工资的第一天，你的首要动作是？", o:[
+    ["还花呗、信用卡，然后打开淘宝",1],
+    ["先转一笔固定的钱到储蓄卡里",3],
+    ["计划一下这个月的预算，然后存点备用金",2]] },
+  { q:"你觉得自己是一个“对数字敏感”的人吗？", o:[
+    ["完全不敏感，看到数字头疼",1],
+    ["还可以，自己的账算得清",2],
+    ["非常敏感，尤其是算价格和收益的时候",3]] },
+  { q:"去超市买东西，你的习惯是？", o:[
+    ["不看价格，想吃什么拿什么",1],
+    ["看价格标签，货比三家",3],
+    ["主要买打折或者放在促销区的东西",2]] },
+  { q:"如果明天就要交房租，但你的钱全在定期里取不出来，你会？", o:[
+    ["找爸妈或者朋友借一点周转",1],
+    ["刷信用卡套现",2],
+    ["庆幸自己留有备用金，完全不怕",3]] },
+  { q:"你梦想中的生活状态是？", o:[
+    ["暴富，买豪宅豪车，环游世界",1],
+    ["有一份稳定的收入，不用为钱发愁就行",2],
+    ["靠被动收入（收租/理财）覆盖日常开销",3]] }
+];
+
+/* 雷达三维：题号从 1 开始 */
+const RADAR_DIMS = [
+  { id:"spendingControl", name:"消费克制", q:[2,4,5,9,15,18], max:18 },
+  { id:"moneyAwareness",  name:"财务规划", q:[3,8,11,13,14,16,17,19], max:24 },
+  { id:"moneyDrive",      name:"搞钱行动", q:[1,6,7,10,12,20], max:18 }
+];
+
+/* ============ 结果数据 ============ */
+const RESULTS = [
+  {
+    id:"R_A", min:20, max:29,
+    title:"快乐月光族", tag:"人间体验卡玩家",
+    analysis:"你简直就是享受当下生活的“第一人”！对于你来说，钱赚来就是为了花的，只有花出去了，那才叫真正的“资产”。你极具创造力，在人际交往中非常大方，所以你的“吸金直觉”并不差。你的致命弱点在于“守财”。你经常在情绪上头时冲动消费，导致“财来财去”。建议你每个月强制储蓄一部分，或者把钱交给靠谱的人打理。别灰心，你的财富密码在于“整合资源”，用好人脉，你的搞钱路会宽很多。",
+    traits:["情绪型消费者","社交慷慨症","短周期快乐驱动"],
+    cp:"R_B", clash:"R_D",
+    line:"钱不是省出来的，是花出来的（但该省也得省啦）！",
+    advice:"发薪日当天自动转出 10% 到一个不常打开的账户。看不见的钱，才真的存得下来。"
+  },
+  {
+    id:"R_B", min:30, max:39,
+    title:"精打细算打工人", tag:"性价比侦探",
+    analysis:"你是一个非常有计划性的人，对每一分钱都精打细算。你的消费观非常健康，主打一个“该省省，该花花”，买东西前必定要货比三家。在投资理财上，你偏向于保守和稳健，有很强的风险防范意识。但在搞大钱方面，你可能会因为过于求稳而错失一些高回报的机会。你的财富密码是“专注”。你适合通过深耕某项技能，让自身价值大幅提升，从而带来薪资的飞跃。",
+    traits:["性价比雷达","风险厌恶","延迟满足体质"],
+    cp:"R_A", clash:"R_C",
+    line:"每一分钱，都要花在刀刃上。",
+    advice:"把省钱能力变现：挑一个你已经研究透的品类，写成攻略或做选品号，这是你最低成本的副业切口。"
+  },
+  {
+    id:"R_C", min:40, max:49,
+    title:"隐藏搞钱小雷达", tag:"稳中求进潜力股",
+    analysis:"你绝对是一个被低估的搞钱好手！你对数字敏感，有很强的商业嗅觉，而且最关键的是，你居然能在“享受生活”和“克制消费”之间找到平衡。你不会盲从大众的消费主义，有自己独立判断价值的能力。你的财富密码是“杠杆”。你已经具备了守财的能力，现在只需要找到合适的渠道（比如学习理财、开拓副业），用小钱撬动大钱，你的财富雪球会越滚越大。",
+    traits:["隐性财商","双轨思维","克制型野心"],
+    cp:"R_D", clash:"R_B",
+    line:"你以为我在花钱，其实我在布一盘大棋。",
+    advice:"给自己定一条“试错预算”：每月拿 5% 去做一件没做过的事（副业、小额定投、一个课程），别只守不攻。"
+  },
+  {
+    id:"R_D", min:50, max:60,
+    title:"天生吸金霸总", tag:"无情搞钱机器",
+    analysis:"这世界上如果有人能靠呼吸赚钱，那一定是你！你的理智和克制简直到了令人发指的地步。你不仅能敏锐地察觉到商机，还有着极强的执行力。那些消费主义的陷阱在你面前，简直就像小孩子的把戏。你不会轻易被情绪左右，看问题直达本质。但要注意，生活不只是赚钱，偶尔也要学会享受一下“无用的快乐”，否则你可能会在人际关系上显得过于功利和冷漠。",
+    traits:["数字洁癖","反消费主义","理性过载"],
+    cp:"R_C", clash:"R_A",
+    line:"搞钱，是我唯一的信仰。",
+    advice:"每月给自己划一笔“纯浪费预算”，只能用来买没用的快乐。这是防止你把自己活成一张报表的唯一办法。"
+  }
+];
+
+/* ============ 状态 ============ */
+const state = { i:0, scores:[], total:0, result:null, dims:null };
+const $ = id => document.getElementById(id);
+const show = id => {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0,0);
+};
+
+/* ============ 答题 ============ */
+function renderQuestion(){
+  const i = state.i, q = QUESTIONS[i];
+  $('qIdx').textContent = String(i+1).padStart(2,'0');
+  $('qPct').textContent = Math.round((i+1)/QUESTIONS.length*100) + '%';
+  $('qBar').style.width = ((i+1)/QUESTIONS.length*100) + '%';
+  $('slipNo').textContent = '第 ' + String(i+1).padStart(2,'0') + ' 问';
+  $('qText').textContent = q.q;
+
+  const box = $('opts');
+  box.innerHTML = '';
+  q.o.forEach((opt, idx) => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.type = 'button';
+    b.innerHTML = '<span class="k">' + 'ABC'[idx] + '</span><span class="t"></span>';
+    b.querySelector('.t').textContent = opt[0];
+    b.addEventListener('click', () => choose(b, opt[1]));
+    box.appendChild(b);
+  });
+
+  const slip = $('slip');
+  slip.style.animation = 'none';
+  void slip.offsetWidth;
+  slip.style.animation = 'screenIn .32s ease both';
+}
+
+let locked = false;
+function choose(el, score){
+  if (locked) return;
+  locked = true;
+  el.classList.add('sel');
+
+  const flash = document.createElement('span');
+  flash.className = 'flash';
+  flash.textContent = '+' + score;
+  el.appendChild(flash);
+
+  state.scores.push(score);
+
+  setTimeout(() => {
+    locked = false;
+    if (state.i < QUESTIONS.length - 1){
+      state.i++;
+      renderQuestion();
+    } else {
+      finish();
+    }
+  }, 260);
+}
+
+/* ============ 计分 ============ */
+function finish(){
+  state.total = state.scores.reduce((a,b)=>a+b,0);
+  state.result = RESULTS.find(r => state.total >= r.min && state.total <= r.max) || RESULTS[0];
+
+  const dims = RADAR_DIMS.map(d => {
+    const sum = d.q.reduce((acc,qno) => acc + state.scores[qno-1], 0);
+    return { name:d.name, pct: Math.max(20, Math.min(95, Math.round(sum / d.max * 100))) };
+  });
+  state.dims = dims;
+
+  renderResult();
+  show('screen-result');
+}
+
+/* ============ 雷达图 ============ */
+function radarSVG(dims, size){
+  const cx = size/2, cy = size/2 + 6, r = size*0.32;
+  const ang = [-90, 30, 150];
+  const pt = (i, k) => {
+    const a = ang[i] * Math.PI/180;
+    return [cx + r*k*Math.cos(a), cy + r*k*Math.sin(a)];
+  };
+  const poly = k => [0,1,2].map(i => pt(i,k).join(',')).join(' ');
+
+  let grid = '';
+  [1/3, 2/3, 1].forEach(k => {
+    grid += '<polygon points="'+poly(k)+'" fill="none" stroke="rgba(26,33,29,.18)" stroke-width="1"/>';
+  });
+  for (let i=0;i<3;i++){
+    const [x,y] = pt(i,1);
+    grid += '<line x1="'+cx+'" y1="'+cy+'" x2="'+x+'" y2="'+y+'" stroke="rgba(26,33,29,.13)" stroke-width="1"/>';
+  }
+  const dataPts = dims.map((d,i) => pt(i, d.pct/100).join(',')).join(' ');
+  const dots = dims.map((d,i) => {
+    const [x,y] = pt(i, d.pct/100);
+    return '<circle cx="'+x+'" cy="'+y+'" r="3.2" fill="#B8402B"/>';
+  }).join('');
+
+  const labels = [
+    ['消费克制', cx, cy - r - 16, 'middle'],
+    ['财务规划', cx + r*0.98 + 10, cy + r*0.52 + 4, 'start'],
+    ['搞钱行动', cx - r*0.98 - 10, cy + r*0.52 + 4, 'end']
+  ].map(([t,x,y,anchor]) =>
+    '<text x="'+x+'" y="'+y+'" text-anchor="'+anchor+'" font-size="11.5" fill="#6E7A72" letter-spacing="1">'+t+'</text>'
+  ).join('');
+
+  return '<svg viewBox="0 0 '+size+' '+size+'" role="img" aria-label="财富三维雷达图">'
+    + grid
+    + '<polygon points="'+dataPts+'" fill="rgba(217,164,65,.42)" stroke="#9A6F22" stroke-width="1.6" stroke-linejoin="round"/>'
+    + dots + labels + '</svg>';
+}
+
+/* ============ 结果渲染 ============ */
+function renderResult(){
+  const r = state.result, t = state.total;
+  const byId = id => RESULTS.find(x => x.id === id);
+  const cp = byId(r.cp), clash = byId(r.clash);
+
+  $('receipt').innerHTML =
+    '<div class="r-head"><span>搞钱天赋与隐藏财富人格</span><span>NO.' + String(t).padStart(2,'0') + '</span></div>'
+    + '<hr class="dash">'
+    + '<h2 class="r-title">' + r.title + '</h2>'
+    + '<span class="r-tag">' + r.tag + '</span>'
+    + '<div class="score-row"><span class="score-label">财商总分</span>'
+    + '<span class="score-num">' + t + '<small>/ 60</small></span></div>'
+    + '<div class="meter"><i id="meterFill"></i></div>'
+    + '<div class="meter-scale"><span>20</span><span>60</span></div>'
+    + '<div class="radar-box">' + radarSVG(state.dims, 230) + '</div>'
+    + '<p class="radar-note">越高代表这一项越强，和总分无关</p>'
+    + '<div class="ledger-row"><span class="lb">性格侧写</span><span class="dots"></span></div>'
+    + '<p class="body-text">' + r.analysis + '</p>'
+    + '<div class="ledger-row"><span class="lb">隐藏特质</span><span class="dots"></span></div>'
+    + '<div class="traits">' + r.traits.map(x => '<span class="trait">' + x + '</span>').join('') + '</div>'
+    + '<p class="quote">' + r.line + '</p>'
+    + '<div class="pair">'
+    +   '<div class="pair-row"><span class="tag">最佳搭子</span><span class="val">' + cp.title + '</span><span class="go" data-go="'+cp.id+'">看看 TA</span></div>'
+    +   '<div class="pair-row"><span class="tag">最不对付</span><span class="val">' + clash.title + '</span><span class="go" data-go="'+clash.id+'">看看 TA</span></div>'
+    + '</div>'
+    + '<div class="r-foot">建议：' + r.advice + '<br>本测试仅供娱乐参考</div>';
+
+  requestAnimationFrame(() => {
+    const fill = $('meterFill');
+    if (fill) fill.style.width = Math.round((t - 20) / 40 * 100) + '%';
+  });
+
+  document.querySelectorAll('[data-go]').forEach(el => {
+    el.addEventListener('click', () => openPeek(el.dataset.go));
+  });
+}
+
+/* ============ 海报 ============ */
+function buildPoster(){
+  const W = 750, H = 1200;
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  const r = state.result;
+
+  g.fillStyle = '#0D1210'; g.fillRect(0,0,W,H);
+  const glow = g.createRadialGradient(W/2, 0, 0, W/2, 0, H*0.72);
+  glow.addColorStop(0, 'rgba(217,164,65,.16)');
+  glow.addColorStop(1, 'rgba(217,164,65,0)');
+  g.fillStyle = glow; g.fillRect(0,0,W,H);
+
+  const PX = 46, PY = 120, PW = W - PX*2, PH = 960;
+  const L = PX + 42, R = PX + PW - 42;
+
+  // 小票纸 + 上下锯齿
+  g.fillStyle = '#F3EEE4';
+  g.fillRect(PX, PY, PW, PH);
+  const tooth = 14, amp = 9;
+  g.beginPath(); g.moveTo(PX, PY);
+  for (let x = PX; x < PX + PW; x += tooth){ g.lineTo(x + tooth/2, PY - amp); g.lineTo(x + tooth, PY); }
+  g.lineTo(PX + PW, PY); g.closePath(); g.fill();
+  g.beginPath(); g.moveTo(PX, PY + PH);
+  for (let x = PX; x < PX + PW; x += tooth){ g.lineTo(x + tooth/2, PY + PH + amp); g.lineTo(x + tooth, PY + PH); }
+  g.lineTo(PX + PW, PY + PH); g.closePath(); g.fill();
+
+  // 头部
+  g.fillStyle = '#6E7A72';
+  g.font = '600 21px "PingFang SC","Microsoft YaHei",sans-serif';
+  g.fillText('搞钱天赋与隐藏财富人格', L, 178);
+  g.strokeStyle = 'rgba(26,33,29,.3)'; g.setLineDash([7,7]); g.lineWidth = 1.5;
+  g.beginPath(); g.moveTo(L, 204); g.lineTo(R, 204); g.stroke();
+  g.setLineDash([]);
+
+  // 结果标题
+  g.fillStyle = '#1A211D';
+  g.font = '700 60px "Songti SC","SimSun",serif';
+  g.fillText(r.title, L, 266);
+
+  // 专属标签
+  g.font = '400 23px "PingFang SC","Microsoft YaHei",sans-serif';
+  const tw = g.measureText(r.tag).width;
+  g.strokeStyle = 'rgba(26,33,29,.45)'; g.lineWidth = 2;
+  g.strokeRect(L, 286, tw + 34, 46);
+  g.fillStyle = '#1A211D';
+  g.fillText(r.tag, L + 17, 317);
+
+  // 总分
+  g.fillStyle = '#6E7A72';
+  g.font = '400 21px "PingFang SC","Microsoft YaHei",sans-serif';
+  g.fillText('财商总分', L, 394);
+  g.fillStyle = '#1A211D';
+  g.font = '400 58px Georgia,serif';
+  g.textAlign = 'right';
+  g.fillText(state.total + ' / 60', R, 400);
+  g.textAlign = 'left';
+  const barW = R - L;
+  g.fillStyle = 'rgba(26,33,29,.12)'; g.fillRect(L, 412, barW, 7);
+  g.fillStyle = '#D9A441'; g.fillRect(L, 412, barW * (state.total - 20) / 40, 7);
+
+  // 雷达
+  const cx = W/2, cy = 575, rad = 105;
+  const angs = [-90, 30, 150];
+  const pt = (i,k) => [cx + rad*k*Math.cos(angs[i]*Math.PI/180), cy + rad*k*Math.sin(angs[i]*Math.PI/180)];
+  [1/3, 2/3, 1].forEach(k => {
+    g.beginPath();
+    [0,1,2].forEach((i,idx) => { const p = pt(i,k); idx ? g.lineTo(p[0],p[1]) : g.moveTo(p[0],p[1]); });
+    g.closePath(); g.strokeStyle = 'rgba(26,33,29,.18)'; g.lineWidth = 1.2; g.stroke();
+  });
+  for (let i = 0; i < 3; i++){
+    const p = pt(i,1);
+    g.beginPath(); g.moveTo(cx,cy); g.lineTo(p[0],p[1]);
+    g.strokeStyle = 'rgba(26,33,29,.12)'; g.stroke();
+  }
+  g.beginPath();
+  state.dims.forEach((d,i) => { const p = pt(i, d.pct/100); i ? g.lineTo(p[0],p[1]) : g.moveTo(p[0],p[1]); });
+  g.closePath();
+  g.fillStyle = 'rgba(217,164,65,.45)'; g.fill();
+  g.strokeStyle = '#9A6F22'; g.lineWidth = 2.4; g.stroke();
+  state.dims.forEach((d,i) => {
+    const p = pt(i, d.pct/100);
+    g.beginPath(); g.arc(p[0], p[1], 5, 0, Math.PI*2); g.fillStyle = '#B8402B'; g.fill();
+  });
+
+  g.fillStyle = '#6E7A72';
+  g.font = '400 22px "PingFang SC","Microsoft YaHei",sans-serif';
+  g.textAlign = 'center';
+  g.fillText('消费克制', cx, cy - rad - 20);
+  g.textAlign = 'left';
+  g.fillText('财务规划', cx + rad*0.86, cy + rad*0.56);
+  g.textAlign = 'right';
+  g.fillText('搞钱行动', cx - rad*0.86, cy + rad*0.56);
+  g.textAlign = 'left';
+
+  // 隐藏特质
+  g.fillStyle = '#6E7A72';
+  g.font = '400 21px "PingFang SC","Microsoft YaHei",sans-serif';
+  g.fillText(r.traits.join('　/　'), L, 720);
+
+  // 金句
+  g.font = '700 27px "Songti SC","SimSun",serif';
+  const lines = wrapLines(g, r.line, R - L - 30);
+  const qTop = 742, qH = lines.length * 40 + 26;
+  g.fillStyle = 'rgba(217,164,65,.18)';
+  g.fillRect(L - 14, qTop, R - L + 28, qH);
+  g.fillStyle = '#B8402B';
+  g.fillRect(L - 14, qTop, 6, qH);
+  g.fillStyle = '#1A211D';
+  lines.forEach((ln, i) => g.fillText(ln, L + 14, qTop + 38 + i*40));
+
+  // 页脚
+  g.strokeStyle = 'rgba(26,33,29,.22)'; g.setLineDash([6,6]); g.lineWidth = 1.4;
+  g.beginPath(); g.moveTo(L, 880); g.lineTo(R, 880); g.stroke();
+  g.setLineDash([]);
+
+  const qs = 110, qx = R - qs, qy = 896;
+  g.strokeStyle = 'rgba(26,33,29,.3)'; g.lineWidth = 2;
+  g.strokeRect(qx, qy, qs, qs);
+  g.fillStyle = '#9AA59D';
+  g.font = '400 17px "PingFang SC","Microsoft YaHei",sans-serif';
+  g.textAlign = 'center';
+  g.fillText('二维码', qx + qs/2, qy + 52);
+  g.fillText('放这里', qx + qs/2, qy + 76);
+  g.textAlign = 'left';
+
+  g.fillStyle = '#2A322D';
+  g.font = '400 22px "PingFang SC","Microsoft YaHei",sans-serif';
+  g.fillText('扫码测你的财富人格', L, 936);
+  g.fillStyle = '#9AA59D';
+  g.font = '400 17px "PingFang SC","Microsoft YaHei",sans-serif';
+  g.fillText('仅供娱乐 · 不构成任何投资建议', L, 970);
+
+  return c.toDataURL('image/png');
+}
+
+function wrapLines(g, text, maxW){
+  const out = []; let line = '';
+  for (const ch of text){
+    if (g.measureText(line + ch).width > maxW && line){ out.push(line); line = ch; }
+    else line += ch;
+  }
+  if (line) out.push(line);
+  return out;
+}
+
+/* ============ 交互 ============ */
+
+$('btnStart').addEventListener('click', () => {
+  state.i = 0; state.scores = [];
+  renderQuestion();
+  show('screen-quiz');
+});
+
+function openPeek(id){
+  const r = RESULTS.find(x => x.id === id);
+  $('posterImg').style.display = 'none';
+  $('peek').classList.add('on');
+  $('peek').innerHTML =
+    '<div class="pk-tag">TA 的财富人格</div>'
+    + '<div class="pk-title">' + r.title + '</div>'
+    + '<p class="pk-line">' + r.line + '</p>'
+    + '<div class="pk-traits">' + r.traits.map(t => '<span>' + t + '</span>').join('') + '</div>'
+    + '<div class="pk-foot">分数落在 ' + r.min + '–' + r.max + ' 分区间。想跟 TA 组队搞钱，先看看你们是不是一路人。</div>';
+  $('modalTip').textContent = '每个人只有一种财富人格，测一次就知道';
+  $('modal').classList.add('on');
+}
+
+$('btnPoster').addEventListener('click', () => {
+  const url = buildPoster();
+  $('posterImg').src = url;
+  $('posterImg').style.display = '';
+  $('peek').classList.remove('on');
+  $('modalTip').innerHTML = '长按图片保存到相册<br>电脑上右键另存为';
+  $('modal').classList.add('on');
+});
+
+$('btnCloseModal').addEventListener('click', () => $('modal').classList.remove('on'));
+$('btnAgain').addEventListener('click', () => {
+  state.i = 0; state.scores = [];
+  renderQuestion();
+  show('screen-quiz');
+});
+
+$('btnShare').addEventListener('click', async () => {
+  const url = location.href;
+  try {
+    await navigator.clipboard.writeText(url);
+    toast('链接已复制，发给朋友吧');
+  } catch(e){
+    toast('长按地址栏复制链接');
+  }
+});
+
+let toastTimer;
+function toast(msg){
+  const el = $('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('on'), 2200);
+}
+</script>
+</body>
+</html>
